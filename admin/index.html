@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Submissions Inbox | Michigan Happy Hour Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1B2838;--muted:#6B8A9E;--line:#D8E2EA;--bg:#F5F7FA;--card:#fff;--accent:#E8614D;--blue:#2D6A8F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1{font-family:Fraunces,Georgia,serif;font-size:clamp(28px,4vw,36px);margin-bottom:6px}
+.sub{color:var(--muted);margin-bottom:20px;line-height:1.5}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.login label{display:block;font-weight:600;margin-bottom:6px}
+.login input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:12px}
+button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer}
+.primary{background:linear-gradient(135deg,var(--blue),var(--accent));color:#fff}
+.ghost{background:#F5F7FA;border:1.5px solid var(--line);color:#4A6274}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.counts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.chip{background:#EFF6FF;color:var(--blue);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.meta{font-size:13px;color:var(--muted);margin:4px 0 10px}
+.field{font-size:14px;line-height:1.5;margin:4px 0}
+.field b{color:#4A6274}
+.err{color:var(--accent);font-weight:600;margin:8px 0}
+.ok{color:#16A34A;font-weight:600;margin:8px 0}
+.hidden{display:none}
+.status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#FFF0ED;color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Submissions inbox</h1>
+  <p class="sub">Password-protected review queue for listing submissions stored in D1. This page is noindex.</p>
+
+  <div id="login" class="card login">
+    <label for="password">Admin password</label>
+    <input id="password" type="password" placeholder="ADMIN_PASSWORD" autocomplete="current-password">
+    <div class="row">
+      <button class="primary" id="login-btn" type="button">Unlock inbox</button>
+      <button class="ghost" id="clear-btn" type="button">Clear saved password</button>
+    </div>
+    <div id="login-msg" class="err hidden"></div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="row" style="justify-content:space-between;margin-bottom:8px">
+      <div class="counts" id="counts"></div>
+      <div class="row">
+        <select id="status-filter" class="ghost" style="padding:10px 12px">
+          <option value="">All statuses</option>
+          <option value="new">new</option>
+          <option value="reviewed">reviewed</option>
+          <option value="published">published</option>
+          <option value="rejected">rejected</option>
+        </select>
+        <button class="ghost" id="refresh-btn" type="button">Refresh</button>
+        <button class="ghost" id="logout-btn" type="button">Lock</button>
+      </div>
+    </div>
+    <div id="list"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY = 'mhh_admin_pw';
+  var login = document.getElementById('login');
+  var app = document.getElementById('app');
+  var msg = document.getElementById('login-msg');
+  var list = document.getElementById('list');
+  var counts = document.getElementById('counts');
+  var pwInput = document.getElementById('password');
+
+  function pw(){ return sessionStorage.getItem(KEY) || ''; }
+  function setPw(v){ sessionStorage.setItem(KEY, v); }
+  function clearPw(){ sessionStorage.removeItem(KEY); }
+
+  function showError(t){ msg.textContent = t; msg.classList.remove('hidden'); }
+  function hideError(){ msg.classList.add('hidden'); msg.textContent = ''; }
+
+  async function api(path, opts){
+    opts = opts || {};
+    opts.headers = Object.assign({
+      'Authorization': 'Bearer ' + pw(),
+      'Content-Type': 'application/json'
+    }, opts.headers || {});
+    var res = await fetch(path, opts);
+    var data = await res.json().catch(function(){ return {}; });
+    return { res: res, data: data };
+  }
+
+  function renderCounts(items){
+    if (!items || !items.length) { counts.innerHTML = '<span class="chip">0 total</span>'; return; }
+    counts.innerHTML = items.map(function(c){
+      return '<span class="chip">' + c.status + ': ' + c.count + '</span>';
+    }).join('');
+  }
+
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderList(rows){
+    if (!rows.length) {
+      list.innerHTML = '<div class="card">No submissions yet.</div>';
+      return;
+    }
+    list.innerHTML = rows.map(function(s){
+      return '<div class="card" data-id="'+s.id+'">'
+        + '<div class="row" style="justify-content:space-between">'
+        + '<div><strong>'+esc(s.name)+'</strong> · '+esc(s.town)
+        + ' <span class="status">'+esc(s.status)+'</span></div>'
+        + '<div class="meta">#'+s.id+' · '+esc(s.created_at)+' · '+esc(s.source||'')+'</div>'
+        + '</div>'
+        + '<div class="field"><b>Type:</b> '+esc(s.submission_type)+'</div>'
+        + '<div class="field"><b>Category:</b> '+esc(s.category||'—')+'</div>'
+        + '<div class="field"><b>Address:</b> '+esc(s.address||'—')+'</div>'
+        + '<div class="field"><b>Hours:</b> '+esc(s.happy_hour_schedule||'—')+'</div>'
+        + '<div class="field"><b>Deals:</b> '+esc(s.deals||'—')+'</div>'
+        + '<div class="field"><b>Vibe:</b> '+esc(s.vibe||'—')+'</div>'
+        + '<div class="field"><b>Contact:</b> '+esc(s.contact_name||'—')+' · '+esc(s.role||'')+'</div>'
+        + '<div class="field"><b>Email:</b> '+esc(s.email||'—')+' · <b>Phone:</b> '+esc(s.phone||'—')+'</div>'
+        + '<div class="field"><b>Website:</b> '+esc(s.website||'—')+' · <b>Patio:</b> '+esc(s.has_patio||'—')+'</div>'
+        + '<div class="field"><b>Notes:</b> '+esc(s.notes||'—')+'</div>'
+        + '<div class="row" style="margin-top:12px">'
+        + ['new','reviewed','published','rejected'].map(function(st){
+            return '<button class="ghost status-btn" data-id="'+s.id+'" data-status="'+st+'">Mark '+st+'</button>';
+          }).join('')
+        + '</div></div>';
+    }).join('');
+
+    list.querySelectorAll('.status-btn').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var id = Number(btn.getAttribute('data-id'));
+        var status = btn.getAttribute('data-status');
+        var result = await api('/api/admin/submissions', {
+          method: 'POST',
+          body: JSON.stringify({ id: id, status: status })
+        });
+        if (!result.res.ok || !result.data.ok) {
+          alert(result.data.error || 'Update failed');
+          return;
+        }
+        load();
+      });
+    });
+  }
+
+  async function load(){
+    hideError();
+    var status = document.getElementById('status-filter').value;
+    var q = status ? ('?status=' + encodeURIComponent(status)) : '';
+    var result = await api('/api/admin/submissions' + q);
+    if (result.res.status === 401) {
+      clearPw();
+      app.classList.add('hidden');
+      login.classList.remove('hidden');
+      showError('Wrong password.');
+      return;
+    }
+    if (result.res.status === 503) {
+      showError('Set ADMIN_PASSWORD in Cloudflare Pages → Settings → Variables and secrets, then redeploy.');
+      return;
+    }
+    if (!result.res.ok || !result.data.ok) {
+      showError(result.data.error || 'Failed to load');
+      return;
+    }
+    login.classList.add('hidden');
+    app.classList.remove('hidden');
+    renderCounts(result.data.counts);
+    renderList(result.data.submissions || []);
+  }
+
+  document.getElementById('login-btn').addEventListener('click', function(){
+    var v = pwInput.value.trim();
+    if (!v) { showError('Enter the admin password.'); return; }
+    setPw(v);
+    load();
+  });
+  document.getElementById('clear-btn').addEventListener('click', function(){
+    clearPw(); pwInput.value=''; hideError();
+  });
+  document.getElementById('logout-btn').addEventListener('click', function(){
+    clearPw(); app.classList.add('hidden'); login.classList.remove('hidden');
+  });
+  document.getElementById('refresh-btn').addEventListener('click', load);
+  document.getElementById('status-filter').addEventListener('change', load);
+  pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
+
+  if (pw()) load();
+})();
+</script>
+</body>
+</html>

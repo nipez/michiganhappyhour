@@ -500,37 +500,42 @@ function App(){
     setTimeout(()=>setMapHighlight(null),5000);
   };
 
+  const scrollToListings=()=>{const el=document.getElementById("listings-top");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});};
+
   return(
     <div style={{background:"#F5F7FA",minHeight:"100vh"}}>
 
+      {/* STICKY NAV */}
+      <nav style={{position:"sticky",top:0,zIndex:50,backdropFilter:"blur(12px)",background:"rgba(15,24,36,0.92)",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
+        <div style={{maxWidth:1200,margin:"0 auto",padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+          <a href="/" style={{color:"#fff",fontWeight:800,fontSize:17,textDecoration:"none",letterSpacing:-0.2}}>Michigan Happy Hour</a>
+          <div style={{display:"flex",gap:14,flexWrap:"wrap",alignItems:"center"}}>
+            <button onClick={scrollToListings} style={{background:"none",border:"none",color:"#D5E0EA",fontWeight:600,fontSize:14,cursor:"pointer"}}>Today's deals</button>
+            <a href="/blog/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Guides</a>
+            <a href="/map/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Map</a>
+            <a href="/for-business/" style={{color:"#FFB3A6",fontWeight:700,fontSize:14,textDecoration:"none"}}>For business</a>
+          </div>
+        </div>
+      </nav>
+
       {/* HERO */}
-      <header style={{position:"relative",height:"70vh",minHeight:400,maxHeight:700,overflow:"hidden"}}>
-        <img src="img/hero.jpg" alt="Happy Hour" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 40%"}}/>
-        <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(to bottom, rgba(10,20,35,0.4) 0%, rgba(10,20,35,0.6) 50%, rgba(10,20,35,0.92) 100%)"}}/>
-        <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 20px 36px",maxWidth:1200,margin:"0 auto"}}>
-          <div className="fade-up" style={{maxWidth:700}}>
-            <div style={{fontSize:18,fontWeight:700,color:"#E8614D",textTransform:"uppercase",letterSpacing:4,marginBottom:12}}>Michigan</div>
-            <h1 className="serif" style={{fontSize:"clamp(42px, 6vw, 72px)",fontWeight:900,color:"#fff",margin:"0 0 16px 0",lineHeight:1.05,letterSpacing:-1}}>Happy Hour Guide</h1>
-            <p style={{fontSize:"clamp(18px,3.5vw,22px)",color:"#B8CBD9",margin:"0 0 28px 0",lineHeight:1.5,maxWidth:550}}>From Detroit to Mackinac Island — every deal, every day. The best hour shouldn't be hard to find.</p>
-            <div className="hero-stats" style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-              {[["🥂",`${rc.all||0} spots on ${day}`],["📍",`${REGIONS.length-1} regions`],["🍺",`${L.length} listings`],["🗺️","Interactive Map →"]].map(([e,t],i)=>
-                <div key={i} onClick={t==="Interactive Map →"?()=>window.location.href="/map/":undefined} style={{display:"inline-flex",alignItems:"center",gap:8,background:t==="Interactive Map →"?"rgba(232,97,77,0.25)":"rgba(255,255,255,0.12)",backdropFilter:"blur(12px)",padding:"10px 20px",borderRadius:28,border:t==="Interactive Map →"?"1px solid rgba(232,97,77,0.4)":"1px solid rgba(255,255,255,0.15)",cursor:t==="Interactive Map →"?"pointer":"default"}}>
-                  <span style={{fontSize:22}}>{e}</span><span style={{color:"#EDF2F6",fontSize:18,fontWeight:600}}>{t}</span>
-                </div>
-              )}
+      <header style={{position:"relative",height:"78vh",minHeight:440,maxHeight:760,overflow:"hidden"}}>
+        <img src="img/hero.jpg" alt="Happy hour drinks in Michigan" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 40%"}}/>
+        <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(to bottom, rgba(10,20,35,0.35) 0%, rgba(10,20,35,0.55) 45%, rgba(10,20,35,0.94) 100%)"}}/>
+        <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 20px 40px",maxWidth:1200,margin:"0 auto"}}>
+          <div className="fade-up" style={{maxWidth:720}}>
+            <div style={{fontSize:15,fontWeight:800,color:"#E8614D",textTransform:"uppercase",letterSpacing:3.5,marginBottom:12}}>Michigan Happy Hour</div>
+            <h1 className="serif" style={{fontSize:"clamp(44px, 7vw, 76px)",fontWeight:900,color:"#fff",margin:"0 0 14px 0",lineHeight:1.02,letterSpacing:-1.5}}>Find tonight's best deal.</h1>
+            <p style={{fontSize:"clamp(17px,3.2vw,21px)",color:"#B8CBD9",margin:"0 0 22px 0",lineHeight:1.45,maxWidth:520}}>From Detroit to Mackinac — happy hours by day, city, and what's live right now.</p>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:18}}>
+              <button onClick={scrollToListings} style={{padding:"14px 22px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer"}}>Browse {rc.all||0} spots today</button>
+              <a href="/blog/" style={{padding:"14px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.28)",background:"rgba(255,255,255,0.1)",color:"#fff",fontWeight:700,fontSize:16,textDecoration:"none"}}>City guides</a>
+              <a href="/map/" style={{padding:"14px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.18)",background:"transparent",color:"#D5E0EA",fontWeight:700,fontSize:16,textDecoration:"none"}}>Open map</a>
             </div>
+            <div style={{fontSize:14,color:"#8AA3B5",fontWeight:600}}>{REGIONS.length-1} regions · {L.length} listings · Updated weekly</div>
           </div>
         </div>
       </header>
-
-      {/* PHOTO STRIP */}
-      <div style={{padding:"28px 0 8px"}}>
-        <div className="photo-strip">
-          {["cheers-cocktails.jpg","wine-cheese.jpg","tropical-drinks.jpg","daytime-cheers.jpg","charcuterie.jpg","old-fashioned.jpg","friends-wine.jpg"].map((f,i)=>
-            <img key={i} src={`img/${f}`} alt="" style={{width:f.includes("old-fashioned")||f.includes("wine-cheese")?260:340,height:220}}/>
-          )}
-        </div>
-      </div>
 
       {/* MAIN */}
       <main style={{maxWidth:1200,margin:"0 auto",padding:"12px 16px 0"}}>
@@ -559,6 +564,40 @@ function App(){
               </div>
             </button>;
           })}
+        </div>
+
+        {/* Guides + collections — early, before the long listing scroll */}
+        <div style={{margin:"4px 0 18px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:12,marginBottom:10}}>
+            <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>Guides & collections</div>
+            <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All guides →</a>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,220px),1fr))",gap:10}}>
+            <a href="/blog/detroit-happy-hour-guide.html" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit happy hours</div>
+            </a>
+            <a href="/blog/grand-rapids-happy-hour-guide.html" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Grand Rapids happy hours</div>
+            </a>
+            <a href="/blog/ann-arbor-happy-hour-guide.html" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Ann Arbor happy hours</div>
+            </a>
+            <a href="/collections/best-patios.html" style={{display:"block",padding:"16px",borderRadius:14,background:"linear-gradient(135deg,#FFFBEB,#FEF3C7)",border:"1.5px solid #F59E0B",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#B45309",fontWeight:700,marginBottom:4}}>COLLECTION</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#92400E"}}>Best patios & rooftops</div>
+            </a>
+            <a href="/collections/best-late-night.html" style={{display:"block",padding:"16px",borderRadius:14,background:"linear-gradient(135deg,#F5F3FF,#EDE9FE)",border:"1.5px solid #8B5CF6",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#7C3AED",fontWeight:700,marginBottom:4}}>COLLECTION</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#5B21B6"}}>Late-night happy hours</div>
+            </a>
+            <a href="/blog/traverse-city-happy-hour-guide.html" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Traverse City guide</div>
+            </a>
+          </div>
         </div>
 
         {/* Search & filters */}
@@ -622,8 +661,8 @@ function App(){
           <div style={{background:"#fff",borderRadius:16,overflow:"hidden",border:"1.5px solid #D8E2EA",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",textAlign:"center",minHeight:160}}>
             <div style={{fontSize:36,marginBottom:8}}>📣</div>
             <div style={{fontSize:18,fontWeight:700,color:"#1B2838",marginBottom:4}}>Feature Your Spot Here</div>
-            <p style={{fontSize:15,color:"#6B8A9E",lineHeight:1.5,marginBottom:14,maxWidth:280}}>Get premium placement at the top of the <span style={{color:"#E8614D",fontWeight:600}}>Happy Hour Guide</span> and reach visitors actively searching for deals.</p>
-            <button onClick={()=>setModal(true)} style={{padding:"10px 24px",borderRadius:10,border:"1.5px solid #E8614D",background:"transparent",color:"#E8614D",fontWeight:700,fontSize:15,cursor:"pointer",transition:"all 0.2s"}} onMouseOver={e=>{e.target.style.background="#E8614D";e.target.style.color="#fff";}} onMouseOut={e=>{e.target.style.background="transparent";e.target.style.color="#E8614D";}}>Learn More →</button>
+            <p style={{fontSize:15,color:"#6B8A9E",lineHeight:1.5,marginBottom:14,maxWidth:280}}>Claim your listing, get monthly click stats, and take the top slot in your region.</p>
+            <a href="/for-business/" style={{padding:"10px 24px",borderRadius:10,border:"1.5px solid #E8614D",background:"transparent",color:"#E8614D",fontWeight:700,fontSize:15,textDecoration:"none",display:"inline-block"}}>For business →</a>
           </div>
         </div>
 
@@ -678,57 +717,12 @@ function App(){
           <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(135deg,rgba(10,20,35,0.88),rgba(20,35,55,0.85))"}}/>
           <div style={{position:"relative",zIndex:1,padding:"40px 24px",textAlign:"center"}}>
             <h3 className="serif" style={{color:"#EDF2F6",fontSize:"clamp(24px,5vw,32px)",fontWeight:700,margin:"0 0 12px 0"}}>Own a spot in Michigan?</h3>
-            <p style={{color:"#A8BFCC",fontSize:20,margin:"0 0 28px 0",lineHeight:1.5,maxWidth:500,marginLeft:"auto",marginRight:"auto"}}>List your happy hour for free. We verify and publish within 48 hours.</p>
-            <button className="btn-glow" onClick={()=>setModal(true)} style={{padding:"18px 40px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:700,fontSize:20,cursor:"pointer",boxShadow:"0 6px 24px rgba(232,97,77,0.4)"}}>Submit Your Happy Hour</button>
-            <div style={{marginTop:12}}><a href="/submit/" style={{fontSize:16,color:"#6B8A9E"}}>or use our detailed submission form &rarr;</a></div>
-          </div>
-        </div>
-
-        {/* Curated Collections */}
-        <div style={{background:"#fff",borderRadius:16,padding:"20px 18px",marginBottom:20,border:"1.5px solid #D8E2EA"}}>
-          <div className="serif" style={{fontSize:24,fontWeight:700,color:"#1B2838",marginBottom:16}}>Curated Collections</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,280px),1fr))",gap:12}}>
-            <a href="/collections/best-patios.html" style={{display:"block",padding:"18px 20px",borderRadius:14,background:"linear-gradient(135deg,#FFFBEB,#FEF3C7)",border:"1.5px solid #F59E0B",textDecoration:"none",transition:"transform 0.2s"}} onMouseOver={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseOut={e=>e.currentTarget.style.transform="none"}>
-              <div style={{fontSize:28,marginBottom:6}}>☀️</div>
-              <div style={{fontSize:18,fontWeight:700,color:"#92400E"}}>Best Patios & Rooftops</div>
-              <div style={{fontSize:14,color:"#B45309",marginTop:4}}>{L.filter(l=>l.col&&l.col.includes("patio")).length} spots with outdoor seating</div>
-            </a>
-            <a href="/collections/best-late-night.html" style={{display:"block",padding:"18px 20px",borderRadius:14,background:"linear-gradient(135deg,#F5F3FF,#EDE9FE)",border:"1.5px solid #8B5CF6",textDecoration:"none",transition:"transform 0.2s"}} onMouseOver={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseOut={e=>e.currentTarget.style.transform="none"}>
-              <div style={{fontSize:28,marginBottom:6}}>🌙</div>
-              <div style={{fontSize:18,fontWeight:700,color:"#5B21B6"}}>Best Late-Night Happy Hours</div>
-              <div style={{fontSize:14,color:"#7C3AED",marginTop:4}}>{L.filter(l=>l.col&&l.col.includes("late")).length} spots for night owls</div>
-            </a>
-          </div>
-        </div>
-
-        {/* Browse by region */}
-        <div style={{background:"#fff",borderRadius:16,padding:"20px 18px",marginBottom:40,border:"1.5px solid #D8E2EA"}}>
-          <div className="serif" style={{fontSize:24,fontWeight:700,color:"#1B2838",marginBottom:16}}>Browse by Region</div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
-            {REGIONS.filter(r=>r.id!=="all").map(r=>(
-              <button key={r.id} onClick={()=>{setReg(r.id);window.scrollTo({top:500,behavior:"smooth"});}} style={{padding:"12px 20px",borderRadius:28,border:"1.5px solid #D8E2EA",background:"#F5F7FA",fontSize:18,color:"#4A6274",cursor:"pointer",fontWeight:500}} onMouseOver={e=>{e.target.style.background="#2D6A8F";e.target.style.color="#fff";e.target.style.borderColor="#2D6A8F";}} onMouseOut={e=>{e.target.style.background="#F5F7FA";e.target.style.color="#4A6274";e.target.style.borderColor="#D8E2EA";}}>
-                {r.emoji} {r.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* From the Blog */}
-        <div style={{background:"#fff",borderRadius:16,padding:"20px 18px",marginBottom:40,border:"1.5px solid #D8E2EA"}}>
-          <div className="serif" style={{fontSize:24,fontWeight:700,color:"#1B2838",marginBottom:16}}>From the Blog</div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,280px),1fr))",gap:12}}>
-            <a href="/blog/michigan-happy-hour-laws.html" style={{display:"block",padding:"16px",borderRadius:12,border:"1.5px solid #D8E2EA",textDecoration:"none",transition:"border-color 0.2s"}} onMouseOver={e=>e.currentTarget.style.borderColor="#E8614D"} onMouseOut={e=>e.currentTarget.style.borderColor="#D8E2EA"}>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838",marginBottom:4}}>Michigan Happy Hour Laws</div>
-              <div style={{fontSize:14,color:"#6B8A9E"}}>What bars can legally offer — and what to expect</div>
-            </a>
-            <a href="/blog/best-brewery-happy-hours-michigan.html" style={{display:"block",padding:"16px",borderRadius:12,border:"1.5px solid #D8E2EA",textDecoration:"none",transition:"border-color 0.2s"}} onMouseOver={e=>e.currentTarget.style.borderColor="#E8614D"} onMouseOut={e=>e.currentTarget.style.borderColor="#D8E2EA"}>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838",marginBottom:4}}>15 Best Brewery Happy Hours</div>
-              <div style={{fontSize:14,color:"#6B8A9E"}}>From Founders to Blackrocks — top craft beer deals</div>
-            </a>
-            <a href="/blog/traverse-city-happy-hour-guide.html" style={{display:"block",padding:"16px",borderRadius:12,border:"1.5px solid #D8E2EA",textDecoration:"none",transition:"border-color 0.2s"}} onMouseOver={e=>e.currentTarget.style.borderColor="#E8614D"} onMouseOut={e=>e.currentTarget.style.borderColor="#D8E2EA"}>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838",marginBottom:4}}>Traverse City Happy Hour Guide</div>
-              <div style={{fontSize:14,color:"#6B8A9E"}}>18 spots, insider tips, day-by-day strategy</div>
-            </a>
+            <p style={{color:"#A8BFCC",fontSize:20,margin:"0 0 28px 0",lineHeight:1.5,maxWidth:500,marginLeft:"auto",marginRight:"auto"}}>List free — or claim &amp; feature your spot with monthly click analytics.</p>
+            <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
+              <a className="btn-glow" href="/for-business/" style={{padding:"18px 32px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:700,fontSize:18,textDecoration:"none",boxShadow:"0 6px 24px rgba(232,97,77,0.4)",display:"inline-block"}}>For business</a>
+              <button onClick={()=>setModal(true)} style={{padding:"18px 32px",borderRadius:14,border:"1.5px solid rgba(255,255,255,0.35)",background:"transparent",color:"#fff",fontWeight:700,fontSize:18,cursor:"pointer"}}>Quick free submit</button>
+            </div>
+            <div style={{marginTop:12}}><a href="/submit/" style={{fontSize:16,color:"#6B8A9E"}}>or use the full submission form &rarr;</a></div>
           </div>
         </div>
 
@@ -736,11 +730,11 @@ function App(){
         <footer style={{borderTop:"2px solid #D8E2EA",padding:"32px 0 48px",textAlign:"center"}}>
           <div className="serif" style={{fontSize:22,fontWeight:700,color:"#2D6A8F",marginBottom:8}}>MichiganHappyHour.com</div>
           <div style={{display:"flex",justifyContent:"center",gap:20,flexWrap:"wrap",marginBottom:16}}>
-            <a href="/blog/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>📰 Blog</a>
-            <a href="/map/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>🗺️ Map</a>
-            <a href="/submit/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>📝 Submit a Spot</a>
-            <a href="/collections/best-patios.html" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>☀️ Best Patios</a>
-            <a href="/collections/best-late-night.html" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>🌙 Late Night</a>
+            <a href="/blog/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Guides</a>
+            <a href="/map/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Map</a>
+            <a href="/submit/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Submit a spot</a>
+            <a href="/for-business/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>For business</a>
+            <a href="/collections/best-patios.html" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Best patios</a>
           </div>
           <div style={{fontSize:18,color:"#8AA3B5",lineHeight:2}}>
             The most comprehensive happy hour guide in Michigan
@@ -857,7 +851,7 @@ function App(){
             </div>
             <div style={{display:"flex",gap:12,marginTop:20}}>
               <button onClick={()=>setClaimModal(null)} style={{flex:1,padding:"14px",borderRadius:12,border:"2px solid #D8E2EA",background:"transparent",color:"#4A6274",fontWeight:600,fontSize:16,cursor:"pointer"}}>Cancel</button>
-              <button className="btn-glow" onClick={()=>{alert("Claim request submitted! We'll verify and contact you within 48 hours.");setClaimModal(null);}} style={{flex:1,padding:"14px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer"}}>Submit Claim</button>
+              <a href={"/for-business/#claim"} style={{flex:1,padding:"14px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>Continue to claim →</a>
             </div>
           </div>
         </div>

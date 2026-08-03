@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NCRX2Y71B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4NCRX2Y71B');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Feature &amp; Claim Your Listing | Michigan Happy Hour for Businesses</title>
+<meta name="description" content="Claim your Michigan Happy Hour listing, get monthly click analytics, and feature your bar or restaurant where locals and visitors are already searching for deals.">
+<link rel="canonical" href="https://michiganhappyhour.com/for-business/">
+<meta property="og:title" content="Feature &amp; Claim Your Listing | Michigan Happy Hour">
+<meta property="og:description" content="Show up when Michigan drinkers search for happy hour. Claim your listing, get CTA analytics, and feature your spot.">
+<meta property="og:image" content="https://michiganhappyhour.com/img/hero.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://michiganhappyhour.com/for-business/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14202c; --muted:#5f7385; --line:#d5e0e8; --paper:#f3f6f8;
+  --blue:#2D6A8F; --coral:#E8614D; --cream:#fff8f3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:var(--blue);text-decoration:none}a:hover{color:var(--coral)}
+.sf{font-family:Fraunces,Georgia,serif}
+.nav{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgba(20,32,44,.92);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav-inner{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.nav a.brand{color:#fff;font-weight:700;font-size:18px}
+.nav .links{display:flex;gap:14px;flex-wrap:wrap}
+.nav .links a{color:#c9d7e2;font-weight:600;font-size:14px}
+.hero{position:relative;min-height:72vh;display:flex;align-items:flex-end;overflow:hidden}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 35%}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,18,28,.35),rgba(10,18,28,.88))}
+.hero-inner{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:48px 20px 56px;color:#fff}
+.hero-inner .eyebrow{text-transform:uppercase;letter-spacing:.18em;font-size:13px;font-weight:700;color:#ffb3a6;margin-bottom:12px}
+.hero-inner h1{font-size:clamp(36px,6vw,64px);line-height:1.05;max-width:14ch;margin-bottom:14px}
+.hero-inner p{font-size:clamp(17px,2.4vw,20px);color:#d5e0ea;max-width:38ch;line-height:1.55;margin-bottom:24px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 22px;border-radius:12px;font-weight:700;font-size:16px;border:none;cursor:pointer}
+.btn-primary{background:linear-gradient(135deg,var(--coral),#f0806e);color:#fff}
+.btn-secondary{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.28)}
+.section{max-width:1080px;margin:0 auto;padding:56px 20px}
+.section h2{font-size:clamp(26px,4vw,36px);margin-bottom:10px}
+.section .lead{color:var(--muted);font-size:18px;line-height:1.6;max-width:54ch;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tile{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:22px}
+.tile h3{font-size:18px;margin-bottom:8px}
+.tile p{color:var(--muted);font-size:15px;line-height:1.55}
+.metrics{background:linear-gradient(135deg,#1b2c3b,#2d4a5e);color:#fff;border-radius:20px;padding:28px;margin-top:8px}
+.metrics h2{color:#fff}
+.metrics .lead{color:#b8cbd9}
+.metric-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.metric{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:16px}
+.metric .n{font-family:Fraunces,Georgia,serif;font-size:34px;font-weight:800}
+.metric .l{color:#b8cbd9;font-size:14px;margin-top:4px}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.plan{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:12px}
+.plan.featured{border-color:var(--coral);box-shadow:0 10px 30px rgba(232,97,77,.12)}
+.plan h3{font-size:22px}
+.plan ul{list-style:none;display:grid;gap:8px;color:var(--muted);font-size:15px;line-height:1.45;flex:1}
+.plan li::before{content:"→ ";color:var(--coral);font-weight:700}
+.form-card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:24px}
+label{display:block;font-weight:600;margin:0 0 6px;font-size:14px;color:#4A6274}
+input,select,textarea{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px;background:#fafcfd}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.two{grid-template-columns:1fr}}
+.note{font-size:13px;color:var(--muted);margin-top:8px}
+footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:center;color:var(--muted);font-size:14px;line-height:1.9}
+#form-msg{margin-top:10px;font-weight:600}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/">Michigan Happy Hour</a>
+    <div class="links">
+      <a href="/">Browse spots</a>
+      <a href="/blog/">Guides</a>
+      <a href="/submit/">Free listing</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <img src="/img/nightlife.jpg" alt="Busy Michigan bar at happy hour">
+  <div class="shade"></div>
+  <div class="hero-inner">
+    <div class="eyebrow">For bars &amp; restaurants</div>
+    <h1 class="sf">Show up when they’re deciding where to go.</h1>
+    <p>Michigan Happy Hour already ranks for local deal searches. Claim your listing, keep specials accurate, and feature your spot where intent is highest.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#claim">Claim / feature my spot</a>
+      <a class="btn btn-secondary" href="/submit/">Submit a free listing</a>
+    </div>
+  </div>
+</header>
+
+<section class="section">
+  <h2 class="sf">Why venues use this</h2>
+  <p class="lead">People landing here aren’t browsing recipes — they’re picking a patio, a brewery, or a $6 cocktail tonight. That’s the moment your listing should be sharp.</p>
+  <div class="grid">
+    <div class="tile"><h3>High-intent traffic</h3><p>Visitors filter by day, region, “live now,” and directions. We track Call, Map, Directions, and Details per venue.</p></div>
+    <div class="tile"><h3>Accurate specials win</h3><p>Stale hours kill trust. Claimed listings can update deals anytime so you don’t lose the click to a competitor.</p></div>
+    <div class="tile"><h3>Proof you can sell on</h3><p>Monthly CTA stats (views, calls, directions) make the value obvious to owners and managers.</p></div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="metrics">
+    <h2 class="sf">What we measure for you</h2>
+    <p class="lead">Same KPIs you’d want in a sales report — built into the product.</p>
+    <div class="metric-row">
+      <div class="metric"><div class="n">Call</div><div class="l">Phone taps from your listing</div></div>
+      <div class="metric"><div class="n">Map</div><div class="l">Map opens &amp; pin views</div></div>
+      <div class="metric"><div class="n">Directions</div><div class="l">Google Maps launches</div></div>
+      <div class="metric"><div class="n">Details</div><div class="l">Full spot page views</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="sf">Packages</h2>
+  <p class="lead">Start free. Upgrade when you want priority placement and reporting.</p>
+  <div class="plans">
+    <div class="plan">
+      <h3 class="sf">Free listing</h3>
+      <ul>
+        <li>Appear in search &amp; region pages</li>
+        <li>Hours, deals, phone, directions</li>
+        <li>Community update suggestions</li>
+      </ul>
+      <a class="btn btn-secondary" style="color:var(--ink);border-color:var(--line);background:#f5f7fa" href="/submit/">Submit free listing</a>
+    </div>
+    <div class="plan featured">
+      <h3 class="sf">Claimed</h3>
+      <ul>
+        <li>Verified badge</li>
+        <li>Edit deals anytime</li>
+        <li>Monthly CTA analytics</li>
+        <li>QR code for in-bar use</li>
+      </ul>
+      <a class="btn btn-primary" href="#claim">Request claim</a>
+    </div>
+    <div class="plan">
+      <h3 class="sf">Featured</h3>
+      <ul>
+        <li>Priority placement in your region</li>
+        <li>Homepage / map callouts</li>
+        <li>Guide &amp; collection mentions where relevant</li>
+        <li>Everything in Claimed</li>
+      </ul>
+      <a class="btn btn-primary" href="#claim">Ask about featured</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="claim">
+  <h2 class="sf">Request a claim or featured spot</h2>
+  <p class="lead">Tell us who you are and which listing to verify. We’ll follow up — submissions are saved even if email isn’t set up yet.</p>
+  <div class="form-card">
+    <form id="biz-form">
+      <input type="hidden" name="submission_type" value="claim_request">
+      <input type="hidden" name="source" value="for_business">
+      <div class="two">
+        <div>
+          <label>Business name *</label>
+          <input name="name" required placeholder="e.g. The Little Fleet">
+        </div>
+        <div>
+          <label>Town / city *</label>
+          <input name="town" required placeholder="e.g. Traverse City">
+        </div>
+      </div>
+      <div class="two">
+        <div>
+          <label>Interest *</label>
+          <select name="category" required>
+            <option value="">Select…</option>
+            <option>Claim existing listing</option>
+            <option>Featured placement</option>
+            <option>Both claim + featured</option>
+            <option>New listing + claim</option>
+          </select>
+        </div>
+        <div>
+          <label>Your role</label>
+          <input name="role" placeholder="Owner, GM, marketing…">
+        </div>
+      </div>
+      <label>Happy hour summary *</label>
+      <textarea name="happy_hour_schedule" required rows="2" placeholder="Days & times, or 'see current listing'"></textarea>
+      <label>Current deals / what to feature *</label>
+      <textarea name="deals" required rows="3" placeholder="Key specials, patio, late night, etc."></textarea>
+      <div class="two">
+        <div>
+          <label>Your name *</label>
+          <input name="contact_name" required>
+        </div>
+        <div>
+          <label>Email *</label>
+          <input type="email" name="email" required>
+        </div>
+      </div>
+      <div class="two">
+        <div>
+          <label>Phone</label>
+          <input name="phone" placeholder="(xxx) xxx-xxxx">
+        </div>
+        <div>
+          <label>Website</label>
+          <input name="website" placeholder="https://">
+        </div>
+      </div>
+      <label>How can we verify you manage this spot?</label>
+      <textarea name="notes" rows="2" placeholder="e.g. Call the restaurant line and ask for me"></textarea>
+      <div style="position:absolute;left:-9999px" aria-hidden="true"><input name="company" tabindex="-1" autocomplete="off"></div>
+      <button class="btn btn-primary" type="submit" id="biz-btn">Submit request</button>
+      <div id="form-msg" class="note"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="sf" style="font-size:18px;color:var(--blue);font-weight:700">Michigan Happy Hour</div>
+  <a href="/">Browse spots</a> · <a href="/blog/">Guides</a> · <a href="/submit/">Free listing</a><br>
+  © 2026 MichiganHappyHour.com
+</footer>
+<script src="/js/cta-track.js" defer></script>
+<script>
+(function(){
+  var form = document.getElementById('biz-form');
+  var btn = document.getElementById('biz-btn');
+  var msg = document.getElementById('form-msg');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    var fd = new FormData(form);
+    var payload = {};
+    fd.forEach(function(v,k){ payload[k] = v; });
+    payload.path = location.pathname;
+    fetch('/api/submit', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().then(function(d){ return {r:r,d:d}; }); })
+    .then(function(x){
+      if (!x.r.ok || !x.d.ok) throw new Error(x.d.error || 'failed');
+      if (window.trackCta) window.trackCta('submit_success', { name: payload.name, town: payload.town, page_type:'for_business', source:'for_business' });
+      msg.style.color = '#16A34A';
+      msg.textContent = 'Got it — your request is saved. We’ll review shortly.';
+      form.reset();
+      btn.disabled = false;
+      btn.textContent = 'Submit request';
+    }).catch(function(){
+      msg.style.color = '#E8614D';
+      msg.textContent = 'Could not save. Try again or use /submit/.';
+      btn.disabled = false;
+      btn.textContent = 'Submit request';
+    });
+  });
+})();
+</script>
+</body>
+</html>
