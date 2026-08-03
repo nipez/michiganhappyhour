@@ -8,9 +8,7 @@
     {
       "binding": "DB",
       "database_name": "michiganhappyhour",
-      // Placeholder for local dev. Run `npm run setup:d1` after `npx wrangler login`
-      // to create the remote DB and replace this id.
-      "database_id": "00000000-0000-4000-8000-000000000001",
+      "database_id": "4528af36-e164-409c-b477-f517302d2400",
       "preview_database_id": "DB",
       "migrations_dir": "migrations"
     }
