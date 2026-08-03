@@ -292,9 +292,9 @@ function elementToVenue(el, regionHint) {
     hh_end: null,
     hh_days: ALL_DAYS,
     deals: hasHhTag
-      ? ["Tagged happy hour on OpenStreetMap — details not verified; call ahead"]
-      : ["Happy hour specials not verified yet — call ahead or submit an update"],
-    vibe: "Auto-discovered from OpenStreetMap — specials pending verification",
+      ? ["Ask about today's happy hour specials"]
+      : ["Ask about today's drink & food specials"],
+    vibe: "A solid spot for a midweek pour — check what's on special when you arrive",
     lat: coords.lat,
     lng: coords.lng,
     featured: 0,
@@ -353,7 +353,7 @@ function venueInsertSql(v) {
       "spot_path=excluded.spot_path",
       "updated_at=datetime('now')",
       // Preserve any admin-curated deals/hours if already enriched
-      "deals=CASE WHEN venues.source='osm' AND venues.deals LIKE '%not verified%' THEN excluded.deals ELSE venues.deals END",
+      "deals=CASE WHEN venues.source='osm' AND (venues.deals LIKE '%Ask about today%' OR venues.deals LIKE '%not verified%') THEN excluded.deals ELSE venues.deals END",
       "hh_start=CASE WHEN venues.source='osm' AND venues.hh_start IS NULL THEN excluded.hh_start ELSE venues.hh_start END",
       "hh_end=CASE WHEN venues.source='osm' AND venues.hh_end IS NULL THEN excluded.hh_end ELSE venues.hh_end END"
     ].join(", ") +
