@@ -74,10 +74,20 @@ input,select,button{font-family:inherit}
 .map-pin-popup .mpp-secondary{background:#F5F7FA;color:#4A6274;border:1px solid #D8E2EA}
 
 /* ===== MOBILE RESPONSIVE ===== */
+.nav-links{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.card-actions{display:flex;gap:8px;margin-top:12px}
+.card-actions a,.card-actions button{flex:1;text-align:center;padding:12px 10px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none;display:block;border:none}
+.card-actions .btn-details{background:linear-gradient(135deg,#2D6A8F,#E8614D);color:#fff}
+.card-actions .btn-directions{background:#FFF5F3;color:#E8614D;border:1.5px solid #E8614D}
+.card-meta-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:14px;font-weight:600}
+.card-meta-links button,.card-meta-links a{background:none;border:none;padding:0;color:#2D6A8F;cursor:pointer;font:inherit;font-weight:600;text-decoration:none}
+.card-meta-links button:hover,.card-meta-links a:hover{color:#E8614D}
 @media(max-width:768px){
   .photo-strip img{width:260px!important;height:170px!important}
   .hero-stats{flex-direction:column;gap:10px!important}
   .hero-stats>div{width:100%}
+  .nav-links a:nth-child(1),.nav-links button:nth-child(1){display:none}
+  .nav-for-biz{display:none!important}
 }
 @media(max-width:600px){
   .photo-strip{gap:8px!important;padding:0 16px 12px!important}
@@ -333,6 +343,11 @@ function escapeMapHtml(s){
 
 function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLive}){
   const cc=catColors[l.cat]||"#2D6A8F";
+  const [open,setOpen]=useState(false);
+  const deals=l.deals||[];
+  const shown=open?deals:deals.slice(0,2);
+  const more=deals.length-shown.length;
+  const slug=toSlug(l.name,l.town);
   return(
     <div id={`card-${l.id}`} className="card-hover" style={{
       background:"#fff",borderRadius:16,overflow:"hidden",
@@ -340,51 +355,53 @@ function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLiv
       boxShadow:highlighted?"0 8px 32px rgba(232,97,77,0.2)":"0 2px 12px rgba(45,106,143,0.06)",
       transition:"all 0.3s ease"
     }}>
-      {/* Header */}
-      <div style={{padding:"14px 16px 10px"}}>
-        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:8}}>
+      <div style={{padding:"16px 16px 12px"}}>
+        <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:10}}>
           <div style={{flex:1,minWidth:0}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
               <div style={{width:8,height:8,borderRadius:"50%",background:cc,flexShrink:0}}/>
-              <div style={{fontWeight:700,fontSize:"clamp(17px,3.5vw,21px)",color:"#1B2838",lineHeight:1.25,minWidth:0}}><a href={"/spots/"+toSlug(l.name,l.town)} style={{color:"#1B2838",textDecoration:"none"}} onMouseOver={e=>e.target.style.color="#E8614D"} onMouseOut={e=>e.target.style.color="#1B2838"}>{l.name}</a></div>
-              <button onClick={(e)=>{e.stopPropagation();onToggleFav(l.id);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,padding:"2px",flexShrink:0}} title={isFav?"Remove from favorites":"Add to favorites"}>{isFav?"❤️":"🤍"}</button>
-              {l.feat && <span style={{fontSize:16,flexShrink:0}}>⭐</span>}
+              <div style={{fontWeight:700,fontSize:"clamp(17px,3.5vw,21px)",color:"#1B2838",lineHeight:1.25,minWidth:0}}>
+                <a href={"/spots/"+slug} style={{color:"#1B2838",textDecoration:"none"}} onMouseOver={e=>e.target.style.color="#E8614D"} onMouseOut={e=>e.target.style.color="#1B2838"}>{l.name}</a>
+              </div>
+              <button onClick={(e)=>{e.stopPropagation();onToggleFav(l.id);}} style={{background:"none",border:"none",cursor:"pointer",fontSize:18,padding:"2px",flexShrink:0}} title={isFav?"Remove from favorites":"Add to favorites"} aria-label="Favorite">{isFav?"❤️":"🤍"}</button>
             </div>
-            <div style={{fontSize:15,color:"#6B8A9E",lineHeight:1.4,paddingLeft:16}}>{l.town} · {l.addr}{dist!=null&&<span style={{marginLeft:6,color:"#2D6A8F",fontWeight:700,fontSize:14}}>{dist<0.1?"< 0.1":dist.toFixed(1)} mi</span>}{isLive&&<span style={{marginLeft:6,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:10,fontSize:11,fontWeight:700,animation:"pulse 2s infinite"}}>LIVE</span>}</div>
+            <div style={{fontSize:15,color:"#6B8A9E",lineHeight:1.4,paddingLeft:16}}>
+              {l.town}{l.addr?" · "+l.addr:""}
+              {dist!=null&&<span style={{marginLeft:6,color:"#2D6A8F",fontWeight:700,fontSize:14}}>{dist<0.1?"< 0.1":dist.toFixed(1)} mi</span>}
+              {isLive&&<span style={{marginLeft:6,background:"#22C55E",color:"#fff",padding:"2px 8px",borderRadius:10,fontSize:11,fontWeight:700}}>LIVE</span>}
+            </div>
           </div>
           <div style={{textAlign:"right",flexShrink:0}}>
-            <div style={{fontWeight:700,fontSize:18,color:isT?"#2D6A8F":"#4A6274",whiteSpace:"nowrap"}}>{l.hh.s}–{l.hh.e}</div>
-            {isT && <div style={{fontSize:14,fontWeight:700,color:"#E8614D",textTransform:"uppercase",letterSpacing:1.5,marginTop:2}}>Today</div>}
+            <div style={{fontWeight:800,fontSize:18,color:"#E8614D",whiteSpace:"nowrap"}}>{l.hh.s}–{l.hh.e}</div>
+            <div style={{fontSize:13,color:"#8AA3B5",marginTop:2,fontWeight:600}}>{isT?"Today":(l.hh.d.length===7?"Every day":l.hh.d.length+" days")}</div>
           </div>
         </div>
-      </div>
-      {/* Badges */}
-      <div style={{padding:"2px 16px 10px",display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
-        <Badge color={cc} bg={cc+"18"}>{l.cat}</Badge>
-        {l.hh.d.length===7 && <Badge color="#2E8B7A" bg="#E5F4F1">7 days</Badge>}
-        {l.sp?.map((s,i)=><Badge key={i} color="#C25B28" bg="#FFF0ED">{s}</Badge>)}
-        {l.col?.includes("patio") && <Badge color="#D97706" bg="#FFFBEB">☀️ Patio</Badge>}
-        {l.col?.includes("late") && <Badge color="#7C3AED" bg="#F5F3FF">🌙 Late</Badge>}
-        
-      </div>
-      {/* Always-expanded details */}
-      <div style={{padding:"0 16px 16px",borderTop:"1.5px solid #E2EBF0"}}>
-        <p style={{fontSize:16,color:"#4A6274",fontStyle:"italic",margin:"12px 0",lineHeight:1.5}}>"{l.vibe}"</p>
-        <div style={{fontSize:13,fontWeight:700,color:"#8AA3B5",textTransform:"uppercase",letterSpacing:1.5,marginBottom:8}}>Deals & Specials</div>
-        {l.deals.map((d,i)=>(
-          <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:5,fontSize:16,color:"#1B2838",lineHeight:1.4}}>
-            <span style={{color:"#E8614D",fontWeight:700,flexShrink:0,fontSize:16}}>→</span>{d}
-          </div>
-        ))}
-        <div style={{fontSize:15,color:"#8AA3B5",marginTop:10}}>
-          <span style={{fontWeight:600}}>Days: </span>{l.hh.d.length===7?"Every day":l.hh.d.join(", ")}
+        <div style={{padding:"10px 0 0 16px",display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+          <Badge color={cc} bg={cc+"18"}>{l.cat}</Badge>
+          {l.col?.includes("patio") && <Badge color="#D97706" bg="#FFFBEB">Patio</Badge>}
+          {l.col?.includes("late") && <Badge color="#2D6A8F" bg="#EFF6FF">Late</Badge>}
+          {l.feat && <Badge color="#E8614D" bg="#FFF0ED">Featured</Badge>}
         </div>
-        {l.ph && <div style={{fontSize:15,color:"#8AA3B5",marginTop:4}}><span style={{fontWeight:600}}>Phone: </span>{l.ph}</div>}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
-          <button onClick={()=>{trackSpotCta("cta_call",l,"card");if(l.ph)window.location.href="tel:"+l.ph;}} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontWeight:600,fontSize:15,cursor:"pointer"}}>📞 Call</button>
-          <button onClick={()=>{trackSpotCta("cta_map",l,"card");onMapClick(l);}} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontWeight:600,fontSize:15,cursor:"pointer"}}>🗺️ Map</button>
-          <a href={"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(l.name+" "+l.addr+" "+l.town+" MI")} target="_blank" rel="noopener" onClick={()=>trackSpotCta("cta_directions",l,"card")} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #E8614D",background:"#FFF5F3",color:"#E8614D",fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"block"}}>📍 Directions</a>
-          <a href={"/spots/"+toSlug(l.name,l.town)} onClick={()=>trackSpotCta("cta_details",l,"card")} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #2D6A8F",background:"#EFF6FF",color:"#2D6A8F",fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"block"}}>🔗 Details</a>
+        {open && l.vibe && <p style={{fontSize:15,color:"#4A6274",fontStyle:"italic",margin:"10px 0 0 16px",lineHeight:1.45}}>"{l.vibe}"</p>}
+        <div style={{margin:"12px 0 0 16px"}}>
+          {shown.map((d,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:5,fontSize:16,color:"#1B2838",lineHeight:1.4}}>
+              <span style={{color:"#E8614D",fontWeight:700,flexShrink:0}}>→</span>{d}
+            </div>
+          ))}
+          {(more>0 || (!open && (deals.length>2 || l.vibe))) && (
+            <button onClick={()=>setOpen(!open)} style={{background:"none",border:"none",color:"#2D6A8F",fontWeight:700,fontSize:14,cursor:"pointer",padding:"4px 0",marginTop:2}}>
+              {open?"Show less":(more>0?`+${more} more deal${more>1?"s":""}`:"More details")}
+            </button>
+          )}
+        </div>
+        <div className="card-actions" style={{paddingLeft:16}}>
+          <a className="btn-details" href={"/spots/"+slug} onClick={()=>trackSpotCta("cta_details",l,"card")}>Details</a>
+          <a className="btn-directions" href={"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(l.name+" "+(l.addr||"")+" "+l.town+" MI")} target="_blank" rel="noopener" onClick={()=>trackSpotCta("cta_directions",l,"card")}>Directions</a>
+        </div>
+        <div className="card-meta-links" style={{paddingLeft:16}}>
+          {l.ph && <button type="button" onClick={()=>{trackSpotCta("cta_call",l,"card");window.location.href="tel:"+l.ph;}}>Call {l.ph}</button>}
+          <button type="button" onClick={()=>{trackSpotCta("cta_map",l,"card");onMapClick(l);}}>Show on map</button>
         </div>
       </div>
     </div>
@@ -478,7 +495,7 @@ function App(){
   const [sort,setSort]=useState("region");
   const [modal,setModal]=useState(false);
   const [mapHighlight,setMapHighlight]=useState(null);
-  const [showMap,setShowMap]=useState(false);
+  const [showMap,setShowMap]=useState(true);
   const [showTop,setShowTop]=useState(false);
   React.useEffect(()=>{const h=()=>setShowTop(window.scrollY>800);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h);},[]);
   React.useEffect(()=>{
@@ -550,29 +567,28 @@ function App(){
       {/* STICKY NAV */}
       <nav style={{position:"sticky",top:0,zIndex:50,backdropFilter:"blur(12px)",background:"rgba(15,24,36,0.92)",borderBottom:"1px solid rgba(255,255,255,0.08)"}}>
         <div style={{maxWidth:1200,margin:"0 auto",padding:"12px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
-          <a href="/" style={{color:"#fff",fontWeight:800,fontSize:17,textDecoration:"none",letterSpacing:-0.2}}>Michigan Happy Hour</a>
-          <div style={{display:"flex",gap:14,flexWrap:"wrap",alignItems:"center"}}>
+          <a href="/" className="serif" style={{color:"#fff",fontWeight:800,fontSize:20,textDecoration:"none",letterSpacing:-0.3}}>Michigan Happy Hour</a>
+          <div className="nav-links">
             <button onClick={scrollToListings} style={{background:"none",border:"none",color:"#D5E0EA",fontWeight:600,fontSize:14,cursor:"pointer"}}>Today's deals</button>
             <a href="/blog/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Guides</a>
             <a href="/map/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Map</a>
-            <a href="/for-business/" style={{color:"#FFB3A6",fontWeight:700,fontSize:14,textDecoration:"none"}}>For business</a>
+            <a className="nav-for-biz" href="/for-business/" style={{color:"#FFB3A6",fontWeight:700,fontSize:14,textDecoration:"none"}}>For business</a>
           </div>
         </div>
       </nav>
 
-      {/* HERO */}
-      <header style={{position:"relative",height:"78vh",minHeight:440,maxHeight:760,overflow:"hidden"}}>
+      {/* HERO — brand-first, one primary CTA */}
+      <header style={{position:"relative",height:"72vh",minHeight:420,maxHeight:700,overflow:"hidden"}}>
         <img src="img/hero.jpg" alt="Happy hour drinks in Michigan" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",objectPosition:"center 40%"}}/>
-        <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(to bottom, rgba(10,20,35,0.35) 0%, rgba(10,20,35,0.55) 45%, rgba(10,20,35,0.94) 100%)"}}/>
-        <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 20px 40px",maxWidth:1200,margin:"0 auto"}}>
-          <div className="fade-up" style={{maxWidth:720}}>
-            <div style={{fontSize:15,fontWeight:800,color:"#E8614D",textTransform:"uppercase",letterSpacing:3.5,marginBottom:12}}>Michigan Happy Hour</div>
-            <h1 className="serif" style={{fontSize:"clamp(44px, 7vw, 76px)",fontWeight:900,color:"#fff",margin:"0 0 14px 0",lineHeight:1.02,letterSpacing:-1.5}}>Find tonight's best deal.</h1>
-            <p style={{fontSize:"clamp(17px,3.2vw,21px)",color:"#B8CBD9",margin:"0 0 22px 0",lineHeight:1.45,maxWidth:520}}>From Detroit to Mackinac — happy hours by day, city, and what's live right now.</p>
-            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:18}}>
-              <button onClick={scrollToListings} style={{padding:"14px 22px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer"}}>Browse {rc.all||0} spots today</button>
-              <a href="/blog/" style={{padding:"14px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.28)",background:"rgba(255,255,255,0.1)",color:"#fff",fontWeight:700,fontSize:16,textDecoration:"none"}}>City guides</a>
-              <a href="/map/" style={{padding:"14px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.18)",background:"transparent",color:"#D5E0EA",fontWeight:700,fontSize:16,textDecoration:"none"}}>Open map</a>
+        <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(to bottom, rgba(10,20,35,0.28) 0%, rgba(10,20,35,0.52) 42%, rgba(10,20,35,0.94) 100%)"}}/>
+        <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 20px 36px",maxWidth:1200,margin:"0 auto"}}>
+          <div className="fade-up" style={{maxWidth:740}}>
+            <h1 className="serif" style={{fontSize:"clamp(48px, 8vw, 84px)",fontWeight:900,color:"#fff",margin:"0 0 12px 0",lineHeight:0.98,letterSpacing:-1.8}}>Michigan Happy Hour</h1>
+            <p style={{fontSize:"clamp(20px,3.4vw,28px)",color:"#F2F6F9",fontWeight:600,margin:"0 0 10px 0",lineHeight:1.25}}>Find tonight's best deal statewide.</p>
+            <p style={{fontSize:"clamp(16px,2.8vw,19px)",color:"#B8CBD9",margin:"0 0 22px 0",lineHeight:1.45,maxWidth:520}}>Real hours and specials from Detroit to Mackinac — filter by day, city, or what's live now.</p>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:14}}>
+              <button onClick={scrollToListings} style={{padding:"15px 24px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer"}}>Browse {rc.all||0} spots today</button>
+              <a href="/map/" style={{padding:"15px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.28)",background:"rgba(255,255,255,0.1)",color:"#fff",fontWeight:700,fontSize:16,textDecoration:"none"}}>Open map</a>
             </div>
             <div style={{fontSize:14,color:"#8AA3B5",fontWeight:600}}>{REGIONS.length-1} regions · {listings.length} listings · Updated weekly</div>
           </div>
@@ -611,45 +627,7 @@ function App(){
             </div>;
           })}
         </div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"0 0 16px"}}>
-          {REGIONS.filter(r=>r.id!=="all").map(r=>(
-            <a key={"rl-"+r.id} href={`/regions/${r.id}`} style={{fontSize:13,fontWeight:600,color:"#2D6A8F",textDecoration:"none",padding:"4px 10px",borderRadius:999,border:"1px solid #D8E2EA",background:"#fff"}}>{r.name}</a>
-          ))}
-        </div>
-
-        {/* Guides + collections — early, before the long listing scroll */}
-        <div style={{margin:"4px 0 18px"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:12,marginBottom:10}}>
-            <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>Guides & collections</div>
-            <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All guides →</a>
-          </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,220px),1fr))",gap:10}}>
-            <a href="/blog/detroit-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit happy hours</div>
-            </a>
-            <a href="/blog/grand-rapids-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Grand Rapids happy hours</div>
-            </a>
-            <a href="/blog/ann-arbor-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Ann Arbor happy hours</div>
-            </a>
-            <a href="/collections/best-patios" style={{display:"block",padding:"16px",borderRadius:14,background:"linear-gradient(135deg,#FFFBEB,#FEF3C7)",border:"1.5px solid #F59E0B",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#B45309",fontWeight:700,marginBottom:4}}>COLLECTION</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#92400E"}}>Best patios & rooftops</div>
-            </a>
-            <a href="/collections/best-late-night" style={{display:"block",padding:"16px",borderRadius:14,background:"linear-gradient(135deg,#F5F3FF,#EDE9FE)",border:"1.5px solid #8B5CF6",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#7C3AED",fontWeight:700,marginBottom:4}}>COLLECTION</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#5B21B6"}}>Late-night happy hours</div>
-            </a>
-            <a href="/blog/traverse-city-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Traverse City guide</div>
-            </a>
-          </div>
-        </div>
+        <p style={{fontSize:14,color:"#8AA3B5",margin:"-4px 0 16px",fontWeight:500}}>Tap a region to filter today's deals — or open its guide.</p>
 
         {/* Search & filters */}
         <div id="listings-top" style={{background:"#fff",borderRadius:14,padding:"10px 12px",marginBottom:12,border:"1.5px solid #D8E2EA",boxShadow:"0 2px 12px rgba(45,106,143,0.04)"}}>
@@ -721,7 +699,7 @@ function App(){
         <div style={{padding:"6px 4px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
             <span style={{fontSize:16,color:"#6B8A9E",fontWeight:600}}>{showNow?"🟢 ":showFavs?"❤️ ":colFilter==="patio"?"☀️ ":colFilter==="late"?"🌙 ":""}{filtered.length} {showFavs?"favorite":colFilter==="patio"?"patio spot":colFilter==="late"?"late-night spot":"spot"}{filtered.length!==1?"s":""}{showNow?" live right now":" on "+day}{reg!=="all"?` in ${REGIONS.find(r=>r.id===reg)?.name}`:""}</span>
-            <span style={{fontSize:12,color:"#A8BFCC",fontWeight:500}}>✅ Updated March 2026</span>
+            <span style={{fontSize:12,color:"#A8BFCC",fontWeight:500}}>Updated weekly</span>
           </div>
         </div>
 
@@ -747,33 +725,69 @@ function App(){
         </div>
 
         {/* ===== INTERACTIVE MAP ===== */}
-        <div id="map-section" style={{background:"#fff",borderRadius:20,overflow:"hidden",marginBottom:20,border:"1.5px solid #D8E2EA",boxShadow:"0 4px 20px rgba(45,106,143,0.08)"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 24px",borderBottom:"1.5px solid #E2EBF0"}}>
-            <div style={{display:"flex",alignItems:"center",gap:10}}>
-              <span style={{fontSize:24}}>🗺️</span>
-              <span className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>Explore the Map</span>
-              <span style={{fontSize:18,color:"#8AA3B5",fontWeight:500}}>{filtered.length} spots</span>
+        <div id="map-section" style={{background:"#fff",borderRadius:20,overflow:"hidden",marginBottom:24,border:"1.5px solid #D8E2EA",boxShadow:"0 4px 20px rgba(45,106,143,0.08)"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"16px 20px",borderBottom:"1.5px solid #E2EBF0",gap:12,flexWrap:"wrap"}}>
+            <div>
+              <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>Explore the map</div>
+              <div style={{fontSize:14,color:"#8AA3B5",fontWeight:500,marginTop:2}}>{filtered.length} spots · click a pin for deals</div>
             </div>
-            <button onClick={()=>setShowMap(!showMap)} style={{padding:"8px 18px",borderRadius:20,border:"1.5px solid #D8E2EA",background:"#F5F7FA",fontSize:18,color:"#4A6274",cursor:"pointer",fontWeight:500}}>{showMap?"Hide Map":"Show Map"}</button>
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <a href="/map/" style={{padding:"8px 14px",borderRadius:20,border:"1.5px solid #D8E2EA",background:"#fff",fontSize:14,color:"#2D6A8F",fontWeight:700,textDecoration:"none"}}>Full map</a>
+              <button onClick={()=>setShowMap(!showMap)} style={{padding:"8px 16px",borderRadius:20,border:"1.5px solid #D8E2EA",background:"#F5F7FA",fontSize:14,color:"#4A6274",cursor:"pointer",fontWeight:600}}>{showMap?"Hide":"Show"}</button>
+            </div>
           </div>
           {showMap && <div style={{height:"min(450px, 60vh)"}}><HappyHourMap listings={filtered} onPinClick={handlePinClick} highlightId={mapHighlight}/></div>}
-          {showMap && <div style={{padding:"10px 24px 14px",display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
-            {Object.entries(catColors).map(([name,color])=><div key={name} style={{display:"flex",alignItems:"center",gap:5,fontSize:18,color:"#4A6274"}}><div style={{width:10,height:10,borderRadius:"50%",background:color}}/>  {name}</div>)}
+          {showMap && <div style={{padding:"10px 20px 14px",display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}>
+            {Object.entries(catColors).map(([name,color])=><div key={name} style={{display:"flex",alignItems:"center",gap:5,fontSize:13,color:"#4A6274"}}><div style={{width:10,height:10,borderRadius:"50%",background:color}}/>{name}</div>)}
           </div>}
         </div>
 
+        {/* Guides + collections — after primary browse job */}
+        <div style={{margin:"0 0 28px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:12,marginBottom:12}}>
+            <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>City guides</div>
+            <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All guides →</a>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,220px),1fr))",gap:10}}>
+            <a href="/blog/detroit-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit happy hours</div>
+            </a>
+            <a href="/blog/grand-rapids-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Grand Rapids happy hours</div>
+            </a>
+            <a href="/blog/ann-arbor-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Ann Arbor happy hours</div>
+            </a>
+            <a href="/blog/traverse-city-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Traverse City guide</div>
+            </a>
+            <a href="/collections/best-patios" style={{display:"block",padding:"16px",borderRadius:14,background:"#FFFBEB",border:"1.5px solid #F59E0B",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#B45309",fontWeight:700,marginBottom:4}}>COLLECTION</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#92400E"}}>Best patios & rooftops</div>
+            </a>
+            <a href="/collections/best-late-night" style={{display:"block",padding:"16px",borderRadius:14,background:"#EFF6FF",border:"1.5px solid #2D6A8F",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#2D6A8F",fontWeight:700,marginBottom:4}}>COLLECTION</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Late-night happy hours</div>
+            </a>
+          </div>
+        </div>
+
         {/* CTA */}
-        <div style={{position:"relative",borderRadius:20,overflow:"hidden",marginBottom:32,minHeight:300}}>
+        <div style={{position:"relative",borderRadius:20,overflow:"hidden",marginBottom:32,minHeight:280}}>
           <img src="img/chalkboard.jpg" alt="" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover"}}/>
-          <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(135deg,rgba(10,20,35,0.88),rgba(20,35,55,0.85))"}}/>
+          <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"linear-gradient(135deg,rgba(8,14,24,0.92),rgba(15,28,42,0.9))"}}/>
           <div style={{position:"relative",zIndex:1,padding:"40px 24px",textAlign:"center"}}>
-            <h3 className="serif" style={{color:"#EDF2F6",fontSize:"clamp(24px,5vw,32px)",fontWeight:700,margin:"0 0 12px 0"}}>Own a spot in Michigan?</h3>
-            <p style={{color:"#A8BFCC",fontSize:20,margin:"0 0 28px 0",lineHeight:1.5,maxWidth:500,marginLeft:"auto",marginRight:"auto"}}>List free — or claim &amp; feature your spot with monthly click analytics.</p>
+            <h3 className="serif" style={{color:"#fff",fontSize:"clamp(24px,5vw,32px)",fontWeight:700,margin:"0 0 12px 0"}}>Own a spot in Michigan?</h3>
+            <p style={{color:"#C5D4E0",fontSize:18,margin:"0 0 28px 0",lineHeight:1.5,maxWidth:480,marginLeft:"auto",marginRight:"auto"}}>List free — or claim &amp; feature your spot with monthly click analytics.</p>
             <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
-              <a className="btn-glow" href="/for-business/" style={{padding:"18px 32px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:700,fontSize:18,textDecoration:"none",boxShadow:"0 6px 24px rgba(232,97,77,0.4)",display:"inline-block"}}>For business</a>
-              <button onClick={()=>setModal(true)} style={{padding:"18px 32px",borderRadius:14,border:"1.5px solid rgba(255,255,255,0.35)",background:"transparent",color:"#fff",fontWeight:700,fontSize:18,cursor:"pointer"}}>Quick free submit</button>
+              <a className="btn-glow" href="/for-business/" style={{padding:"16px 28px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:700,fontSize:17,textDecoration:"none",boxShadow:"0 6px 24px rgba(232,97,77,0.4)",display:"inline-block"}}>For business</a>
+              <button onClick={()=>setModal(true)} style={{padding:"16px 28px",borderRadius:14,border:"1.5px solid rgba(255,255,255,0.4)",background:"rgba(255,255,255,0.08)",color:"#fff",fontWeight:700,fontSize:17,cursor:"pointer"}}>Quick free submit</button>
             </div>
-            <div style={{marginTop:12}}><a href="/submit/" style={{fontSize:16,color:"#6B8A9E"}}>or use the full submission form &rarr;</a></div>
+            <div style={{marginTop:14}}><a href="/submit/" style={{fontSize:15,color:"#A8BFCC"}}>or use the full submission form &rarr;</a></div>
           </div>
         </div>
 
