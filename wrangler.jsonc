@@ -1,0 +1,7 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "michiganhappyhour",
+  "compatibility_date": "2026-08-03",
+  // Static site lives at the repo root (no build step).
+  "pages_build_output_dir": "."
+}

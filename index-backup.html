@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4NCRX2Y71B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4NCRX2Y71B');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northern Michigan Happy Hour Guide | Traverse City Wine Tour</title>
+<meta name="description" content="The complete guide to happy hour deals across Northern Michigan — Traverse City, Leelanau, Petoskey, Charlevoix, Mackinac Island, Frankfort, Elk Rapids, and more. Updated weekly.">
+<meta name="keywords" content="happy hour, northern michigan, traverse city, leelanau, petoskey, charlevoix, mackinac island, frankfort, elk rapids, bellaire, drink specials, restaurant deals">
+<meta property="og:title" content="Northern Michigan Happy Hour Guide">
+<meta property="og:description" content="Every deal, every day — from Frankfort to Mackinac Island. The best hour shouldn't be hard to find.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://traversecitywinetour.com/happy-hour">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FAF7F2;color:#3D2B1F;-webkit-font-smoothing:antialiased}
+::selection{background:#C4895C;color:#fff}
+input,select,button{font-family:inherit}
+::-webkit-scrollbar{height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#E8DFD4;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel" data-type="module">
+const { useState, useMemo, useEffect, useCallback } = React;
+
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const TODAY_INDEX = new Date().getDay();
+const TODAY = DAYS[TODAY_INDEX];
+
+const REGIONS = [
+  { id:"all", name:"All Regions", emoji:"🗺️" },
+  { id:"traverse-city", name:"Traverse City", emoji:"🏙️" },
+  { id:"leelanau", name:"Leelanau Peninsula", emoji:"🍇" },
+  { id:"old-mission", name:"Old Mission Peninsula", emoji:"🍷" },
+  { id:"elk-rapids", name:"Elk Rapids & Torch Lake", emoji:"🌊" },
+  { id:"frankfort-benzie", name:"Frankfort & Benzie County", emoji:"⛵" },
+  { id:"charlevoix-petoskey", name:"Charlevoix & Petoskey", emoji:"🪨" },
+  { id:"mackinaw", name:"Mackinaw City & Mackinac Island", emoji:"🌉" },
+  { id:"bellaire-mancelona", name:"Bellaire & Antrim County", emoji:"🏔️" },
+];
+
+const CATEGORIES = ["All","Wine Bar","Brewery","Restaurant","Cocktail Bar","Taproom","Distillery","Cidery"];
+
+const LISTINGS = [
+  // TRAVERSE CITY
+  {id:1,name:"The Parlor",category:"Cocktail Bar",region:"traverse-city",town:"Traverse City",address:"267 E Front St",happyHour:{start:"3:00 PM",end:"7:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["50% off all drinks","25% off full kitchen menu","All-night happy hour Mondays"],vibe:"Speakeasy-inspired cocktails with lively downtown energy",rating:4.7,img:"🍸",featured:true,phone:"(231) 944-0100"},
+  {id:2,name:"7 Monks Taproom",category:"Taproom",region:"traverse-city",town:"Traverse City",address:"128 S Union St",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$5 sliders","$4 dirty fries","$2 off craft drafts"],vibe:"Massive tap list and a hidden speakeasy downstairs (Low Bar)",rating:4.5,img:"🍺",phone:"(231) 421-8410"},
+  {id:3,name:"Sorellina",category:"Restaurant",region:"traverse-city",town:"Traverse City",address:"250 E Front St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$5 personal pizzas","$5.50 house wines","$6 bruschetta & caprese"],vibe:"Italian comfort food and a cozy date-night starter",rating:4.6,img:"🍕",phone:"(231) 421-5912"},
+  {id:4,name:"Mama Lu's Taco Shop",category:"Restaurant",region:"traverse-city",town:"Traverse City",address:"234 E Front St",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$7 classic margaritas","$5 apps","$4 house wine","$1 off beer"],vibe:"Laid-back taco spot with legendary $2 Taco Tuesdays all day",specials:["$2 Taco Tuesdays"],rating:4.4,img:"🌮",featured:true,phone:"(231) 252-5023"},
+  {id:5,name:"Bistro FouFou",category:"Restaurant",region:"traverse-city",town:"Traverse City",address:"118 Cass St",happyHour:{start:"4:00 PM",end:"7:00 PM",days:["Monday","Tuesday","Wednesday","Thursday"]},deals:["Steamed mussels special","Short rib sliders","Wine by the glass deals"],vibe:"French bistro in a converted firehouse — intimate and charming",rating:4.6,img:"🥂",phone:"(231) 922-4010"},
+  {id:6,name:"Right Brain Brewery",category:"Brewery",region:"traverse-city",town:"Traverse City",address:"225 E Sixteenth St",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$4.50 pints","$3.75 mug fills (members)","Taco Night specials"],vibe:"Quirky creative brewery with adventurous seasonal brews",rating:4.5,img:"🍺",phone:"(231) 944-1239"},
+  {id:7,name:"Rare Bird Brewpub",category:"Brewery",region:"traverse-city",town:"Traverse City",address:"229 Lake Ave",happyHour:{start:"3:00 PM",end:"5:30 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$1 off all pints","Half-off apps","$5 featured cocktail"],vibe:"Neighborhood brewpub with an outstanding patio",rating:4.5,img:"🐦",phone:"(231) 252-4968"},
+  {id:8,name:"North Peak Brewing",category:"Brewery",region:"traverse-city",town:"Traverse City",address:"400 W Front St",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off all alcohol","$1 off appetizers & pizzas"],vibe:"Craft brews and burgers in a converted candy factory",rating:4.4,img:"🏔️",phone:"(231) 941-7325"},
+  {id:9,name:"Left Foot Charley",category:"Wine Bar",region:"traverse-city",town:"Traverse City",address:"806 Red Dr",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$5 wine tastings","Cheese plate specials","Half-off select bottles"],vibe:"Natural winemaking in the Village at Grand Traverse Commons",rating:4.7,img:"🍷",phone:"(231) 995-0500"},
+  {id:10,name:"Firefly",category:"Restaurant",region:"traverse-city",town:"Traverse City",address:"310 Cass St",happyHour:{start:"4:00 PM",end:"7:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$8 craft cocktails","$6 wines","$5 bites menu"],vibe:"Warm neighborhood spot with seasonal New American fare",rating:4.6,img:"✨",phone:"(231) 932-1310"},
+  {id:11,name:"Smoke & Porter",category:"Restaurant",region:"traverse-city",town:"Traverse City",address:"830 Cottageview Dr",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$2 off craft beers","Discounted small plates","$5 well drinks"],vibe:"Smoked meats and craft beer in the Village",rating:4.3,img:"🔥",phone:"(231) 252-4171"},
+  {id:12,name:"TC Whiskey Co.",category:"Distillery",region:"traverse-city",town:"Traverse City",address:"201 E Fourteenth St",happyHour:{start:"3:00 PM",end:"7:00 PM",days:["Monday","Tuesday","Wednesday","Thursday"]},deals:["$6 cocktails","Extended HH til 8 PM on live music nights"],vibe:"Award-winning cherry whiskey straight from the source",rating:4.5,img:"🥃",phone:"(231) 922-8468"},
+  // LEELANAU
+  {id:20,name:"The Cove",category:"Restaurant",region:"leelanau",town:"Leland",address:"111 River St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$5 local wines","$3 off appetizers","Whitefish dip special"],vibe:"Fishtown waterfront dining — grab a seat on the deck",rating:4.5,img:"⛵",featured:true,phone:"(231) 256-9834"},
+  {id:21,name:"Hop Lot Brewing",category:"Brewery",region:"leelanau",town:"Suttons Bay",address:"658 S West Bay Shore Dr",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off pints","$2 off flights","Pretzel & beer cheese $5"],vibe:"Top-tier craft beer with vineyard views and West Bay sunsets",rating:4.8,img:"🍺",featured:true,phone:"(231) 866-4505"},
+  {id:22,name:"9 Bean Rows",category:"Restaurant",region:"leelanau",town:"Suttons Bay",address:"303 St Joseph Ave",happyHour:{start:"4:30 PM",end:"6:00 PM",days:["Wednesday","Thursday","Friday","Saturday"]},deals:["$7 wine pours","Small plates from $6","Local cheese boards"],vibe:"Farm-to-table gem using Leelanau-sourced everything",rating:4.7,img:"🌿",phone:"(231) 271-4165"},
+  {id:23,name:"Tandem Ciders",category:"Cidery",region:"leelanau",town:"Suttons Bay",address:"2055 N Setterbo Rd",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Thursday","Friday","Saturday","Sunday"]},deals:["$2 off cider flights","Seasonal cider specials","Cheese & charcuterie deal"],vibe:"Farmstead cidery tucked into the rolling hills — unbeatable in fall",rating:4.6,img:"🍎",phone:"(231) 271-0050"},
+  {id:24,name:"Fischer's Happy Hour Tavern",category:"Restaurant",region:"leelanau",town:"Glen Arbor",address:"5754 W Western Ave",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$4 wells","$3 domestic drafts","Half-off loaded nachos"],vibe:"No-frills bar near Sleeping Bear Dunes — it's literally in the name",rating:4.2,img:"🍻",phone:"(231) 334-3922"},
+  {id:25,name:"Black Star Farms",category:"Wine Bar",region:"leelanau",town:"Suttons Bay",address:"10844 E Revold Rd",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Thursday","Friday","Saturday"]},deals:["$6 estate wines","Artisan cheese pairings","$4 off bottles to go"],vibe:"Estate winery with gorgeous tasting room and vineyard views",rating:4.7,img:"🍷",phone:"(231) 944-1251"},
+  {id:26,name:"Blu",category:"Restaurant",region:"leelanau",town:"Glen Arbor",address:"5705 S Lake St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$6 cocktails","$5 wine pours","Flatbread specials"],vibe:"Upscale lakeside dining steps from Sleeping Bear — stunning sunsets",rating:4.5,img:"💙",phone:"(231) 334-2530"},
+  // OLD MISSION
+  {id:30,name:"Chateau Chantal",category:"Wine Bar",region:"old-mission",town:"Old Mission",address:"15900 Rue de Vin",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$6 wine by the glass","$5 flatbreads","Half-off charcuterie boards"],vibe:"Vineyard views overlooking West Bay — hard to beat at golden hour",rating:4.8,img:"🍷",featured:true,phone:"(231) 223-4110"},
+  {id:31,name:"Jolly Pumpkin at Mission Table",category:"Brewery",region:"old-mission",town:"Old Mission",address:"13512 Peninsula Dr",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$2 off sour ales","$5 flatbreads","Half-off starters"],vibe:"Sour beer specialists with stunning bay views from the patio",rating:4.5,img:"🎃",phone:"(231) 223-4333"},
+  {id:32,name:"Bonobo Winery",category:"Wine Bar",region:"old-mission",town:"Old Mission",address:"12011 Center Rd",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Wednesday","Thursday","Friday","Saturday"]},deals:["$5 wine by the glass","Small plate pairings","Sunset specials Fridays"],vibe:"Modern tasting room with a treehouse vibe overlooking the vines",rating:4.6,img:"🌳",phone:"(231) 282-9463"},
+  {id:33,name:"2 Lads Winery",category:"Wine Bar",region:"old-mission",town:"Old Mission",address:"16985 Smokey Hollow Rd",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Friday","Saturday"]},deals:["$5 reserve pours","Cheese board specials","$3 off bottles"],vibe:"Modern minimalist tasting room with panoramic peninsula views",rating:4.6,img:"🥂",phone:"(231) 223-7722"},
+  // ELK RAPIDS & TORCH LAKE
+  {id:40,name:"Ethanology",category:"Distillery",region:"elk-rapids",town:"Elk Rapids",address:"119 Ames St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Wednesday","Thursday","Friday","Saturday"]},deals:["$7 craft cocktails","$5 spirit tastings","Small bites menu"],vibe:"Grain-to-glass distillery in a charming downtown space",rating:4.5,img:"🥃",featured:true,phone:"(231) 264-5755"},
+  {id:41,name:"Pearl's New Orleans Kitchen",category:"Restaurant",region:"elk-rapids",town:"Elk Rapids",address:"617 Ames St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Tuesday","Wednesday","Thursday","Friday"]},deals:["$6 hurricanes","$5 gumbo cups","$2 off wine & beer"],vibe:"Cajun soul food on the shores of Elk Lake — a hidden gem",rating:4.4,img:"🦐",phone:"(231) 264-0530"},
+  {id:42,name:"Short's Torch Lake",category:"Brewery",region:"elk-rapids",town:"Alden",address:"7 Bridge St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off all pints","$5 pub pretzels","Flight specials"],vibe:"Short's satellite taproom right on Torch Lake",rating:4.6,img:"🍺",phone:"(231) 331-4126"},
+  {id:43,name:"Riverwalk Grill",category:"Restaurant",region:"elk-rapids",town:"Elk Rapids",address:"105 Ames St",happyHour:{start:"3:30 PM",end:"5:30 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$5 house wines","$2 off drafts","Bruschetta specials"],vibe:"Riverside patio dining in the heart of downtown Elk Rapids",rating:4.3,img:"🌊",phone:"(231) 264-9133"},
+  // FRANKFORT & BENZIE
+  {id:50,name:"Stormcloud Brewing",category:"Brewery",region:"frankfort-benzie",town:"Frankfort",address:"303 Main St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off pints","$2 off flights","Pretzel & mustard $4"],vibe:"Beloved Belgian-inspired brewery in the heart of downtown Frankfort",rating:4.7,img:"⛈️",featured:true,phone:"(231) 352-0118"},
+  {id:51,name:"The Hotel Frankfort",category:"Restaurant",region:"frankfort-benzie",town:"Frankfort",address:"231 Main St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$6 cocktails","$5 wine pours","Oyster specials Thursdays"],vibe:"Elevated pub fare in a beautifully restored historic hotel",rating:4.5,img:"🏨",phone:"(231) 352-4303"},
+  {id:52,name:"Iron Fish Distillery",category:"Distillery",region:"frankfort-benzie",town:"Thompsonville",address:"14234 Dzuibanek Rd",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Thursday","Friday","Saturday"]},deals:["$7 signature cocktails","Distillery tour + tasting combo","$5 snacks"],vibe:"Farm distillery on 120 acres — the drive alone is worth it",rating:4.6,img:"🐟",phone:"(231) 378-3474"},
+  {id:53,name:"Cold Creek Inn",category:"Restaurant",region:"frankfort-benzie",town:"Beulah",address:"491 S Benzie Blvd",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$5 wells","$4 domestic drafts","Half-off starters"],vibe:"Classic Up North lodge vibes on the shores of Crystal Lake",rating:4.2,img:"🏕️",phone:"(231) 882-4341"},
+  // CHARLEVOIX & PETOSKEY
+  {id:60,name:"Beards Brewery",category:"Brewery",region:"charlevoix-petoskey",town:"Petoskey",address:"215 E Lake St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off pints","$5 pub bites","Monday $3 pints all day"],vibe:"Laid-back downtown Petoskey brewery with a great patio",rating:4.5,img:"🧔",phone:"(231) 753-2221"},
+  {id:61,name:"Palette Bistro",category:"Restaurant",region:"charlevoix-petoskey",town:"Petoskey",address:"321 Bay St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$7 wines","Half-off small plates","$8 featured cocktail"],vibe:"Farm-to-fork dining in the Gaslight District",rating:4.6,img:"🎨",phone:"(231) 348-3321"},
+  {id:62,name:"Castle Farms Winery",category:"Wine Bar",region:"charlevoix-petoskey",town:"Charlevoix",address:"5052 M-66 N",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Friday","Saturday"]},deals:["$5 tastings","Cheese & wine pairing specials","Live music Fridays"],vibe:"Wine tasting in a stone castle — yes, an actual castle",rating:4.4,img:"🏰",phone:"(231) 237-0884"},
+  {id:63,name:"Tap 30 Pourhouse",category:"Taproom",region:"charlevoix-petoskey",town:"Charlevoix",address:"307 Bridge St",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$2 off all taps","Wing Wednesday $0.75 wings","$5 cocktail of the day"],vibe:"30 taps of Michigan craft beer in downtown Charlevoix",rating:4.3,img:"🍺",phone:"(231) 547-0182"},
+  {id:64,name:"City Park Grill",category:"Restaurant",region:"charlevoix-petoskey",town:"Petoskey",address:"432 E Lake St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$6 house cocktails","$5 wines","Half-off bar bites"],vibe:"Hemingway's old haunt — a Petoskey landmark since 1875",rating:4.5,img:"📖",phone:"(231) 347-0101"},
+  {id:65,name:"Petoskey Brewing",category:"Brewery",region:"charlevoix-petoskey",town:"Petoskey",address:"1844 M-119",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off all pints","$5 soft pretzels","Flight deals"],vibe:"Local brewery with a killer view of Little Traverse Bay",rating:4.4,img:"🍺",phone:"(231) 753-2057"},
+  // MACKINAW
+  {id:70,name:"The Dixie Saloon",category:"Restaurant",region:"mackinaw",town:"Mackinaw City",address:"401 E Central Ave",happyHour:{start:"3:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$4 wells","$5 burgers","Live music weekends"],vibe:"Old-school roadhouse energy right at the base of the bridge",rating:4.2,img:"🤠",phone:"(231) 436-5449"},
+  {id:71,name:"Horn's Gaslight Bar",category:"Cocktail Bar",region:"mackinaw",town:"Mackinac Island",address:"7405 Main St",happyHour:{start:"3:00 PM",end:"5:30 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$6 island cocktails","$4 drafts","Perch basket special"],vibe:"Island institution since 1933 — the oldest bar on Mackinac",rating:4.4,img:"🏝️",featured:true,phone:"(906) 847-6154"},
+  {id:72,name:"Gate House at Mission Point",category:"Restaurant",region:"mackinaw",town:"Mackinac Island",address:"6633 Main St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]},deals:["$8 craft cocktails","Sunset appetizer menu","Wine flight specials"],vibe:"Upscale island dining with sweeping Straits views",rating:4.6,img:"🌅",phone:"(906) 847-3312"},
+  {id:73,name:"Audie's Restaurant",category:"Restaurant",region:"mackinaw",town:"Mackinaw City",address:"314 N Nicolet St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["$5 local wines","$4 drafts","Whitefish slider special"],vibe:"Family-run Mackinaw staple serving Great Lakes comfort food since 1972",rating:4.3,img:"🐟",phone:"(231) 436-5744"},
+  // BELLAIRE
+  {id:80,name:"Short's Brewing Company",category:"Brewery",region:"bellaire-mancelona",town:"Bellaire",address:"121 N Bridge St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Monday","Tuesday","Wednesday","Thursday","Friday"]},deals:["$1 off all pints","$5 pub pretzels","$2 off flights"],vibe:"The mothership — where Short's started and still innovates",rating:4.7,img:"🍺",featured:true,phone:"(231) 498-2300"},
+  {id:81,name:"Lulu's Bistro",category:"Restaurant",region:"bellaire-mancelona",town:"Bellaire",address:"123 N Bridge St",happyHour:{start:"4:00 PM",end:"6:00 PM",days:["Wednesday","Thursday","Friday","Saturday"]},deals:["$7 wines by the glass","Half-off starters","Seasonal cocktail specials"],vibe:"Upscale comfort food right next to Short's — make it a double stop",rating:4.5,img:"🍽️",phone:"(231) 533-5252"},
+  {id:82,name:"Shorts Pull Barn",category:"Brewery",region:"bellaire-mancelona",town:"Bellaire",address:"300 N Bridge St",happyHour:{start:"3:00 PM",end:"5:00 PM",days:["Thursday","Friday","Saturday","Sunday"]},deals:["$1 off pints","$5 pizza slices","Live music weekends"],vibe:"Short's expansion spot with wood-fired pizza and an outdoor stage",rating:4.4,img:"🎵",phone:"(231) 498-2300"},
+];
+
+// ================ COMPONENTS ================
+
+function StarRating({ rating }) {
+  return (
+    <span style={{color:"#D4874E",fontSize:12,letterSpacing:0.5}}>
+      {"★".repeat(Math.floor(rating))}
+      <span style={{color:"#ddd"}}>{"★".repeat(5-Math.floor(rating))}</span>
+      <span style={{color:"#8B7355",marginLeft:3,fontSize:11}}>{rating}</span>
+    </span>
+  );
+}
+
+function Badge({ children, color="#7B4F3A", bg="#F5EDE3" }) {
+  return <span style={{display:"inline-block",padding:"3px 9px",borderRadius:20,fontSize:10,fontWeight:600,color,background:bg,letterSpacing:0.3,whiteSpace:"nowrap"}}>{children}</span>;
+}
+
+function ListingCard({ listing, isToday }) {
+  const [expanded, setExpanded] = useState(false);
+  const reg = REGIONS.find(r => r.id === listing.region);
+
+  const handleDirections = useCallback((e) => {
+    e.stopPropagation();
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(listing.name + " " + listing.address + " " + listing.town + " MI")}`, "_blank");
+  }, [listing]);
+
+  const handleCall = useCallback((e) => {
+    e.stopPropagation();
+    if(listing.phone) window.location.href = `tel:${listing.phone}`;
+  }, [listing]);
+
+  return (
+    <div onClick={() => setExpanded(!expanded)} style={{
+      background:"#fff",borderRadius:14,overflow:"hidden",cursor:"pointer",
+      border:listing.featured&&isToday?"2px solid #C4895C":"1px solid #E8DFD4",
+      boxShadow:expanded?"0 8px 30px rgba(123,79,58,0.12)":"0 2px 8px rgba(123,79,58,0.06)",
+      transition:"all 0.25s ease",
+    }}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 18px 10px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:11,flex:1,minWidth:0}}>
+          <div style={{width:42,height:42,borderRadius:10,background:"linear-gradient(135deg,#F5EDE3,#E8DFD4)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0}}>{listing.img}</div>
+          <div style={{minWidth:0}}>
+            <div style={{fontWeight:700,fontSize:15,color:"#3D2B1F",lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{listing.name}</div>
+            <div style={{fontSize:11,color:"#9B8B7A",marginTop:2}}>{listing.town} · {listing.address}</div>
+          </div>
+        </div>
+        <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
+          <div style={{fontWeight:700,fontSize:13,color:isToday?"#7B4F3A":"#6B5E52",whiteSpace:"nowrap"}}>{listing.happyHour.start}–{listing.happyHour.end}</div>
+          {isToday && <div style={{fontSize:9,fontWeight:700,color:"#C4895C",textTransform:"uppercase",letterSpacing:1,marginTop:2}}>Today</div>}
+        </div>
+      </div>
+      <div style={{padding:"4px 18px 12px",display:"flex",gap:5,flexWrap:"wrap",alignItems:"center"}}>
+        <Badge>{listing.category}</Badge>
+        <Badge color="#5A7B6A" bg="#E8F0EA">{listing.town}</Badge>
+        {listing.happyHour.days.length===7 && <Badge color="#4A7C59" bg="#E8F0EA">7 days</Badge>}
+        {listing.specials?.map((s,i) => <Badge key={i} color="#8B4513" bg="#FFF3E8">{s}</Badge>)}
+        {listing.featured && <Badge color="#B8860B" bg="#FFF8E7">★ Featured</Badge>}
+        <div style={{marginLeft:"auto"}}><StarRating rating={listing.rating}/></div>
+      </div>
+      {expanded && (
+        <div style={{padding:"0 18px 16px",borderTop:"1px solid #F0E8DE"}}>
+          <p style={{fontSize:13,color:"#6B5E52",fontStyle:"italic",margin:"12px 0",lineHeight:1.5}}>"{listing.vibe}"</p>
+          <div style={{fontSize:10,fontWeight:700,color:"#9B8B7A",textTransform:"uppercase",letterSpacing:1.2,marginBottom:8}}>Deals & Specials</div>
+          {listing.deals.map((d,i) => (
+            <div key={i} style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:4,fontSize:13,color:"#3D2B1F"}}>
+              <span style={{color:"#C4895C",fontWeight:700,flexShrink:0}}>→</span>{d}
+            </div>
+          ))}
+          <div style={{fontSize:11,color:"#9B8B7A",marginTop:10}}>
+            <span style={{fontWeight:600}}>Days: </span>{listing.happyHour.days.length===7?"Every day":listing.happyHour.days.join(", ")}
+          </div>
+          <div style={{fontSize:11,color:"#9B8B7A",marginTop:4}}>
+            <span style={{fontWeight:600}}>Region: </span>{reg?.name}
+          </div>
+          {listing.phone && <div style={{fontSize:11,color:"#9B8B7A",marginTop:4}}>
+            <span style={{fontWeight:600}}>Phone: </span>{listing.phone}
+          </div>}
+          <div style={{display:"flex",gap:8,marginTop:14}}>
+            <button onClick={handleCall} style={{flex:1,padding:"10px 16px",borderRadius:8,border:"1.5px solid #C4895C",background:"transparent",color:"#7B4F3A",fontWeight:600,fontSize:12,cursor:"pointer"}}>📞 Call Ahead</button>
+            <button onClick={handleDirections} style={{flex:1,padding:"10px 16px",borderRadius:8,border:"none",background:"linear-gradient(135deg,#7B4F3A,#C4895C)",color:"#fff",fontWeight:600,fontSize:12,cursor:"pointer"}}>📍 Directions</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ================ MAIN APP ================
+
+function App() {
+  const [activeDay, setActiveDay] = useState(TODAY);
+  const [region, setRegion] = useState("all");
+  const [category, setCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("region");
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+  const filtered = useMemo(() => {
+    let r = LISTINGS.filter(l => {
+      return l.happyHour.days.includes(activeDay)
+        && (region==="all" || l.region===region)
+        && (category==="All" || l.category===category)
+        && (!search || l.name.toLowerCase().includes(search.toLowerCase()) || l.town.toLowerCase().includes(search.toLowerCase()) || l.deals.some(d=>d.toLowerCase().includes(search.toLowerCase())) || l.vibe.toLowerCase().includes(search.toLowerCase()));
+    });
+    if(sortBy==="name") r.sort((a,b)=>a.name.localeCompare(b.name));
+    else if(sortBy==="rating") r.sort((a,b)=>b.rating-a.rating);
+    else if(sortBy==="time") r.sort((a,b)=>a.happyHour.start.localeCompare(b.happyHour.start));
+    else r.sort((a,b)=>{const ri=REGIONS.findIndex(x=>x.id===a.region)-REGIONS.findIndex(x=>x.id===b.region);return ri!==0?ri:a.name.localeCompare(b.name);});
+    return r;
+  }, [activeDay,region,category,search,sortBy]);
+
+  const regionCounts = useMemo(() => {
+    const c={};
+    LISTINGS.forEach(l=>{if(l.happyHour.days.includes(activeDay)){c[l.region]=(c[l.region]||0)+1;}});
+    c.all=Object.values(c).reduce((a,b)=>a+b,0);
+    return c;
+  }, [activeDay]);
+
+  const grouped = useMemo(() => {
+    if(region!=="all"||sortBy!=="region") return null;
+    const g={};
+    filtered.forEach(l=>{if(!g[l.region])g[l.region]=[];g[l.region].push(l);});
+    return g;
+  }, [filtered,region,sortBy]);
+
+  return (
+    <div style={{background:"#FAF7F2",minHeight:"100vh"}}>
+      {/* Nav */}
+      <nav style={{background:"#3D2B1F",padding:"10px 20px",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
+        <a href="https://traversecitywinetour.com" style={{color:"#C4895C",fontSize:12,fontWeight:500,textDecoration:"none"}}>← Traverse City Wine Tour</a>
+        <span style={{color:"#8B7355",fontSize:11}}>traversecitywinetour.com</span>
+      </nav>
+
+      {/* Hero */}
+      <header style={{background:"linear-gradient(145deg,#3D2B1F 0%,#5C3D2E 60%,#7B4F3A 100%)",padding:"44px 24px 36px",textAlign:"center",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,bottom:0,background:"radial-gradient(ellipse at 30% 20%,rgba(196,137,92,0.15) 0%,transparent 60%)"}}/>
+        <div style={{position:"relative",zIndex:1,maxWidth:640,margin:"0 auto"}}>
+          <div style={{fontSize:10,fontWeight:700,color:"#C4895C",textTransform:"uppercase",letterSpacing:3,marginBottom:10}}>Northern Michigan</div>
+          <h1 style={{fontSize:34,fontWeight:800,color:"#F5EDE3",margin:"0 0 8px 0",lineHeight:1.1,letterSpacing:-0.5}}>Happy Hour Guide</h1>
+          <p style={{fontSize:14,color:"#BBA88E",margin:"0 0 18px 0",lineHeight:1.5}}>From Frankfort to Mackinac Island — every deal, every day.<br/>The best hour shouldn't be hard to find.</p>
+          <div style={{display:"flex",justifyContent:"center",gap:16,flexWrap:"wrap"}}>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",padding:"7px 14px",borderRadius:20}}>
+              <span style={{fontSize:14}}>🥂</span><span style={{color:"#E8D5C0",fontSize:12,fontWeight:500}}>{regionCounts.all||0} spots on {activeDay}</span>
+            </div>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",padding:"7px 14px",borderRadius:20}}>
+              <span style={{fontSize:14}}>📍</span><span style={{color:"#E8D5C0",fontSize:12,fontWeight:500}}>{REGIONS.length-1} regions</span>
+            </div>
+            <div style={{display:"inline-flex",alignItems:"center",gap:6,background:"rgba(255,255,255,0.1)",padding:"7px 14px",borderRadius:20}}>
+              <span style={{fontSize:14}}>🍺</span><span style={{color:"#E8D5C0",fontSize:12,fontWeight:500}}>{LISTINGS.length} total listings</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main style={{maxWidth:680,margin:"0 auto",padding:"0 16px"}}>
+        {/* Day selector */}
+        <div style={{display:"flex",gap:4,padding:"18px 0 14px",overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+          {DAYS.map((day,i)=>{
+            const isA=activeDay===day,isC=i===TODAY_INDEX;
+            return <button key={day} onClick={()=>setActiveDay(day)} style={{padding:"8px 14px",borderRadius:20,border:"none",background:isA?"linear-gradient(135deg,#7B4F3A,#C4895C)":"#fff",color:isA?"#fff":"#6B5E52",fontWeight:isA?700:500,fontSize:12,cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,boxShadow:isA?"0 2px 8px rgba(123,79,58,0.25)":"0 1px 3px rgba(0,0,0,0.06)",position:"relative"}}>
+              {day.slice(0,3)}
+              {isC&&!isA&&<span style={{position:"absolute",bottom:2,left:"50%",transform:"translateX(-50%)",width:4,height:4,borderRadius:"50%",background:"#C4895C"}}/>}
+            </button>;
+          })}
+        </div>
+
+        {/* Region grid */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:12}}>
+          {REGIONS.map(r=>{
+            const isA=region===r.id,cnt=regionCounts[r.id]||0;
+            return <button key={r.id} onClick={()=>setRegion(r.id)} style={{padding:"10px 8px",borderRadius:10,border:isA?"2px solid #C4895C":"1px solid #E8DFD4",background:isA?"#FFF8F0":"#fff",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:2,transition:"all 0.15s ease"}}>
+              <span style={{fontSize:16}}>{r.emoji}</span>
+              <span style={{fontSize:10,fontWeight:isA?700:500,color:isA?"#7B4F3A":"#6B5E52",textAlign:"center",lineHeight:1.2}}>{r.name}</span>
+              <span style={{fontSize:9,color:"#9B8B7A",fontWeight:600}}>{cnt}</span>
+            </button>;
+          })}
+        </div>
+
+        {/* Search & filters */}
+        <div style={{background:"#fff",borderRadius:12,padding:"12px 14px",marginBottom:12,border:"1px solid #E8DFD4"}}>
+          <input type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search spots, towns, deals..." style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1.5px solid #E8DFD4",fontSize:14,color:"#3D2B1F",outline:"none",background:"#FAF7F2",boxSizing:"border-box",marginBottom:10}}/>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+            <select value={category} onChange={e=>setCategory(e.target.value)} style={{padding:"7px 12px",borderRadius:8,border:"1.5px solid #E8DFD4",fontSize:12,color:"#6B5E52",background:"#FAF7F2",cursor:"pointer",fontWeight:500}}>
+              {CATEGORIES.map(c=><option key={c} value={c}>{c==="All"?"All Types":c}</option>)}
+            </select>
+            <select value={sortBy} onChange={e=>setSortBy(e.target.value)} style={{padding:"7px 12px",borderRadius:8,border:"1.5px solid #E8DFD4",fontSize:12,color:"#6B5E52",background:"#FAF7F2",cursor:"pointer",fontWeight:500,marginLeft:"auto"}}>
+              <option value="region">Sort: By Region</option>
+              <option value="name">Sort: A–Z</option>
+              <option value="rating">Sort: Top Rated</option>
+              <option value="time">Sort: Earliest</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Count */}
+        <div style={{padding:"6px 4px 10px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{fontSize:13,color:"#9B8B7A",fontWeight:500}}>
+            {filtered.length} spot{filtered.length!==1?"s":""} on {activeDay}{region!=="all"?` in ${REGIONS.find(r=>r.id===region)?.name}`:""}
+          </span>
+          <span style={{fontSize:11,color:"#BBA88E"}}>Tap for details</span>
+        </div>
+
+        {/* Listings */}
+        <div style={{display:"flex",flexDirection:"column",gap:10,paddingBottom:28}}>
+          {filtered.length===0?(
+            <div style={{textAlign:"center",padding:"48px 20px",color:"#9B8B7A"}}>
+              <div style={{fontSize:40,marginBottom:12}}>🍷</div>
+              <div style={{fontSize:16,fontWeight:600,marginBottom:6,color:"#6B5E52"}}>No happy hours found</div>
+              <div style={{fontSize:13}}>Try a different day, region, or filter.</div>
+            </div>
+          ):grouped?Object.entries(grouped).map(([rid,lsts])=>{
+            const rg=REGIONS.find(r=>r.id===rid);
+            return <div key={rid}>
+              <div style={{display:"flex",alignItems:"center",gap:8,padding:"14px 0 8px",borderBottom:"2px solid #E8DFD4",marginBottom:10}}>
+                <span style={{fontSize:18}}>{rg?.emoji}</span>
+                <span style={{fontSize:15,fontWeight:700,color:"#3D2B1F"}}>{rg?.name}</span>
+                <span style={{fontSize:11,color:"#9B8B7A",fontWeight:500,marginLeft:"auto"}}>{lsts.length} spot{lsts.length!==1?"s":""}</span>
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:8}}>
+                {lsts.map(l=><ListingCard key={l.id} listing={l} isToday={activeDay===TODAY}/>)}
+              </div>
+            </div>;
+          }):(filtered.map(l=><ListingCard key={l.id} listing={l} isToday={activeDay===TODAY}/>))}
+        </div>
+
+        {/* Submit CTA */}
+        <div style={{background:"linear-gradient(135deg,#3D2B1F,#5C3D2E)",borderRadius:14,padding:"28px 24px",textAlign:"center",marginBottom:24}}>
+          <div style={{fontSize:22,marginBottom:8}}>📍</div>
+          <h3 style={{color:"#F5EDE3",fontSize:18,fontWeight:700,margin:"0 0 8px 0"}}>Own a spot in Northern Michigan?</h3>
+          <p style={{color:"#BBA88E",fontSize:13,margin:"0 0 16px 0",lineHeight:1.5}}>List your happy hour for free. We cover TC, Leelanau,<br/>Benzie, Charlevoix, Petoskey, Mackinac, and beyond.</p>
+          <button onClick={()=>setShowSubmitModal(true)} style={{padding:"12px 28px",borderRadius:8,border:"none",background:"linear-gradient(135deg,#C4895C,#D4A574)",color:"#fff",fontWeight:700,fontSize:14,cursor:"pointer",boxShadow:"0 4px 12px rgba(196,137,92,0.3)"}}>Submit Your Happy Hour</button>
+        </div>
+
+        {/* Browse by region */}
+        <div style={{background:"#fff",borderRadius:14,padding:"20px",marginBottom:32,border:"1px solid #E8DFD4"}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#3D2B1F",marginBottom:12}}>Browse by Region</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {REGIONS.filter(r=>r.id!=="all").map(r=>(
+              <button key={r.id} onClick={()=>{setRegion(r.id);window.scrollTo({top:0,behavior:"smooth"});}} style={{padding:"6px 12px",borderRadius:20,border:"1px solid #E8DFD4",background:"#FAF7F2",fontSize:11,color:"#6B5E52",cursor:"pointer",fontWeight:500}}>
+                {r.emoji} {r.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer style={{borderTop:"1px solid #E8DFD4",padding:"24px 0 40px",textAlign:"center"}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#7B4F3A",marginBottom:4}}>Northern Michigan Happy Hour Guide</div>
+          <div style={{fontSize:11,color:"#9B8B7A",lineHeight:1.8}}>
+            A companion to <a href="https://traversecitywinetour.com" style={{color:"#C4895C",fontWeight:600,textDecoration:"none"}}>Traverse City Wine Tour</a>
+            <br/>Specials verified weekly · Last updated March 2026
+            <br/><span style={{fontSize:10}}>Hours and deals may change — call ahead to confirm</span>
+            <br/><span style={{fontSize:10,marginTop:8,display:"inline-block"}}>© 2026 Traverse City Wine Tour. All rights reserved.</span>
+          </div>
+        </footer>
+      </main>
+
+      {/* Submit Modal */}
+      {showSubmitModal && (
+        <div onClick={()=>setShowSubmitModal(false)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:16,padding:"32px 28px",maxWidth:480,width:"100%",maxHeight:"80vh",overflow:"auto"}}>
+            <h3 style={{fontSize:20,fontWeight:700,color:"#3D2B1F",marginBottom:4}}>Submit Your Happy Hour</h3>
+            <p style={{fontSize:13,color:"#9B8B7A",marginBottom:20,lineHeight:1.5}}>We'll verify the details and add your listing within 48 hours.</p>
+            {["Restaurant / Bar Name","Town / City","Address","Happy Hour Days & Times","Deals & Specials","Contact Email","Phone Number"].map((label,i) => (
+              <div key={i} style={{marginBottom:12}}>
+                <label style={{fontSize:11,fontWeight:600,color:"#6B5E52",display:"block",marginBottom:4}}>{label}</label>
+                {label==="Deals & Specials"?
+                  <textarea rows={3} placeholder={`e.g. $5 wines, half-off apps...`} style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #E8DFD4",fontSize:13,resize:"vertical",outline:"none",background:"#FAF7F2",boxSizing:"border-box"}}/>:
+                  <input type={label.includes("Email")?"email":"text"} placeholder={label} style={{width:"100%",padding:"10px 12px",borderRadius:8,border:"1.5px solid #E8DFD4",fontSize:13,outline:"none",background:"#FAF7F2",boxSizing:"border-box"}}/>
+                }
+              </div>
+            ))}
+            <div style={{display:"flex",gap:10,marginTop:20}}>
+              <button onClick={()=>setShowSubmitModal(false)} style={{flex:1,padding:"12px",borderRadius:8,border:"1.5px solid #E8DFD4",background:"transparent",color:"#6B5E52",fontWeight:600,fontSize:13,cursor:"pointer"}}>Cancel</button>
+              <button onClick={()=>{alert("Thank you! We'll review and add your listing within 48 hours.");setShowSubmitModal(false);}} style={{flex:1,padding:"12px",borderRadius:8,border:"none",background:"linear-gradient(135deg,#7B4F3A,#C4895C)",color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer"}}>Submit</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+__MACOSX/
+._*
+
+# Editor / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Node (for local wrangler tooling)
+node_modules/
+.wrangler/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
