@@ -11,22 +11,22 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Hour Near Me in Michigan | 180+ Deals Statewide</title>
-<meta name="description" content="Find happy hour near you in Michigan — 180+ bars and restaurants with real hours and drink specials. Detroit, Grand Rapids, Ann Arbor, Traverse City &amp; more. Updated weekly.">
+<title>Michigan Happy Hour | #1 Place to Find Your Next Deal</title>
+<meta name="description" content="Michigan’s happy hour guide — 800+ bars and restaurants with hours, specials, and maps. Detroit, Grand Rapids, Ann Arbor, Traverse City &amp; more. Updated weekly.">
 <link rel="canonical" href="https://michiganhappyhour.com/">
-<meta property="og:title" content="Happy Hour Near Me in Michigan | 180+ Deals Statewide">
-<meta property="og:description" content="Looking for happy hour near you? Browse 180+ Michigan spots with hours, deals, and maps — updated weekly.">
+<meta property="og:title" content="Michigan Happy Hour | #1 Place to Find Your Next Deal">
+<meta property="og:description" content="The #1 place to find your next happy hour in Michigan — 800+ spots with hours, deals, and maps. Updated weekly.">
 <meta property="og:url" content="https://michiganhappyhour.com/">
 <meta property="og:image" content="https://michiganhappyhour.com/img/hero.jpg">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Michigan Happy Hour Guide">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Happy Hour Near Me in Michigan | 180+ Deals Statewide">
-<meta name="twitter:description" content="Looking for happy hour near you? Browse 180+ Michigan spots with hours and deals.">
+<meta name="twitter:title" content="Michigan Happy Hour | #1 Place to Find Your Next Deal">
+<meta name="twitter:description" content="The #1 place to find your next happy hour in Michigan — 800+ spots with hours and deals.">
 <meta name="twitter:image" content="https://michiganhappyhour.com/img/hero.jpg">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍻</text></svg>">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"Michigan Happy Hour Guide","url":"https://michiganhappyhour.com/","description":"Find happy hour near you in Michigan. 180+ bars and restaurants with real hours and drink specials.","publisher":{"@type":"Organization","name":"MichiganHappyHour.com","url":"https://michiganhappyhour.com"},"potentialAction":{"@type":"SearchAction","target":"https://michiganhappyhour.com/?q={search_term_string}","query-input":"required name=search_term_string"}}
+{"@context":"https://schema.org","@type":"WebSite","name":"Michigan Happy Hour Guide","url":"https://michiganhappyhour.com/","description":"The #1 place to find your next happy hour in Michigan. 800+ bars and restaurants with real hours and drink specials.","publisher":{"@type":"Organization","name":"MichiganHappyHour.com","url":"https://michiganhappyhour.com"},"potentialAction":{"@type":"SearchAction","target":"https://michiganhappyhour.com/?q={search_term_string}","query-input":"required name=search_term_string"}}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -132,6 +132,30 @@ const REGIONS=[
 const CATS=["All","Wine Bar","Brewery","Restaurant","Cocktail Bar","Taproom","Distillery","Cidery"];
 const catColors={"Wine Bar":"#8B2252","Brewery":"#D4A017","Restaurant":"#2E8B7A","Cocktail Bar":"#2D6A8F","Taproom":"#B87A1A","Distillery":"#5B4A8A","Cidery":"#C25B28"};
 function toSlug(name,town){return(name+"-"+town).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+const REGION_CENTERS={
+  "traverse-city":{lat:44.7631,lng:-85.6206},
+  leelanau:{lat:45.02,lng:-85.75},
+  "old-mission":{lat:44.9,lng:-85.52},
+  "elk-rapids":{lat:44.9,lng:-85.38},
+  "frankfort-benzie":{lat:44.63,lng:-86.15},
+  "charlevoix-petoskey":{lat:45.37,lng:-85.05},
+  "bellaire-mancelona":{lat:44.98,lng:-85.2},
+  mackinaw:{lat:45.78,lng:-84.73},
+  "grand-rapids":{lat:42.9634,lng:-85.6681},
+  "ann-arbor":{lat:42.2808,lng:-83.743},
+  detroit:{lat:42.3314,lng:-83.0458},
+  kalamazoo:{lat:42.2917,lng:-85.5872},
+  lansing:{lat:42.7325,lng:-84.5555},
+  holland:{lat:42.7875,lng:-86.109},
+  muskegon:{lat:43.2342,lng:-86.2484},
+  marquette:{lat:46.5436,lng:-87.3954},
+  "tri-cities":{lat:43.5,lng:-84.0},
+  flint:{lat:43.0125,lng:-83.6875}
+};
+const REGION_IDS=new Set(REGIONS.map(r=>r.id));
+function haversineMi(lat1,lng1,lat2,lng2){const R=3959;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function nearestRegionId(lat,lng){let best="all",bestD=Infinity;for(const[id,c] of Object.entries(REGION_CENTERS)){const d=haversineMi(lat,lng,c.lat,c.lng);if(d<bestD){bestD=d;best=id;}}return bestD<=45?best:"all";}
+function readInitialRegion(){try{const sp=new URLSearchParams(window.location.search);const fromUrl=sp.get("region");if(fromUrl&&REGION_IDS.has(fromUrl))return fromUrl;const saved=localStorage.getItem("hh-region");if(saved&&REGION_IDS.has(saved))return saved;}catch{}return"all";}
 
 const L=[
   {id:1,name:"The Parlor",cat:"Cocktail Bar",reg:"traverse-city",town:"Traverse City",addr:"267 E Front St",hh:{s:"3:00 PM",e:"7:00 PM",d:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["50% off all drinks","25% off full kitchen menu","All-night happy hour Mondays"],vibe:"Speakeasy-inspired cocktails with lively downtown energy",feat:true,ph:"(231) 944-0100",lat:44.7634,lng:-85.6197,col:["late"]},
@@ -489,7 +513,8 @@ function HappyHourMap({listings,onPinClick,highlightId}){
 function App(){
   const [listings,setListings]=useState(L);
   const [day,setDay]=useState(TODAY);
-  const [reg,setReg]=useState("all");
+  const [reg,setReg]=useState(readInitialRegion);
+  const [regionNote,setRegionNote]=useState(()=>{try{const sp=new URLSearchParams(window.location.search);if(sp.get("region"))return"From link";const saved=localStorage.getItem("hh-region");if(saved&&saved!=="all")return"Your default";}catch{}return"";});
   const [cat,setCat]=useState("All");
   const [q,setQ]=useState(()=>{try{return new URLSearchParams(window.location.search).get("q")||"";}catch{return"";}});
   const [sort,setSort]=useState("region");
@@ -497,6 +522,19 @@ function App(){
   const [mapHighlight,setMapHighlight]=useState(null);
   const [showMap,setShowMap]=useState(true);
   const [showTop,setShowTop]=useState(false);
+  const [favs,setFavs]=useState(()=>{try{return JSON.parse(localStorage.getItem('hh-favs'))||[];}catch{return[];}});
+  const [showFavs,setShowFavs]=useState(false);
+  const [showNow,setShowNow]=useState(false);
+  const [colFilter,setColFilter]=useState(null);
+  const [userLoc,setUserLoc]=useState(null);
+  const [locLoading,setLocLoading]=useState(false);
+  const [claimModal,setClaimModal]=useState(null);
+  const applyRegion=(id,{save=true,note=""}={})=>{
+    const next=REGION_IDS.has(id)?id:"all";
+    setReg(next);
+    if(note!==undefined) setRegionNote(note);
+    if(save){try{localStorage.setItem("hh-region",next);}catch{}}
+  };
   React.useEffect(()=>{const h=()=>setShowTop(window.scrollY>800);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h);},[]);
   React.useEffect(()=>{
     fetch("/api/venues?format=list")
@@ -508,22 +546,44 @@ function App(){
     try{
       const url=new URL(window.location.href);
       if(q) url.searchParams.set("q",q); else url.searchParams.delete("q");
+      if(reg&&reg!=="all") url.searchParams.set("region",reg); else url.searchParams.delete("region");
       window.history.replaceState({},"",url.pathname+url.search+url.hash);
     }catch{}
-  },[q]);
-  const [favs,setFavs]=useState(()=>{try{return JSON.parse(localStorage.getItem('hh-favs'))||[];}catch{return[];}});
-  const [showFavs,setShowFavs]=useState(false);
-  const [showNow,setShowNow]=useState(false);
-  const [colFilter,setColFilter]=useState(null);
-  const [userLoc,setUserLoc]=useState(null);
-  const [locLoading,setLocLoading]=useState(false);
-  const [claimModal,setClaimModal]=useState(null);
+  },[q,reg]);
+  // First visit: detect nearest region when no URL/saved preference yet
+  React.useEffect(()=>{
+    try{
+      const sp=new URLSearchParams(window.location.search);
+      if(sp.get("region")) return;
+      if(localStorage.getItem("hh-region")!=null) return;
+      if(!navigator.geolocation){localStorage.setItem("hh-region","all");return;}
+      navigator.geolocation.getCurrentPosition((pos)=>{
+        const id=nearestRegionId(pos.coords.latitude,pos.coords.longitude);
+        setUserLoc({lat:pos.coords.latitude,lng:pos.coords.longitude});
+        if(id&&id!=="all"){
+          applyRegion(id,{note:"Detected near you"});
+        }else{
+          localStorage.setItem("hh-region","all");
+        }
+      },()=>{try{localStorage.setItem("hh-region","all");}catch{}},{enableHighAccuracy:false,timeout:7000,maximumAge:600000});
+    }catch{}
+  },[]);
   const parseTime=(t)=>{if(!t)return null;const m=String(t).match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return null;let h=parseInt(m[1]);const min=parseInt(m[2]);const ap=m[3].toUpperCase();if(ap==="PM"&&h!==12)h+=12;if(ap==="AM"&&h===12)h=0;return h*60+min;};
   const isHappeningNow=(l)=>{const s=parseTime(l.hh&&l.hh.s);const e=parseTime(l.hh&&l.hh.e);if(s==null||e==null||!(l.hh.d||[]).length)return false;const now=new Date();const mins=now.getHours()*60+now.getMinutes();return mins>=s&&mins<=e&&l.hh.d.includes(TODAY);};
   const toggleFav=(id)=>{setFavs(prev=>{const next=prev.includes(id)?prev.filter(x=>x!==id):[...prev,id];try{localStorage.setItem('hh-favs',JSON.stringify(next));}catch{}return next;});};
-  const haversine=(lat1,lng1,lat2,lng2)=>{const R=3959;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));};
+  const haversine=haversineMi;
   const getDist=(l)=>userLoc?haversine(userLoc.lat,userLoc.lng,l.lat,l.lng):null;
-  const requestLocation=()=>{if(userLoc){setSort("near");return;}setLocLoading(true);navigator.geolocation.getCurrentPosition((pos)=>{setUserLoc({lat:pos.coords.latitude,lng:pos.coords.longitude});setSort("near");setLocLoading(false);},(err)=>{alert("Location access denied. Enable location to use Near Me sorting.");setLocLoading(false);},{enableHighAccuracy:false,timeout:8000});};
+  const requestLocation=()=>{
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition((pos)=>{
+      const loc={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      setUserLoc(loc);
+      const id=nearestRegionId(loc.lat,loc.lng);
+      if(id&&id!=="all") applyRegion(id,{note:"Detected near you"});
+      setSort("near");
+      setLocLoading(false);
+    },(err)=>{alert("Location access denied. Enable location to use Near Me.");setLocLoading(false);},{enableHighAccuracy:false,timeout:8000});
+  };
 
   const filtered=useMemo(()=>{
     let r=listings.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):(!(l.hh.d||[]).length||l.hh.d.includes(day)))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||(l.deals||[]).some(d=>d.toLowerCase().includes(q.toLowerCase()))));
@@ -535,10 +595,11 @@ function App(){
     return r;
   },[listings,day,reg,cat,q,sort,showFavs,favs,showNow,colFilter,userLoc]);
 
+  // Total listings per region (not day-filtered) — keeps hero / region cards consistent
   const rc=useMemo(()=>{
-    const c={};listings.forEach(l=>{if(!(l.hh.d||[]).length||l.hh.d.includes(day)){c[l.reg]=(c[l.reg]||0)+1;}});
-    c.all=Object.values(c).reduce((a,b)=>a+b,0);return c;
-  },[listings,day]);
+    const c={};listings.forEach(l=>{c[l.reg]=(c[l.reg]||0)+1;});
+    c.all=listings.length;return c;
+  },[listings]);
 
   const grouped=useMemo(()=>{
     if(reg!=="all"||sort!=="region")return null;
@@ -584,10 +645,10 @@ function App(){
         <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",justifyContent:"flex-end",padding:"0 20px 36px",maxWidth:1200,margin:"0 auto"}}>
           <div className="fade-up" style={{maxWidth:740}}>
             <h1 className="serif" style={{fontSize:"clamp(48px, 8vw, 84px)",fontWeight:900,color:"#fff",margin:"0 0 12px 0",lineHeight:0.98,letterSpacing:-1.8}}>Michigan Happy Hour</h1>
-            <p style={{fontSize:"clamp(20px,3.4vw,28px)",color:"#F2F6F9",fontWeight:600,margin:"0 0 10px 0",lineHeight:1.25}}>Find tonight's best deal statewide.</p>
-            <p style={{fontSize:"clamp(16px,2.8vw,19px)",color:"#B8CBD9",margin:"0 0 22px 0",lineHeight:1.45,maxWidth:520}}>Real hours and specials from Detroit to Mackinac — filter by day, city, or what's live now.</p>
+            <p style={{fontSize:"clamp(20px,3.4vw,28px)",color:"#F2F6F9",fontWeight:700,margin:"0 0 10px 0",lineHeight:1.25}}>#1 place to find your next happy hour in Michigan</p>
+            <p style={{fontSize:"clamp(16px,2.8vw,19px)",color:"#B8CBD9",margin:"0 0 22px 0",lineHeight:1.45,maxWidth:540}}>Real hours and specials from Detroit to Mackinac — filter by day, city, or what’s live now.</p>
             <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:14}}>
-              <button onClick={scrollToListings} style={{padding:"15px 24px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer"}}>Browse {rc.all||0} spots today</button>
+              <button onClick={scrollToListings} style={{padding:"15px 24px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#E8614D,#F0806E)",color:"#fff",fontWeight:800,fontSize:16,cursor:"pointer"}}>Browse {listings.length} spots</button>
               <a href="/map/" style={{padding:"15px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.28)",background:"rgba(255,255,255,0.1)",color:"#fff",fontWeight:700,fontSize:16,textDecoration:"none"}}>Open map</a>
             </div>
             <div style={{fontSize:14,color:"#8AA3B5",fontWeight:600}}>{REGIONS.length-1} regions · {listings.length} listings · Updated weekly</div>
@@ -608,13 +669,24 @@ function App(){
           })}
         </div>
 
-        {/* Region cards — filter on click; region hubs linked for SEO crawl equity */}
+        {/* Region cards — each region is its own landing URL; All Regions filters homepage */}
+        {(reg!=="all"||regionNote)&&(
+          <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,marginBottom:10,padding:"10px 12px",background:"#EFF6FF",border:"1.5px solid #BFDBFE",borderRadius:12}}>
+            <span style={{fontSize:14,color:"#1B2838",fontWeight:600}}>
+              {reg==="all"?"Statewide":`Showing ${REGIONS.find(r=>r.id===reg)?.name||reg}`}
+              {regionNote?` · ${regionNote}`:""}
+              {reg!=="all"?` · saved as your default`:""}
+            </span>
+            <button type="button" onClick={()=>applyRegion("all",{note:""})} style={{marginLeft:"auto",border:"none",background:"transparent",color:"#2D6A8F",fontWeight:700,fontSize:13,cursor:"pointer"}}>Show all</button>
+            {reg!=="all"&&<a href={`/regions/${reg}`} style={{color:"#E8614D",fontWeight:700,fontSize:13,textDecoration:"none"}}>Open region page →</a>}
+          </div>
+        )}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(42%,170px),1fr))",gap:6,marginBottom:16}}>
           {REGIONS.map(r=>{
-            const isA=reg===r.id,cnt=rc[r.id]||0;
+            const isA=reg===r.id,cnt=r.id==="all"?(rc.all||0):(rc[r.id]||0);
             const hub=r.id==="all"?null:`/regions/${r.id}`;
-            return <div key={r.id} style={{position:"relative",height:80}}>
-              <button type="button" onClick={()=>{setReg(r.id);if(r.id!=="all"){setTimeout(()=>{const el=document.getElementById("listings-top");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},100);}}} style={{padding:0,borderRadius:12,border:isA?"3px solid #E8614D":"2px solid transparent",background:"#000",cursor:"pointer",overflow:"hidden",position:"absolute",inset:0,width:"100%",height:"100%",transition:"all 0.2s ease",boxShadow:isA?"0 4px 20px rgba(232,97,77,0.3)":"0 2px 8px rgba(0,0,0,0.1)"}}>
+            const cardInner=(
+              <>
                 <img src={r.img} alt="" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",opacity:isA?0.35:0.3}}/>
                 <div style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",background:"linear-gradient(to top,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 100%)"}}></div>
                 <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"6px 10px"}}>
@@ -622,12 +694,22 @@ function App(){
                   <span style={{fontSize:"clamp(13px,2.5vw,16px)",fontWeight:isA?700:600,color:"#fff",textAlign:"center",lineHeight:1.2,textShadow:"0 1px 3px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.5)"}}>{r.name}</span>
                   <span style={{fontSize:16,color:"#fff",fontWeight:700,textShadow:"0 1px 3px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.5)"}}>{cnt}</span>
                 </div>
-              </button>
-              {hub&&<a href={hub} aria-label={`${r.name} happy hour guide`} style={{position:"absolute",right:6,bottom:6,zIndex:2,fontSize:11,fontWeight:800,color:"#fff",background:"rgba(0,0,0,0.55)",padding:"3px 7px",borderRadius:8,textDecoration:"none",border:"1px solid rgba(255,255,255,0.35)"}}>Guide</a>}
+              </>
+            );
+            const shellStyle={{padding:0,borderRadius:12,border:isA?"3px solid #E8614D":"2px solid transparent",background:"#000",cursor:"pointer",overflow:"hidden",position:"absolute",inset:0,width:"100%",height:"100%",transition:"all 0.2s ease",boxShadow:isA?"0 4px 20px rgba(232,97,77,0.3)":"0 2px 8px rgba(0,0,0,0.1)",display:"block",textDecoration:"none"}};
+            return <div key={r.id} style={{position:"relative",height:80}}>
+              {hub?(
+                <a href={hub} aria-label={`${r.name} happy hour guide`} style={shellStyle} onClick={()=>{try{localStorage.setItem("hh-region",r.id);}catch{}}}>{cardInner}</a>
+              ):(
+                <button type="button" onClick={()=>applyRegion("all",{note:""})} style={shellStyle}>{cardInner}</button>
+              )}
             </div>;
           })}
         </div>
-        <p style={{fontSize:14,color:"#8AA3B5",margin:"-4px 0 16px",fontWeight:500}}>Tap a region to filter today's deals — or open its guide.</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:10,alignItems:"center",margin:"-4px 0 16px"}}>
+          <p style={{fontSize:14,color:"#8AA3B5",fontWeight:500,margin:0,flex:1}}>Each region has its own page you can share — tap a card to open it.</p>
+          <button type="button" onClick={requestLocation} style={{padding:"8px 12px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#2D6A8F",fontWeight:700,fontSize:13,cursor:"pointer",whiteSpace:"nowrap"}}>{locLoading?"Detecting…":"📍 Use my location"}</button>
+        </div>
 
         {/* Search & filters */}
         <div id="listings-top" style={{background:"#fff",borderRadius:14,padding:"10px 12px",marginBottom:12,border:"1.5px solid #D8E2EA",boxShadow:"0 2px 12px rgba(45,106,143,0.04)"}}>
