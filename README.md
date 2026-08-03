@@ -72,24 +72,55 @@ sitemap.xml
 robots.txt
 ```
 
-## Analytics (GA4)
+## Analytics
 
-CTA tracking is live via `/js/cta-track.js` and homepage card handlers.
+CTA + page tracking dual-writes to **GA4** and **Cloudflare D1**.
 
 | Event | When it fires |
 | --- | --- |
+| `page_view` | Non-spot pages (home, map, regions, blog, …) |
 | `spot_view` | Spot detail page load |
 | `cta_call` | Call button / tel link |
 | `cta_map` | Map button / map pin |
 | `cta_directions` | Directions / Google Maps link |
 | `cta_details` | Details / View Details link |
 
-Params include `spot_name`, `town`, `spot_id`, `page_type`, `source`.
+Also stored per event: visitor/session ids, path, title, referrer, UTM params, screen/viewport, language, timezone, user agent, and Cloudflare edge geo (`country`, `city`, `region`, `colo`).
 
-In GA4: **Admin → Events → mark the `cta_*` events as Key events**.  
-Then build an Explore report with rows = `spot_name`, values = event count.
+### Cloudflare D1 setup (one-time)
+
+```bash
+npm install
+npx wrangler login
+npm run setup:d1          # creates DB, patches database_id, applies migrations
+git add wrangler.jsonc && git commit -m "Set D1 database_id" && git push
+```
+
+Then redeploy Pages (Git push is enough if connected). Confirm **Settings → Bindings → DB** points at `michiganhappyhour`.
+
+### Verify
+
+- Browse the site and click Call / Directions on a few spots
+- Open `https://michiganhappyhour.com/api/stats`
+- Or `https://michiganhappyhour.com/api/stats?spot=The%20Little%20Fleet`
+
+Local:
+
+```bash
+npm run db:migrate:local
+npm run dev
+# elsewhere:
+curl -X POST http://127.0.0.1:8788/api/track -H 'content-type: application/json' \
+  -d '{"event_name":"cta_directions","spot_name":"The Little Fleet","town":"Traverse City"}'
+curl http://127.0.0.1:8788/api/stats
+```
+
+### GA4
+
+**Admin → Events → mark the `cta_*` events as Key events**.  
+Explore report: rows = `spot_name`, values = event count.
 
 ## Next (planned)
 
-- Supabase for venue data / submissions
-- Incremental Cursor-driven updates instead of full zip re-uploads
+- Claimed listings + venue-facing monthly reports from D1
+- Move venue content from static HTML into D1 over time
