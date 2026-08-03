@@ -103,6 +103,9 @@ Then redeploy Pages (Git push is enough if connected). Confirm **Settings → Bi
 - Browse the site and click Call / Directions on a few spots
 - Open `https://michiganhappyhour.com/api/stats`
 - Or `https://michiganhappyhour.com/api/stats?spot=The%20Little%20Fleet`
+- Listing submissions are stored in D1 (no email required yet):
+  - `https://michiganhappyhour.com/api/submit` (recent submissions)
+  - also summarized on `/api/stats` as `recent_submissions`
 
 Local:
 

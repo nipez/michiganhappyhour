@@ -75,14 +75,32 @@ export async function onRequestGet(context) {
 
     const countRow = await env.DB.prepare(`SELECT COUNT(*) AS total FROM events`).first();
 
+    let totalSubmissions = 0;
+    let recentSubmissions = [];
+    try {
+      const subCount = await env.DB.prepare(`SELECT COUNT(*) AS total FROM submissions`).first();
+      totalSubmissions = subCount?.total ?? 0;
+      const subs = await env.DB.prepare(
+        `SELECT id, created_at, status, submission_type, name, town, email, source
+         FROM submissions
+         ORDER BY id DESC
+         LIMIT 10`
+      ).all();
+      recentSubmissions = subs.results || [];
+    } catch {
+      // submissions table may not exist yet on older DBs
+    }
+
     return json({
       ok: true,
       days,
       spot: spot || null,
       total_events: countRow?.total ?? 0,
+      total_submissions: totalSubmissions,
       totals: totals.results || [],
       by_spot: bySpot.results || [],
-      recent: recent.results || []
+      recent: recent.results || [],
+      recent_submissions: recentSubmissions
     });
   } catch (err) {
     return json({ ok: false, error: "Query failed", detail: String(err && err.message ? err.message : err) }, 500);
