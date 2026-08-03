@@ -101,7 +101,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
           </div>
         </div>
         <div class="counts" id="venue-counts" style="margin-top:8px"></div>
-        <p class="meta">Edits save to D1 and show on the homepage + map within ~30s. Spot detail HTML pages stay static until republished.</p>
+        <p class="meta">Edits save to D1 and go live on the homepage, map, and spot detail pages (rendered from the database).</p>
         <div id="venues-msg" class="err hidden"></div>
       </div>
 
@@ -474,7 +474,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       showError(msgEl, result.data.error || result.data.detail || 'Save failed');
       return;
     }
-    showOk(msgEl, isNew ? 'Venue created.' : 'Venue saved. Map/home will pick this up shortly.');
+    showOk(msgEl, isNew ? 'Venue created and published.' : 'Venue saved — homepage, map, and spot page are live.');
     fillVenueForm(result.data.venue);
     loadVenues();
   }

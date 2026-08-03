@@ -60,7 +60,7 @@ npm run deploy
 ```
 index.html          # Homepage
 regions/            # City / region guides
-spots/              # Individual venue pages
+spots/              # Spot URLs (HTML rendered live from D1)
 collections/        # Curated lists
 blog/               # Articles
 map/                # Map view
@@ -148,7 +148,7 @@ npm run db:seed-venues:remote
 
 Public JSON: `https://michiganhappyhour.com/api/venues?format=list` (also `format=map`).
 
-> Spot detail HTML under `/spots/` is still static for SEO. Admin edits update the interactive homepage list and map immediately; republish spot pages separately when you want those HTML files to match.
+Spot detail URLs (`/spots/*.html`) are **rendered live from D1** by a Pages Function — admin saves update those pages immediately (plus homepage + map).
 
 ## Business / claim page
 
@@ -157,5 +157,6 @@ Public JSON: `https://michiganhappyhour.com/api/venues?format=list` (also `forma
 ## Next (planned)
 
 - Venue-facing monthly reports from D1 aggregates
-- Regenerate `/spots/*.html` from the D1 `venues` table
+- One-click “apply submission → venue” from the admin inbox
+- Email alerts on new submissions
 

@@ -119,10 +119,16 @@ function coerceVenuePayload(body, { partial = false } = {}) {
     if (!out.spot_path) {
       out.spot_path = `../spots/${slugify(out.name, out.town)}.html`;
     }
-  } else if (out.region) {
-    const meta = REGION_META[out.region];
-    if (body.region_name === undefined && meta) out.region_name = meta.name;
-    if (body.region_color === undefined && meta) out.region_color = meta.color;
+  } else {
+    if (out.region) {
+      const meta = REGION_META[out.region];
+      if (body.region_name === undefined && meta) out.region_name = meta.name;
+      if (body.region_color === undefined && meta) out.region_color = meta.color;
+    }
+    // Keep spot_path aligned when name+town are both updated and path wasn't set explicitly
+    if (out.name && out.town && body.spot_path === undefined) {
+      out.spot_path = `../spots/${slugify(out.name, out.town)}.html`;
+    }
   }
 
   const allowedStatus = ["published", "draft", "archived"];
