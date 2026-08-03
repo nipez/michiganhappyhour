@@ -93,6 +93,17 @@ export function toListVenue(row) {
   return out;
 }
 
+/** Public spot URL from DB spot_path (extensionless). */
+export function publicSpotHref(spotPath) {
+  if (!spotPath) return "#";
+  const raw = String(spotPath).trim();
+  if (raw === "#" || raw.startsWith("http")) return raw;
+  const base = raw.split("/").pop() || "";
+  const slug = base.endsWith(".html") ? base.slice(0, -5) : base;
+  if (!slug) return "#";
+  return `/spots/${slug}`;
+}
+
 /** Compact map marker shape (matches legacy `SPOTS` objects). */
 export function toMapVenue(row) {
   return {
@@ -110,7 +121,7 @@ export function toMapVenue(row) {
     dl: dealsHtml(row.deals),
     cb: collectionBadges(row.collections),
     v: row.vibe || "",
-    s: row.spot_path || "#",
+    s: publicSpotHref(row.spot_path),
     f: row.featured ? 1 : 0
   };
 }

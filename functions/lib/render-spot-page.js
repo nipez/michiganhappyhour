@@ -31,7 +31,43 @@ export function venueSlug(row) {
 }
 
 export function canonicalSpotPath(row) {
-  return `/spots/${venueSlug(row)}.html`;
+  // Cloudflare Pages serves extensionless URLs; keep public paths bare.
+  return `/spots/${venueSlug(row)}`;
+}
+
+/** Compact deal hook for titles (keep SERP titles readable). */
+function dealHook(deals) {
+  const first = (deals[0] || "").trim();
+  if (!first) return "";
+  // Prefer short price-led hooks
+  const short = first.replace(/\s+/g, " ");
+  return short.length <= 42 ? short : short.slice(0, 39).replace(/\s+\S*$/, "") + "…";
+}
+
+function buildSpotSeo(name, town, hhStart, hhEnd, deals) {
+  const hoursLine = [hhStart, hhEnd].filter(Boolean).join("–");
+  const topDeals = deals.slice(0, 3).map((d) => String(d).trim()).filter(Boolean);
+  const dealsPhrase = topDeals.length ? topDeals.join(", ") : "drink & food specials";
+  const hook = dealHook(deals);
+
+  // Prefer deal hook in title for CTR; fall back to city
+  let title;
+  if (hook && `${name} Happy Hour | ${hook}`.length <= 60) {
+    title = `${name} Happy Hour | ${hook}`;
+  } else if (`${name} Happy Hour | ${town}, MI`.length <= 60) {
+    title = `${name} Happy Hour | ${town}, MI`;
+  } else {
+    title = `${name} Happy Hour | ${town}`;
+  }
+
+  // Description: lead with deals for CTR on brand + happy-hour queries
+  let desc = `${dealsPhrase} — ${name} happy hour`;
+  if (hoursLine) desc += ` ${hoursLine}`;
+  desc += ` in ${town}, MI. Hours, specials, and directions.`;
+  desc = desc.slice(0, 160);
+
+  const ogTitle = `${name} Happy Hour | ${town}, MI`;
+  return { title, desc, ogTitle };
 }
 
 export function normalizeSpotSlug(raw) {
@@ -70,12 +106,8 @@ export function renderSpotPage(venue, related = []) {
   const region = venue.region || "";
   const regionLabel = venue.region_name || REGION_LABELS[region] || town;
   const slug = venueSlug(venue);
-  const canonical = `https://michiganhappyhour.com/spots/${slug}.html`;
-  const leadDeal = deals[0] || "Happy hour specials";
-  const hoursLine = [hhStart, hhEnd].filter(Boolean).join("-");
-  const desc = `${name} happy hour: ${hoursLine}. ${leadDeal}`.slice(0, 160);
-  const title = `${name} Happy Hour in ${town}, MI | Michigan Happy Hour Guide`;
-  const ogTitle = `${name} Happy Hour in ${town}, MI`;
+  const canonical = `https://michiganhappyhour.com/spots/${slug}`;
+  const { title, desc, ogTitle } = buildSpotSeo(name, town, hhStart, hhEnd, deals);
   const daysText = days.join(", ");
   const hoursDisplay = [hhStart, hhEnd].filter(Boolean).join(" &ndash; ");
 
@@ -136,7 +168,7 @@ export function renderSpotPage(venue, related = []) {
         "@type": "ListItem",
         position: 2,
         name: regionLabel,
-        item: `https://michiganhappyhour.com/regions/${region}.html`
+        item: `https://michiganhappyhour.com/regions/${region}`
       },
       { "@type": "ListItem", position: 3, name, item: canonical }
     ]
@@ -209,7 +241,7 @@ export function renderSpotPage(venue, related = []) {
 <body>
 <div class="hb"><div class="w"><a href="/" class="sn">🥂 Michigan Happy Hour</a><a href="/">&larr; All Spots</a></div></div>
 <div class="w">
-<div class="bc"><a href="/">Home</a> &rarr; <a href="/regions/${escapeAttr(region)}.html">${escapeHtml(regionLabel)}</a> &rarr; ${escapeHtml(name)}</div>
+<div class="bc"><a href="/">Home</a> &rarr; <a href="/regions/${escapeAttr(region)}">${escapeHtml(regionLabel)}</a> &rarr; ${escapeHtml(name)}</div>
 <div class="cd">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
 <div>

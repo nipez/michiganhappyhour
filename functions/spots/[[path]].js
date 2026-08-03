@@ -71,7 +71,8 @@ async function findVenueBySlug(db, slug) {
 
 /**
  * Dynamic spot pages from D1.
- * /spots/the-parlor-traverse-city.html (and pretty /spots/the-parlor-traverse-city)
+ * Canonical: /spots/the-parlor-traverse-city
+ * Legacy .html URLs 301 → bare (matches Cloudflare Pages HTML handling elsewhere).
  */
 export async function onRequestGet(context) {
   const { request, env, params } = context;
@@ -96,9 +97,9 @@ export async function onRequestGet(context) {
       return Response.redirect(url, 301);
     }
 
-    // Prefer canonical .html URLs for SEO consistency with sitemap
+    // Prefer extensionless URLs (Cloudflare Pages + GSC already use bare paths)
     const url = new URL(request.url);
-    if (!url.pathname.endsWith(".html")) {
+    if (url.pathname.endsWith(".html")) {
       url.pathname = canonicalSpotPath(found.venue);
       return Response.redirect(url, 301);
     }
