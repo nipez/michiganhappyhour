@@ -109,7 +109,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <div class="stats-bar">
 <div>
 <span class="sf" style="font-size:22px;font-weight:800;color:#1B2838">🗺️ Happy Hour Map</span>
-<span class="stat" style="margin-left:12px">Showing <strong id="showing-count">180</strong> of <strong>180</strong> spots</span>
+<span class="stat" style="margin-left:12px">Showing <strong id="showing-count">180</strong> of <strong id="total-count">180</strong> spots</span>
 </div>
 <div style="display:flex;gap:8px;align-items:center">
 <button class="reset-btn" id="reset-btn" onclick="resetFilters()">✕ Show All</button>
@@ -196,6 +196,7 @@ var markers = L.markerClusterGroup({
 
 var allMarkers = [];
 var activeRegion = null;
+var regionColors = {};
 
 function createIcon(color, featured) {
   var sz = featured ? 22 : 16;
@@ -208,12 +209,16 @@ function createIcon(color, featured) {
   });
 }
 
-SPOTS.forEach(function(s) {
+function clearMarkers() {
+  markers.clearLayers();
+  allMarkers = [];
+}
+
+function addSpotMarker(s) {
+  if (s.lat == null || s.lng == null) return;
   var icon = createIcon(s.c, s.f);
   var marker = L.marker([s.lat, s.lng], {icon: icon});
-  
   var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.n + ' ' + s.t + ' MI');
-  
   var popup = '<div class="p-head">' +
     '<div class="p-name">' + s.n + '</div>' +
     '<div class="p-meta">' + s.t + ', MI · <span class="p-cat">' + s.cat + '</span></div>' +
@@ -228,18 +233,62 @@ SPOTS.forEach(function(s) {
     '<a href="' + s.s + '" class="p-btn p-btn-primary" onclick=\'window.trackCta&&window.trackCta("cta_details",'+JSON.stringify({id:s.s,name:s.n,town:s.t,page_type:"map",source:"map_popup"})+')\'>View Details</a>' +
     '<a href="' + mapsUrl + '" target="_blank" rel="noopener" class="p-btn p-btn-secondary" onclick=\'window.trackCta&&window.trackCta("cta_directions",'+JSON.stringify({id:s.s,name:s.n,town:s.t,page_type:"map",source:"map_popup"})+')\'>📍 Directions</a>' +
     '</div>';
-  
   marker.bindPopup(popup, {maxWidth: 300, minWidth: 240});
-  marker.on('mouseover', function(e) { this.openPopup(); });
+  marker.on('mouseover', function() { this.openPopup(); });
   marker._region = s.r;
   allMarkers.push(marker);
   markers.addLayer(marker);
-});
+}
+
+function syncFeaturedFromSpots(spots) {
+  if (!window.FEATURED) return;
+  var byName = {};
+  spots.forEach(function(s) { byName[s.n] = s; });
+  Object.keys(FEATURED).forEach(function(rid) {
+    var f = FEATURED[rid];
+    var match = byName[f.n];
+    if (match) {
+      f.lat = match.lat;
+      f.lng = match.lng;
+      f.hs = match.hs || f.hs;
+      f.he = match.he || f.he;
+      f.s = match.s || f.s;
+      f.cat = match.cat || f.cat;
+    }
+  });
+}
+
+function renderSpots(spots) {
+  clearMarkers();
+  regionColors = {};
+  spots.forEach(function(s) {
+    regionColors[s.r] = s.c;
+    addSpotMarker(s);
+  });
+  syncFeaturedFromSpots(spots);
+  var totalEl = document.getElementById('total-count');
+  var showingEl = document.getElementById('showing-count');
+  if (totalEl) totalEl.textContent = String(spots.length);
+  if (showingEl) showingEl.textContent = String(allMarkers.length);
+}
+
+function loadSpotsFromApi() {
+  renderSpots(SPOTS);
+  fetch('/api/venues?format=map')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.ok && data.venues && data.venues.length) {
+        SPOTS = data.venues;
+        renderSpots(SPOTS);
+        if (activeRegion) filterRegion(activeRegion);
+      }
+    })
+    .catch(function() { /* keep embedded fallback */ });
+}
 
 map.addLayer(markers);
 
-var regionColors = {};
-SPOTS.forEach(function(s) { regionColors[s.r] = s.c; });
+loadSpotsFromApi();
 
 var FEATURED = {
   'traverse-city': {n:'The Little Fleet',cat:'Cocktail Bar',hs:'4:00 PM',he:'6:00 PM',dy:'Every day',v:'Laid-back outdoor food truck court and bar — a downtown TC institution',deals:['$5 draft beer','$8 margaritas','$8 negronis'],s:'../spots/the-little-fleet-traverse-city.html',lat:44.7638,lng:-85.6155},

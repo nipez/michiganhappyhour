@@ -123,9 +123,9 @@ curl http://127.0.0.1:8788/api/stats
 **Admin → Events → mark the `cta_*` events as Key events**.  
 Explore report: rows = `spot_name`, values = event count.
 
-## Admin inbox
+## Admin
 
-Review listing submissions at `/admin/` (noindex).
+Review listing submissions and **edit venues** at `/admin/` (noindex).
 
 ```bash
 printf '%s' 'your-new-password' | npx wrangler pages secret put ADMIN_PASSWORD --project-name=nwmichhappyhour
@@ -133,7 +133,22 @@ printf '%s' 'your-new-password' | npx wrangler pages secret put ADMIN_PASSWORD -
 
 Open `https://michiganhappyhour.com/admin/` and unlock with that password.
 
-**Venue reports tab:** pick a spot → 7/30/90-day Call / Map / Directions / Details / views, copyable outreach blurb, and a top-spots ranking for sales outreach.
+| Tab | Purpose |
+| --- | --- |
+| **Venues** | Search/edit/create listings in D1 (`venues`). Homepage + map load from `/api/venues`. |
+| **Venue reports** | 7/30/90-day Call / Map / Directions / Details / views + outreach blurb |
+| **Submissions** | Inbox of tip/claim forms |
+
+### Seed venues into D1 (one-time / refresh)
+
+```bash
+npm run db:migrate:remote
+npm run db:seed-venues:remote
+```
+
+Public JSON: `https://michiganhappyhour.com/api/venues?format=list` (also `format=map`).
+
+> Spot detail HTML under `/spots/` is still static for SEO. Admin edits update the interactive homepage list and map immediately; republish spot pages separately when you want those HTML files to match.
 
 ## Business / claim page
 
@@ -142,4 +157,5 @@ Open `https://michiganhappyhour.com/admin/` and unlock with that password.
 ## Next (planned)
 
 - Venue-facing monthly reports from D1 aggregates
-- Move venue content from static HTML into D1 over time
+- Regenerate `/spots/*.html` from the D1 `venues` table
+

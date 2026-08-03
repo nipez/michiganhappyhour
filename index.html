@@ -444,6 +444,7 @@ function HappyHourMap({listings,onPinClick,highlightId}){
 
 // ===== MAIN APP =====
 function App(){
+  const [listings,setListings]=useState(L);
   const [day,setDay]=useState(TODAY);
   const [reg,setReg]=useState("all");
   const [cat,setCat]=useState("All");
@@ -454,6 +455,12 @@ function App(){
   const [showMap,setShowMap]=useState(false);
   const [showTop,setShowTop]=useState(false);
   React.useEffect(()=>{const h=()=>setShowTop(window.scrollY>800);window.addEventListener("scroll",h);return()=>window.removeEventListener("scroll",h);},[]);
+  React.useEffect(()=>{
+    fetch("/api/venues?format=list")
+      .then(r=>r.json())
+      .then(d=>{ if(d&&d.ok&&Array.isArray(d.venues)&&d.venues.length) setListings(d.venues); })
+      .catch(()=>{});
+  },[]);
   const [favs,setFavs]=useState(()=>{try{return JSON.parse(localStorage.getItem('hh-favs'))||[];}catch{return[];}});
   const [showFavs,setShowFavs]=useState(false);
   const [showNow,setShowNow]=useState(false);
@@ -469,19 +476,19 @@ function App(){
   const requestLocation=()=>{if(userLoc){setSort("near");return;}setLocLoading(true);navigator.geolocation.getCurrentPosition((pos)=>{setUserLoc({lat:pos.coords.latitude,lng:pos.coords.longitude});setSort("near");setLocLoading(false);},(err)=>{alert("Location access denied. Enable location to use Near Me sorting.");setLocLoading(false);},{enableHighAccuracy:false,timeout:8000});};
 
   const filtered=useMemo(()=>{
-    let r=L.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):l.hh.d.includes(day))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||l.deals.some(d=>d.toLowerCase().includes(q.toLowerCase()))));
+    let r=listings.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):l.hh.d.includes(day))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||(l.deals||[]).some(d=>d.toLowerCase().includes(q.toLowerCase()))));
     if(sort==="near"&&userLoc)r.sort((a,b)=>haversine(userLoc.lat,userLoc.lng,a.lat,a.lng)-haversine(userLoc.lat,userLoc.lng,b.lat,b.lng));
     else if(sort==="name")r.sort((a,b)=>a.name.localeCompare(b.name));
     else if(sort==="rating")r.sort((a,b)=>b.r-a.r);
     else if(sort==="time")r.sort((a,b)=>a.hh.s.localeCompare(b.hh.s));
     else r.sort((a,b)=>{const ri=REGIONS.findIndex(x=>x.id===a.reg)-REGIONS.findIndex(x=>x.id===b.reg);return ri!==0?ri:a.name.localeCompare(b.name);});
     return r;
-  },[day,reg,cat,q,sort,showFavs,favs,showNow,colFilter,userLoc]);
+  },[listings,day,reg,cat,q,sort,showFavs,favs,showNow,colFilter,userLoc]);
 
   const rc=useMemo(()=>{
-    const c={};L.forEach(l=>{if(l.hh.d.includes(day)){c[l.reg]=(c[l.reg]||0)+1;}});
+    const c={};listings.forEach(l=>{if(l.hh.d.includes(day)){c[l.reg]=(c[l.reg]||0)+1;}});
     c.all=Object.values(c).reduce((a,b)=>a+b,0);return c;
-  },[day]);
+  },[listings,day]);
 
   const grouped=useMemo(()=>{
     if(reg!=="all"||sort!=="region")return null;
@@ -532,7 +539,7 @@ function App(){
               <a href="/blog/" style={{padding:"14px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.28)",background:"rgba(255,255,255,0.1)",color:"#fff",fontWeight:700,fontSize:16,textDecoration:"none"}}>City guides</a>
               <a href="/map/" style={{padding:"14px 22px",borderRadius:12,border:"1.5px solid rgba(255,255,255,0.18)",background:"transparent",color:"#D5E0EA",fontWeight:700,fontSize:16,textDecoration:"none"}}>Open map</a>
             </div>
-            <div style={{fontSize:14,color:"#8AA3B5",fontWeight:600}}>{REGIONS.length-1} regions · {L.length} listings · Updated weekly</div>
+            <div style={{fontSize:14,color:"#8AA3B5",fontWeight:600}}>{REGIONS.length-1} regions · {listings.length} listings · Updated weekly</div>
           </div>
         </div>
       </header>
@@ -628,7 +635,7 @@ function App(){
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,500px),1fr))",gap:14,marginBottom:20}}>
           {/* Featured Card - dynamic per region */}
           {(()=>{
-            const featListings=L.filter(x=>x.feat);
+            const featListings=listings.filter(x=>x.feat);
             const fl=reg==="all"?featListings.find(x=>x.id===13):featListings.find(x=>x.reg===reg);
             if(!fl||(!fl.hh.d.includes(day)&&!showFavs))return null;
             const isT=day===TODAY;

@@ -53,7 +53,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
 <body>
 <div class="wrap">
   <h1>Michigan Happy Hour admin</h1>
-  <p class="sub">Submissions inbox + venue KPI reports for outreach. Noindex.</p>
+  <p class="sub">Edit venues, review submissions, and pull KPI reports for outreach. Noindex.</p>
 
   <div id="login" class="card login">
     <label for="password">Admin password</label>
@@ -68,13 +68,116 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
   <div id="app" class="hidden">
     <div class="row" style="justify-content:space-between;margin-bottom:8px">
       <div class="tabs">
-        <button class="tab active" data-tab="reports" type="button">Venue reports</button>
+        <button class="tab active" data-tab="venues" type="button">Venues</button>
+        <button class="tab" data-tab="reports" type="button">Venue reports</button>
         <button class="tab" data-tab="submissions" type="button">Submissions</button>
       </div>
       <button class="ghost" id="logout-btn" type="button">Lock</button>
     </div>
 
-    <section id="tab-reports">
+    <section id="tab-venues">
+      <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:flex-end">
+          <div style="flex:1;min-width:200px">
+            <label class="field-label" for="venue-q">Search</label>
+            <input id="venue-q" type="text" placeholder="Name, town, or address">
+          </div>
+          <div style="min-width:160px">
+            <label class="field-label" for="venue-region">Region</label>
+            <select id="venue-region"><option value="">All regions</option></select>
+          </div>
+          <div style="min-width:140px">
+            <label class="field-label" for="venue-status">Status</label>
+            <select id="venue-status">
+              <option value="">All</option>
+              <option value="published" selected>published</option>
+              <option value="draft">draft</option>
+              <option value="archived">archived</option>
+            </select>
+          </div>
+          <div class="row">
+            <button class="ghost" id="venue-refresh-btn" type="button">Refresh</button>
+            <button class="primary" id="venue-new-btn" type="button">New venue</button>
+          </div>
+        </div>
+        <div class="counts" id="venue-counts" style="margin-top:8px"></div>
+        <p class="meta">Edits save to D1 and show on the homepage + map within ~30s. Spot detail HTML pages stay static until republished.</p>
+        <div id="venues-msg" class="err hidden"></div>
+      </div>
+
+      <div class="two">
+        <div class="card" style="overflow:auto;max-height:70vh">
+          <table>
+            <thead><tr><th>Name</th><th>Town</th><th>Hours</th><th>Status</th></tr></thead>
+            <tbody id="venues-table"></tbody>
+          </table>
+        </div>
+        <div class="card" id="venue-editor">
+          <h2 id="venue-editor-title">Edit venue</h2>
+          <input type="hidden" id="v-id">
+          <label class="field-label" for="v-name">Name</label>
+          <input id="v-name" type="text">
+          <label class="field-label" for="v-town">Town</label>
+          <input id="v-town" type="text">
+          <label class="field-label" for="v-address">Address</label>
+          <input id="v-address" type="text">
+          <label class="field-label" for="v-phone">Phone</label>
+          <input id="v-phone" type="text">
+          <label class="field-label" for="v-category">Category</label>
+          <input id="v-category" type="text" placeholder="Brewery, Cocktail Bar…">
+          <label class="field-label" for="v-region">Region</label>
+          <select id="v-region"></select>
+          <div class="row">
+            <div style="flex:1">
+              <label class="field-label" for="v-hh-start">HH start</label>
+              <input id="v-hh-start" type="text" placeholder="3:00 PM">
+            </div>
+            <div style="flex:1">
+              <label class="field-label" for="v-hh-end">HH end</label>
+              <input id="v-hh-end" type="text" placeholder="6:00 PM">
+            </div>
+          </div>
+          <label class="field-label" for="v-hh-days">Days (comma-separated)</label>
+          <input id="v-hh-days" type="text" placeholder="Monday, Tuesday, Wednesday…">
+          <label class="field-label" for="v-deals">Deals (one per line)</label>
+          <textarea id="v-deals" style="min-height:90px;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px"></textarea>
+          <label class="field-label" for="v-vibe">Vibe</label>
+          <textarea id="v-vibe" style="min-height:70px;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px"></textarea>
+          <div class="row">
+            <div style="flex:1">
+              <label class="field-label" for="v-lat">Latitude</label>
+              <input id="v-lat" type="text" placeholder="44.7634">
+            </div>
+            <div style="flex:1">
+              <label class="field-label" for="v-lng">Longitude</label>
+              <input id="v-lng" type="text" placeholder="-85.6197">
+            </div>
+          </div>
+          <label class="field-label" for="v-collections">Collections (comma-separated)</label>
+          <input id="v-collections" type="text" placeholder="patio, late">
+          <label class="field-label" for="v-spot-path">Spot path</label>
+          <input id="v-spot-path" type="text" placeholder="../spots/name-town.html">
+          <label class="field-label" for="v-status">Status</label>
+          <select id="v-status">
+            <option value="published">published</option>
+            <option value="draft">draft</option>
+            <option value="archived">archived</option>
+          </select>
+          <label class="row" style="gap:8px;margin:8px 0 14px;font-weight:600">
+            <input id="v-featured" type="checkbox" style="width:auto;margin:0"> Featured
+          </label>
+          <label class="field-label" for="v-notes">Admin notes</label>
+          <textarea id="v-notes" style="min-height:60px;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px"></textarea>
+          <div class="row">
+            <button class="primary" id="venue-save-btn" type="button">Save venue</button>
+            <button class="ghost" id="venue-clear-btn" type="button">Clear form</button>
+          </div>
+          <div id="venue-save-msg" class="ok hidden"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-reports" class="hidden">
       <div class="card">
         <div class="two">
           <div>
@@ -167,12 +270,15 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
   var list = document.getElementById('list');
   var counts = document.getElementById('counts');
   var pwInput = document.getElementById('password');
-  var activeTab = 'reports';
+  var activeTab = 'venues';
+  var regionsMeta = {};
+  var venuesCache = [];
 
   function pw(){ return sessionStorage.getItem(KEY) || ''; }
   function setPw(v){ sessionStorage.setItem(KEY, v); }
   function clearPw(){ sessionStorage.removeItem(KEY); }
-  function showError(el, t){ el.textContent = t; el.classList.remove('hidden'); }
+  function showError(el, t){ el.textContent = t; el.classList.remove('hidden'); el.classList.remove('ok'); el.classList.add('err'); }
+  function showOk(el, t){ el.textContent = t; el.classList.remove('hidden'); el.classList.remove('err'); el.classList.add('ok'); }
   function hideError(el){ el.classList.add('hidden'); el.textContent = ''; }
   function esc(s){
     return String(s == null ? '' : s)
@@ -210,10 +316,167 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     document.querySelectorAll('.tab').forEach(function(btn){
       btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
     });
+    document.getElementById('tab-venues').classList.toggle('hidden', tab !== 'venues');
     document.getElementById('tab-reports').classList.toggle('hidden', tab !== 'reports');
     document.getElementById('tab-submissions').classList.toggle('hidden', tab !== 'submissions');
+    if (tab === 'venues') loadVenues();
     if (tab === 'submissions') loadSubmissions();
     if (tab === 'reports') loadReports();
+  }
+
+  function fillRegionSelects(regions){
+    regionsMeta = regions || {};
+    var opts = Object.keys(regionsMeta).map(function(id){
+      return '<option value="'+esc(id)+'">'+esc(regionsMeta[id].name || id)+'</option>';
+    }).join('');
+    var filter = document.getElementById('venue-region');
+    var current = filter.value;
+    filter.innerHTML = '<option value="">All regions</option>' + opts;
+    if (current) filter.value = current;
+    var editor = document.getElementById('v-region');
+    var cur2 = editor.value;
+    editor.innerHTML = opts || '<option value="">Select region</option>';
+    if (cur2) editor.value = cur2;
+  }
+
+  function clearVenueForm(){
+    document.getElementById('venue-editor-title').textContent = 'New venue';
+    ['v-id','v-name','v-town','v-address','v-phone','v-category','v-hh-start','v-hh-end','v-hh-days','v-deals','v-vibe','v-lat','v-lng','v-collections','v-spot-path','v-notes'].forEach(function(id){
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('v-status').value = 'published';
+    document.getElementById('v-featured').checked = false;
+    hideError(document.getElementById('venue-save-msg'));
+  }
+
+  function fillVenueForm(v){
+    document.getElementById('venue-editor-title').textContent = 'Edit · ' + (v.name || 'venue');
+    document.getElementById('v-id').value = v.id || '';
+    document.getElementById('v-name').value = v.name || '';
+    document.getElementById('v-town').value = v.town || '';
+    document.getElementById('v-address').value = v.address || '';
+    document.getElementById('v-phone').value = v.phone || '';
+    document.getElementById('v-category').value = v.category || '';
+    if (v.region) document.getElementById('v-region').value = v.region;
+    document.getElementById('v-hh-start').value = v.hh_start || '';
+    document.getElementById('v-hh-end').value = v.hh_end || '';
+    document.getElementById('v-hh-days').value = (v.hh_days || []).join(', ');
+    document.getElementById('v-deals').value = (v.deals || []).join('\n');
+    document.getElementById('v-vibe').value = v.vibe || '';
+    document.getElementById('v-lat').value = v.lat == null ? '' : v.lat;
+    document.getElementById('v-lng').value = v.lng == null ? '' : v.lng;
+    document.getElementById('v-collections').value = (v.collections || []).join(', ');
+    document.getElementById('v-spot-path').value = v.spot_path || '';
+    document.getElementById('v-status').value = v.status || 'published';
+    document.getElementById('v-featured').checked = !!v.featured;
+    document.getElementById('v-notes').value = v.admin_notes || '';
+    hideError(document.getElementById('venue-save-msg'));
+  }
+
+  function readVenueForm(){
+    var idRaw = document.getElementById('v-id').value.trim();
+    var latRaw = document.getElementById('v-lat').value.trim();
+    var lngRaw = document.getElementById('v-lng').value.trim();
+    return {
+      id: idRaw ? Number(idRaw) : undefined,
+      name: document.getElementById('v-name').value.trim(),
+      town: document.getElementById('v-town').value.trim(),
+      address: document.getElementById('v-address').value.trim(),
+      phone: document.getElementById('v-phone').value.trim(),
+      category: document.getElementById('v-category').value.trim(),
+      region: document.getElementById('v-region').value,
+      hh_start: document.getElementById('v-hh-start').value.trim(),
+      hh_end: document.getElementById('v-hh-end').value.trim(),
+      hh_days: document.getElementById('v-hh-days').value,
+      deals: document.getElementById('v-deals').value,
+      vibe: document.getElementById('v-vibe').value.trim(),
+      lat: latRaw === '' ? null : Number(latRaw),
+      lng: lngRaw === '' ? null : Number(lngRaw),
+      collections: document.getElementById('v-collections').value,
+      spot_path: document.getElementById('v-spot-path').value.trim(),
+      status: document.getElementById('v-status').value,
+      featured: document.getElementById('v-featured').checked,
+      admin_notes: document.getElementById('v-notes').value.trim()
+    };
+  }
+
+  function renderVenueCounts(items){
+    var el = document.getElementById('venue-counts');
+    if (!items || !items.length) { el.innerHTML = '<span class="chip">0 venues</span>'; return; }
+    el.innerHTML = items.map(function(c){
+      return '<span class="chip">' + esc(c.status) + ': ' + esc(c.count) + '</span>';
+    }).join('') + '<span class="chip">' + venuesCache.length + ' shown</span>';
+  }
+
+  function renderVenuesTable(rows){
+    var body = document.getElementById('venues-table');
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="4">No venues match. Seed D1 or clear filters.</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map(function(v){
+      var hours = [v.hh_start, v.hh_end].filter(Boolean).join(' – ') || '—';
+      return '<tr class="clickable" data-id="'+v.id+'">'
+        + '<td><strong>'+esc(v.name)+'</strong>'+(v.featured?' · <span class="status">feat</span>':'')+'</td>'
+        + '<td>'+esc(v.town)+'</td>'
+        + '<td>'+esc(hours)+'</td>'
+        + '<td>'+esc(v.status)+'</td>'
+        + '</tr>';
+    }).join('');
+    body.querySelectorAll('tr.clickable').forEach(function(tr){
+      tr.addEventListener('click', function(){
+        var id = Number(tr.getAttribute('data-id'));
+        var v = venuesCache.find(function(x){ return x.id === id; });
+        if (v) fillVenueForm(v);
+      });
+    });
+  }
+
+  async function loadVenues(){
+    var msgEl = document.getElementById('venues-msg');
+    hideError(msgEl);
+    var q = document.getElementById('venue-q').value.trim();
+    var region = document.getElementById('venue-region').value;
+    var status = document.getElementById('venue-status').value;
+    var params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (region) params.set('region', region);
+    if (status) params.set('status', status);
+    var result = await api('/api/admin/venues?' + params.toString());
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(msgEl, result.data.error || result.data.detail || 'Failed to load venues');
+      return;
+    }
+    login.classList.add('hidden');
+    app.classList.remove('hidden');
+    fillRegionSelects(result.data.regions || {});
+    venuesCache = result.data.venues || [];
+    renderVenueCounts(result.data.counts || []);
+    renderVenuesTable(venuesCache);
+  }
+
+  async function saveVenue(){
+    var msgEl = document.getElementById('venue-save-msg');
+    hideError(msgEl);
+    var payload = readVenueForm();
+    if (!payload.name || !payload.town || !payload.region) {
+      showError(msgEl, 'Name, town, and region are required.');
+      return;
+    }
+    var isNew = !payload.id;
+    var result = await api('/api/admin/venues', {
+      method: isNew ? 'POST' : 'PUT',
+      body: JSON.stringify(payload)
+    });
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(msgEl, result.data.error || result.data.detail || 'Save failed');
+      return;
+    }
+    showOk(msgEl, isNew ? 'Venue created.' : 'Venue saved. Map/home will pick this up shortly.');
+    fillVenueForm(result.data.venue);
+    loadVenues();
   }
 
   function renderCounts(items){
@@ -408,15 +671,15 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
 
   async function unlock(){
     hideError(msg);
-    var result = await api('/api/admin/reports?days=30');
+    var result = await api('/api/admin/venues?status=published&limit=1');
     if (handleAuthFailure(result, msg)) return;
     if (!result.res.ok || !result.data.ok) {
-      showError(msg, result.data.error || 'Failed to unlock');
+      showError(msg, result.data.error || result.data.detail || 'Failed to unlock');
       return;
     }
     login.classList.add('hidden');
     app.classList.remove('hidden');
-    setTab('reports');
+    setTab('venues');
   }
 
   document.querySelectorAll('.tab').forEach(function(btn){
@@ -439,6 +702,17 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
   document.getElementById('refresh-reports-btn').addEventListener('click', loadReports);
   document.getElementById('load-report-btn').addEventListener('click', loadSpotReport);
   document.getElementById('days-select').addEventListener('change', loadReports);
+  document.getElementById('venue-refresh-btn').addEventListener('click', loadVenues);
+  document.getElementById('venue-new-btn').addEventListener('click', clearVenueForm);
+  document.getElementById('venue-clear-btn').addEventListener('click', clearVenueForm);
+  document.getElementById('venue-save-btn').addEventListener('click', saveVenue);
+  document.getElementById('venue-region').addEventListener('change', loadVenues);
+  document.getElementById('venue-status').addEventListener('change', loadVenues);
+  var venueQTimer = null;
+  document.getElementById('venue-q').addEventListener('input', function(){
+    clearTimeout(venueQTimer);
+    venueQTimer = setTimeout(loadVenues, 250);
+  });
   document.getElementById('copy-summary-btn').addEventListener('click', async function(){
     var text = document.getElementById('summary-text').value;
     if (!text) return;
