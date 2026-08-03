@@ -133,6 +133,8 @@ printf '%s' 'your-new-password' | npx wrangler pages secret put ADMIN_PASSWORD -
 
 Open `https://michiganhappyhour.com/admin/` and unlock with that password.
 
+**Venue reports tab:** pick a spot → 7/30/90-day Call / Map / Directions / Details / views, copyable outreach blurb, and a top-spots ranking for sales outreach.
+
 ## Business / claim page
 
 `/for-business/` — claim & featured packages; form saves to D1 `submissions`.

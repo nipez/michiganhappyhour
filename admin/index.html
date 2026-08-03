@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
-<title>Submissions Inbox | Michigan Happy Hour Admin</title>
+<title>Admin | Michigan Happy Hour</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet">
@@ -12,18 +12,20 @@
 :root{--ink:#1B2838;--muted:#6B8A9E;--line:#D8E2EA;--bg:#F5F7FA;--card:#fff;--accent:#E8614D;--blue:#2D6A8F}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 16px 64px}
 h1{font-family:Fraunces,Georgia,serif;font-size:clamp(28px,4vw,36px);margin-bottom:6px}
+h2{font-family:Fraunces,Georgia,serif;font-size:22px;margin:0 0 10px}
 .sub{color:var(--muted);margin-bottom:20px;line-height:1.5}
 .card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
-.login label{display:block;font-weight:600;margin-bottom:6px}
-.login input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:12px}
+.login label,.field-label{display:block;font-weight:600;margin-bottom:6px;font-size:14px}
+.login input,select,input[type=text],textarea{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:12px;font-family:inherit;background:#fff}
 button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer}
 .primary{background:linear-gradient(135deg,var(--blue),var(--accent));color:#fff}
 .ghost{background:#F5F7FA;border:1.5px solid var(--line);color:#4A6274}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .counts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
 .chip{background:#EFF6FF;color:var(--blue);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.chip.hot{background:#FFF0ED;color:var(--accent)}
 .meta{font-size:13px;color:var(--muted);margin:4px 0 10px}
 .field{font-size:14px;line-height:1.5;margin:4px 0}
 .field b{color:#4A6274}
@@ -31,18 +33,33 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
 .ok{color:#16A34A;font-weight:600;margin:8px 0}
 .hidden{display:none}
 .status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#FFF0ED;color:var(--accent)}
+.tabs{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}
+.tab{padding:10px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;cursor:pointer;color:#4A6274}
+.tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:12px 0}
+.metric{background:#F5F7FA;border:1.5px solid var(--line);border-radius:12px;padding:12px}
+.metric .n{font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800}
+.metric .l{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.summary{width:100%;min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.45}
+.two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+@media(max-width:800px){.two{grid-template-columns:1fr}}
+.clickable{cursor:pointer}
+.clickable:hover{background:#f8fafc}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Submissions inbox</h1>
-  <p class="sub">Password-protected review queue for listing submissions stored in D1. This page is noindex.</p>
+  <h1>Michigan Happy Hour admin</h1>
+  <p class="sub">Submissions inbox + venue KPI reports for outreach. Noindex.</p>
 
   <div id="login" class="card login">
     <label for="password">Admin password</label>
     <input id="password" type="password" placeholder="ADMIN_PASSWORD" autocomplete="current-password">
     <div class="row">
-      <button class="primary" id="login-btn" type="button">Unlock inbox</button>
+      <button class="primary" id="login-btn" type="button">Unlock</button>
       <button class="ghost" id="clear-btn" type="button">Clear saved password</button>
     </div>
     <div id="login-msg" class="err hidden"></div>
@@ -50,20 +67,94 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
 
   <div id="app" class="hidden">
     <div class="row" style="justify-content:space-between;margin-bottom:8px">
-      <div class="counts" id="counts"></div>
-      <div class="row">
-        <select id="status-filter" class="ghost" style="padding:10px 12px">
-          <option value="">All statuses</option>
-          <option value="new">new</option>
-          <option value="reviewed">reviewed</option>
-          <option value="published">published</option>
-          <option value="rejected">rejected</option>
-        </select>
-        <button class="ghost" id="refresh-btn" type="button">Refresh</button>
-        <button class="ghost" id="logout-btn" type="button">Lock</button>
+      <div class="tabs">
+        <button class="tab active" data-tab="reports" type="button">Venue reports</button>
+        <button class="tab" data-tab="submissions" type="button">Submissions</button>
       </div>
+      <button class="ghost" id="logout-btn" type="button">Lock</button>
     </div>
-    <div id="list"></div>
+
+    <section id="tab-reports">
+      <div class="card">
+        <div class="two">
+          <div>
+            <label class="field-label" for="spot-select">Venue</label>
+            <select id="spot-select"><option value="">Select a venue with traffic…</option></select>
+            <label class="field-label" for="town-filter">Filter top list by town (optional)</label>
+            <input id="town-filter" type="text" placeholder="e.g. Traverse City">
+          </div>
+          <div>
+            <label class="field-label" for="days-select">Period</label>
+            <select id="days-select">
+              <option value="7">Last 7 days</option>
+              <option value="30" selected>Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
+            <div class="row" style="margin-top:8px">
+              <button class="primary" id="load-report-btn" type="button">Load report</button>
+              <button class="ghost" id="refresh-reports-btn" type="button">Refresh lists</button>
+            </div>
+          </div>
+        </div>
+        <div id="reports-msg" class="err hidden"></div>
+      </div>
+
+      <div id="spot-report" class="card hidden">
+        <div class="row" style="justify-content:space-between;align-items:flex-start">
+          <div>
+            <h2 id="report-title">Venue report</h2>
+            <div class="meta" id="report-meta"></div>
+          </div>
+          <button class="primary" id="copy-summary-btn" type="button">Copy summary</button>
+        </div>
+        <div class="metrics" id="report-metrics"></div>
+        <label class="field-label" for="summary-text">Outreach blurb</label>
+        <textarea id="summary-text" class="summary" readonly></textarea>
+        <div id="copy-ok" class="ok hidden">Copied to clipboard.</div>
+        <h2 style="margin-top:18px">Recent events</h2>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>When</th><th>Event</th><th>Source</th><th>Geo</th></tr></thead>
+            <tbody id="recent-events"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <h2>Top spots for outreach</h2>
+          <span class="chip hot" id="top-label">by CTA taps</span>
+        </div>
+        <p class="meta">Ranked by Call + Map + Directions + Details. Click a row to open that venue’s report.</p>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Spot</th><th>Town</th><th>Views</th><th>Call</th><th>Map</th><th>Directions</th><th>Details</th><th>CTAs</th>
+              </tr>
+            </thead>
+            <tbody id="top-spots"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-submissions" class="hidden">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <div class="counts" id="counts"></div>
+        <div class="row">
+          <select id="status-filter" class="ghost" style="padding:10px 12px;width:auto;margin:0">
+            <option value="">All statuses</option>
+            <option value="new">new</option>
+            <option value="reviewed">reviewed</option>
+            <option value="published">published</option>
+            <option value="rejected">rejected</option>
+          </select>
+          <button class="ghost" id="refresh-btn" type="button">Refresh</button>
+        </div>
+      </div>
+      <div id="list"></div>
+    </section>
   </div>
 </div>
 <script>
@@ -72,16 +163,21 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
   var login = document.getElementById('login');
   var app = document.getElementById('app');
   var msg = document.getElementById('login-msg');
+  var reportsMsg = document.getElementById('reports-msg');
   var list = document.getElementById('list');
   var counts = document.getElementById('counts');
   var pwInput = document.getElementById('password');
+  var activeTab = 'reports';
 
   function pw(){ return sessionStorage.getItem(KEY) || ''; }
   function setPw(v){ sessionStorage.setItem(KEY, v); }
   function clearPw(){ sessionStorage.removeItem(KEY); }
-
-  function showError(t){ msg.textContent = t; msg.classList.remove('hidden'); }
-  function hideError(){ msg.classList.add('hidden'); msg.textContent = ''; }
+  function showError(el, t){ el.textContent = t; el.classList.remove('hidden'); }
+  function hideError(el){ el.classList.add('hidden'); el.textContent = ''; }
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
 
   async function api(path, opts){
     opts = opts || {};
@@ -94,16 +190,37 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
     return { res: res, data: data };
   }
 
+  function handleAuthFailure(result, errorEl){
+    if (result.res.status === 401) {
+      clearPw();
+      app.classList.add('hidden');
+      login.classList.remove('hidden');
+      showError(msg, 'Wrong password.');
+      return true;
+    }
+    if (result.res.status === 503) {
+      showError(errorEl || msg, 'Set ADMIN_PASSWORD in Cloudflare Pages secrets, then redeploy.');
+      return true;
+    }
+    return false;
+  }
+
+  function setTab(tab){
+    activeTab = tab;
+    document.querySelectorAll('.tab').forEach(function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+    });
+    document.getElementById('tab-reports').classList.toggle('hidden', tab !== 'reports');
+    document.getElementById('tab-submissions').classList.toggle('hidden', tab !== 'submissions');
+    if (tab === 'submissions') loadSubmissions();
+    if (tab === 'reports') loadReports();
+  }
+
   function renderCounts(items){
     if (!items || !items.length) { counts.innerHTML = '<span class="chip">0 total</span>'; return; }
     counts.innerHTML = items.map(function(c){
-      return '<span class="chip">' + c.status + ': ' + c.count + '</span>';
+      return '<span class="chip">' + esc(c.status) + ': ' + esc(c.count) + '</span>';
     }).join('');
-  }
-
-  function esc(s){
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   function renderList(rows){
@@ -120,13 +237,9 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
         + '</div>'
         + '<div class="field"><b>Type:</b> '+esc(s.submission_type)+'</div>'
         + '<div class="field"><b>Category:</b> '+esc(s.category||'—')+'</div>'
-        + '<div class="field"><b>Address:</b> '+esc(s.address||'—')+'</div>'
         + '<div class="field"><b>Hours:</b> '+esc(s.happy_hour_schedule||'—')+'</div>'
         + '<div class="field"><b>Deals:</b> '+esc(s.deals||'—')+'</div>'
-        + '<div class="field"><b>Vibe:</b> '+esc(s.vibe||'—')+'</div>'
-        + '<div class="field"><b>Contact:</b> '+esc(s.contact_name||'—')+' · '+esc(s.role||'')+'</div>'
         + '<div class="field"><b>Email:</b> '+esc(s.email||'—')+' · <b>Phone:</b> '+esc(s.phone||'—')+'</div>'
-        + '<div class="field"><b>Website:</b> '+esc(s.website||'—')+' · <b>Patio:</b> '+esc(s.has_patio||'—')+'</div>'
         + '<div class="field"><b>Notes:</b> '+esc(s.notes||'—')+'</div>'
         + '<div class="row" style="margin-top:12px">'
         + ['new','reviewed','published','rejected'].map(function(st){
@@ -143,33 +256,24 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
           method: 'POST',
           body: JSON.stringify({ id: id, status: status })
         });
+        if (handleAuthFailure(result, msg)) return;
         if (!result.res.ok || !result.data.ok) {
           alert(result.data.error || 'Update failed');
           return;
         }
-        load();
+        loadSubmissions();
       });
     });
   }
 
-  async function load(){
-    hideError();
+  async function loadSubmissions(){
+    hideError(msg);
     var status = document.getElementById('status-filter').value;
     var q = status ? ('?status=' + encodeURIComponent(status)) : '';
     var result = await api('/api/admin/submissions' + q);
-    if (result.res.status === 401) {
-      clearPw();
-      app.classList.add('hidden');
-      login.classList.remove('hidden');
-      showError('Wrong password.');
-      return;
-    }
-    if (result.res.status === 503) {
-      showError('Set ADMIN_PASSWORD in Cloudflare Pages → Settings → Variables and secrets, then redeploy.');
-      return;
-    }
+    if (handleAuthFailure(result, msg)) return;
     if (!result.res.ok || !result.data.ok) {
-      showError(result.data.error || 'Failed to load');
+      showError(msg, result.data.error || 'Failed to load submissions');
       return;
     }
     login.classList.add('hidden');
@@ -178,23 +282,178 @@ button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;fon
     renderList(result.data.submissions || []);
   }
 
+  function fillSpotSelect(spots){
+    var sel = document.getElementById('spot-select');
+    var current = sel.value;
+    sel.innerHTML = '<option value="">Select a venue with traffic…</option>' + (spots || []).map(function(s){
+      var key = s.spot_name + '||' + (s.town || '');
+      var label = s.spot_name + (s.town ? ' · ' + s.town : '') + ' (' + s.events + ')';
+      return '<option value="'+esc(key)+'">'+esc(label)+'</option>';
+    }).join('');
+    if (current) sel.value = current;
+  }
+
+  function renderTop(rows){
+    var body = document.getElementById('top-spots');
+    if (!rows || !rows.length) {
+      body.innerHTML = '<tr><td colspan="9">No CTA events in this period yet. Browse the site to generate traffic.</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map(function(r, i){
+      return '<tr class="clickable" data-spot="'+esc(r.spot_name)+'" data-town="'+esc(r.town||'')+'">'
+        + '<td>'+(i+1)+'</td>'
+        + '<td><strong>'+esc(r.spot_name)+'</strong></td>'
+        + '<td>'+esc(r.town||'—')+'</td>'
+        + '<td>'+esc(r.spot_view)+'</td>'
+        + '<td>'+esc(r.cta_call)+'</td>'
+        + '<td>'+esc(r.cta_map)+'</td>'
+        + '<td>'+esc(r.cta_directions)+'</td>'
+        + '<td>'+esc(r.cta_details)+'</td>'
+        + '<td><strong>'+esc(r.total_cta)+'</strong></td>'
+        + '</tr>';
+    }).join('');
+
+    body.querySelectorAll('tr.clickable').forEach(function(tr){
+      tr.addEventListener('click', function(){
+        var spot = tr.getAttribute('data-spot');
+        var town = tr.getAttribute('data-town') || '';
+        var key = spot + '||' + town;
+        var sel = document.getElementById('spot-select');
+        if (![].some.call(sel.options, function(o){ return o.value === key; })) {
+          var opt = document.createElement('option');
+          opt.value = key;
+          opt.textContent = spot + (town ? ' · ' + town : '');
+          sel.appendChild(opt);
+        }
+        sel.value = key;
+        loadSpotReport();
+      });
+    });
+  }
+
+  function renderSpotReport(report){
+    var box = document.getElementById('spot-report');
+    if (!report) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    document.getElementById('report-title').textContent = report.spot_name + (report.town ? ' · ' + report.town : '');
+    document.getElementById('report-meta').textContent = 'Last ' + report.days + ' days · total events ' + report.counts.total_events;
+    var c = report.counts;
+    document.getElementById('report-metrics').innerHTML = [
+      ['Views', c.spot_view],
+      ['Call', c.cta_call],
+      ['Map', c.cta_map],
+      ['Directions', c.cta_directions],
+      ['Details', c.cta_details],
+      ['All CTAs', c.total_cta]
+    ].map(function(pair){
+      return '<div class="metric"><div class="n">'+esc(pair[1])+'</div><div class="l">'+esc(pair[0])+'</div></div>';
+    }).join('');
+    document.getElementById('summary-text').value = report.summary_text || '';
+    document.getElementById('copy-ok').classList.add('hidden');
+
+    var recent = report.recent || [];
+    document.getElementById('recent-events').innerHTML = recent.length ? recent.map(function(e){
+      return '<tr>'
+        + '<td>'+esc(e.created_at)+'</td>'
+        + '<td>'+esc(e.event_name)+'</td>'
+        + '<td>'+esc(e.source||e.page_type||'—')+'</td>'
+        + '<td>'+esc([e.city,e.country].filter(Boolean).join(', ') || '—')+'</td>'
+        + '</tr>';
+    }).join('') : '<tr><td colspan="4">No recent events for this spot.</td></tr>';
+
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function loadReports(){
+    hideError(reportsMsg);
+    var days = document.getElementById('days-select').value || '30';
+    var town = document.getElementById('town-filter').value.trim();
+    var q = '?days=' + encodeURIComponent(days) + (town ? '&town=' + encodeURIComponent(town) : '');
+    var result = await api('/api/admin/reports' + q);
+    if (handleAuthFailure(result, reportsMsg)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(reportsMsg, result.data.error || result.data.detail || 'Failed to load reports');
+      return;
+    }
+    login.classList.add('hidden');
+    app.classList.remove('hidden');
+    fillSpotSelect(result.data.spots || []);
+    renderTop(result.data.top_spots || []);
+    document.getElementById('top-label').textContent = town ? ('by CTA taps · ' + town) : 'by CTA taps';
+  }
+
+  async function loadSpotReport(){
+    hideError(reportsMsg);
+    var raw = document.getElementById('spot-select').value;
+    if (!raw) { showError(reportsMsg, 'Pick a venue first.'); return; }
+    var parts = raw.split('||');
+    var spot = parts[0];
+    var town = parts[1] || '';
+    var days = document.getElementById('days-select').value || '30';
+    var q = '?days=' + encodeURIComponent(days)
+      + '&spot=' + encodeURIComponent(spot)
+      + (town ? '&town=' + encodeURIComponent(town) : '');
+    var result = await api('/api/admin/reports' + q);
+    if (handleAuthFailure(result, reportsMsg)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(reportsMsg, result.data.error || 'Failed to load spot report');
+      return;
+    }
+    // Keep top list in sync with period/town filters
+    fillSpotSelect(result.data.spots || []);
+    renderTop(result.data.top_spots || []);
+    document.getElementById('spot-select').value = raw;
+    renderSpotReport(result.data.spot_report);
+  }
+
+  async function unlock(){
+    hideError(msg);
+    var result = await api('/api/admin/reports?days=30');
+    if (handleAuthFailure(result, msg)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(msg, result.data.error || 'Failed to unlock');
+      return;
+    }
+    login.classList.add('hidden');
+    app.classList.remove('hidden');
+    setTab('reports');
+  }
+
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click', function(){ setTab(btn.getAttribute('data-tab')); });
+  });
   document.getElementById('login-btn').addEventListener('click', function(){
     var v = pwInput.value.trim();
-    if (!v) { showError('Enter the admin password.'); return; }
+    if (!v) { showError(msg, 'Enter the admin password.'); return; }
     setPw(v);
-    load();
+    unlock();
   });
   document.getElementById('clear-btn').addEventListener('click', function(){
-    clearPw(); pwInput.value=''; hideError();
+    clearPw(); pwInput.value=''; hideError(msg);
   });
   document.getElementById('logout-btn').addEventListener('click', function(){
     clearPw(); app.classList.add('hidden'); login.classList.remove('hidden');
   });
-  document.getElementById('refresh-btn').addEventListener('click', load);
-  document.getElementById('status-filter').addEventListener('change', load);
+  document.getElementById('refresh-btn').addEventListener('click', loadSubmissions);
+  document.getElementById('status-filter').addEventListener('change', loadSubmissions);
+  document.getElementById('refresh-reports-btn').addEventListener('click', loadReports);
+  document.getElementById('load-report-btn').addEventListener('click', loadSpotReport);
+  document.getElementById('days-select').addEventListener('change', loadReports);
+  document.getElementById('copy-summary-btn').addEventListener('click', async function(){
+    var text = document.getElementById('summary-text').value;
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      document.getElementById('copy-ok').classList.remove('hidden');
+    } catch (e) {
+      document.getElementById('summary-text').select();
+      document.execCommand('copy');
+      document.getElementById('copy-ok').classList.remove('hidden');
+    }
+  });
   pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
 
-  if (pw()) load();
+  if (pw()) unlock();
 })();
 </script>
 </body>
