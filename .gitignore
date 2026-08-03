@@ -20,6 +20,8 @@ __MACOSX/
 node_modules/
 .wrangler/
 dist/
+.dev.vars
+*.local.sql
 
 # Logs
 *.log
