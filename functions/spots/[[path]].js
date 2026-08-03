@@ -29,17 +29,25 @@ function notFound() {
 }
 
 async function findVenueBySlug(db, slug) {
+  // Fast path: spot_path basename match
+  const byPath = await db
+    .prepare(
+      `SELECT * FROM venues
+       WHERE status = 'published'
+         AND (spot_path = ? OR spot_path LIKE ?)
+       LIMIT 1`
+    )
+    .bind(`../spots/${slug}.html`, `%/${slug}.html`)
+    .first();
+  if (byPath) return { venue: byPath, redirectTo: null };
+
   const rows = await db
     .prepare(`SELECT * FROM venues WHERE status = 'published'`)
     .all();
   const list = rows.results || [];
 
-  // Exact match on stored path basename or name-town slug
-  let match = list.find((v) => venueSlug(v) === slug);
-  if (match) return { venue: match, redirectTo: null };
-
-  // Also accept current slugify(name,town) even if spot_path is stale
-  match = list.find((v) => slugify(v.name, v.town) === slug);
+  // Accept current slugify(name,town) even if spot_path is stale
+  let match = list.find((v) => slugify(v.name, v.town) === slug);
   if (match) {
     const canonical = venueSlug(match);
     return {
