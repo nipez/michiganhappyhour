@@ -156,8 +156,8 @@ Spot detail URLs (`/spots/*.html`) are **rendered live from D1** by a Pages Func
 
 ## SEO notes
 
-- Sitemap: `sitemap.xml` (regenerate when venues change)
-- Spot pages + homepage listings should stay linked via real `/spots/{slug}.html` URLs
+- Sitemap: `sitemap.xml` — rebuild with `node scripts/generate-sitemap.mjs` after venue imports, then resubmit in GSC
+- Spot pages + homepage listings should stay linked via real `/spots/{slug}` URLs
 - `/admin/`, `/api/`, thanks page, and `index-backup.html` are disallowed / noindex
 
 ## Next (planned)
