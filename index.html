@@ -448,7 +448,7 @@ function App(){
   const [day,setDay]=useState(TODAY);
   const [reg,setReg]=useState("all");
   const [cat,setCat]=useState("All");
-  const [q,setQ]=useState("");
+  const [q,setQ]=useState(()=>{try{return new URLSearchParams(window.location.search).get("q")||"";}catch{return"";}});
   const [sort,setSort]=useState("region");
   const [modal,setModal]=useState(false);
   const [mapHighlight,setMapHighlight]=useState(null);
@@ -461,6 +461,13 @@ function App(){
       .then(d=>{ if(d&&d.ok&&Array.isArray(d.venues)&&d.venues.length) setListings(d.venues); })
       .catch(()=>{});
   },[]);
+  React.useEffect(()=>{
+    try{
+      const url=new URL(window.location.href);
+      if(q) url.searchParams.set("q",q); else url.searchParams.delete("q");
+      window.history.replaceState({},"",url.pathname+url.search+url.hash);
+    }catch{}
+  },[q]);
   const [favs,setFavs]=useState(()=>{try{return JSON.parse(localStorage.getItem('hh-favs'))||[];}catch{return[];}});
   const [showFavs,setShowFavs]=useState(false);
   const [showNow,setShowNow]=useState(false);
