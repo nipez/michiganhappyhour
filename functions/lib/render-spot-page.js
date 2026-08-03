@@ -199,12 +199,20 @@ export function renderSpotPage(venue, related = []) {
         .join("\n")
     : "";
 
+  const trackBase = JSON.stringify({
+    id: venue.id || slug,
+    name,
+    town,
+    page_type: "spot",
+    source: "spot_pdp"
+  });
+
   const phoneBtn = phone
-    ? `<a href="tel:${escapeAttr(phone)}" class="bt bo">&#x1F4DE; ${escapeHtml(phone)}</a>`
+    ? `<a href="tel:${escapeAttr(phone)}" class="bt bo" data-cta="cta_call" onclick='window.trackCta&&window.trackCta("cta_call",${trackBase})'>&#x1F4DE; ${escapeHtml(phone)}</a>`
     : "";
 
   const featuredBadge = venue.featured
-    ? `<span class="bg" style="background:#FFF0ED;color:#E8614D;margin-left:8px">Featured</span>`
+    ? `<span class="bg" style="background:#FFF0ED;color:#E8614D">Featured</span>`
     : "";
 
   return `<!DOCTYPE html>
@@ -236,7 +244,41 @@ export function renderSpotPage(venue, related = []) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FA;color:#1B2838;-webkit-font-smoothing:antialiased}.sf{font-family:'Playfair Display',Georgia,serif}a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}.w{max-width:800px;margin:0 auto;padding:0 20px}.bc{padding:16px 0;font-size:15px;color:#8AA3B5}.bc a{color:#6B8A9E}.hb{background:linear-gradient(135deg,#1B2838,#2D4A5E);padding:20px 0}.hb .w{display:flex;align-items:center;justify-content:space-between}.hb a{color:#E8614D;font-weight:700;font-size:18px}.hb .sn{color:#fff;font-size:20px;font-weight:700}.cd{background:#fff;border-radius:16px;border:1.5px solid #D8E2EA;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(45,106,143,0.06)}.bg{display:inline-block;padding:5px 14px;border-radius:20px;font-size:15px;font-weight:600}.di{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:17px;line-height:1.5}.da{color:#E8614D;font-weight:700;flex-shrink:0}.bt{display:inline-flex;align-items:center;gap:6px;padding:14px 24px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none}.bp{background:linear-gradient(135deg,#2D6A8F,#E8614D);color:#fff}.bo{background:#F5F7FA;border:2px solid #D8E2EA;color:#4A6274}.nc{display:block;background:#fff;border-radius:12px;border:1.5px solid #D8E2EA;padding:16px 18px;transition:all 0.2s;text-decoration:none;color:inherit}.nc:hover{border-color:#E8614D;box-shadow:0 4px 16px rgba(232,97,77,0.1)}.ft{border-top:2px solid #D8E2EA;padding:32px 0;text-align:center;margin-top:40px;color:#8AA3B5;font-size:15px;line-height:2}.me{border-radius:12px;overflow:hidden;margin:20px 0;border:1.5px solid #D8E2EA}@media(max-width:600px){.w{padding:0 16px}.cd{padding:20px 18px}}</style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FA;color:#1B2838;-webkit-font-smoothing:antialiased}
+.sf{font-family:'Playfair Display',Georgia,serif}
+a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
+.w{max-width:800px;margin:0 auto;padding:0 20px}
+.bc{padding:16px 0;font-size:15px;color:#8AA3B5}.bc a{color:#6B8A9E}
+.hb{background:linear-gradient(135deg,#1B2838,#2D4A5E);padding:20px 0}
+.hb .w{display:flex;align-items:center;justify-content:space-between}
+.hb a{color:#E8614D;font-weight:700;font-size:18px}.hb .sn{color:#fff;font-size:20px;font-weight:700}
+.cd{background:#fff;border-radius:16px;border:1.5px solid #D8E2EA;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(45,106,143,0.06)}
+.bg{display:inline-block;padding:5px 14px;border-radius:20px;font-size:15px;font-weight:600}
+.badges{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hh{background:linear-gradient(135deg,#EFF6FF,#F5F7FA);border-radius:12px;padding:20px;margin-bottom:20px}
+.di{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:17px;line-height:1.5}
+.da{color:#E8614D;font-weight:700;flex-shrink:0}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 16px}
+.bt{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none;flex:1 1 180px;min-height:52px;transition:opacity .15s,transform .15s}
+.bt:hover{opacity:.92;transform:translateY(-1px)}
+.bp{background:linear-gradient(135deg,#2D6A8F,#E8614D);color:#fff}
+.bo{background:#F5F7FA;border:2px solid #D8E2EA;color:#4A6274}
+.note{margin:0;padding:12px 14px;background:#FFF8F0;border-radius:10px;border:1px solid #F0E0D0;font-size:13px;color:#8A7560;line-height:1.55}
+.note a{color:#E8614D;font-weight:600}
+.nc{display:block;background:#fff;border-radius:12px;border:1.5px solid #D8E2EA;padding:16px 18px;transition:all 0.2s;text-decoration:none;color:inherit}
+.nc:hover{border-color:#E8614D;box-shadow:0 4px 16px rgba(232,97,77,0.1)}
+.ft{border-top:2px solid #D8E2EA;padding:32px 0;text-align:center;margin-top:40px;color:#8AA3B5;font-size:15px;line-height:2}
+.me{border-radius:12px;overflow:hidden;margin:8px 0 20px;border:1.5px solid #D8E2EA}
+.map-label{font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin:8px 0 10px}
+@media(max-width:600px){
+  .w{padding:0 16px}
+  .cd{padding:20px 18px}
+  .actions{flex-direction:column;margin-top:20px}
+  .bt{flex:1 1 auto;width:100%}
+}
+</style>
 </head>
 <body>
 <div class="hb"><div class="w"><a href="/" class="sn">🥂 Michigan Happy Hour</a><a href="/">&larr; All Spots</a></div></div>
@@ -248,31 +290,35 @@ export function renderSpotPage(venue, related = []) {
 <h1 class="sf" style="font-size:clamp(28px,5vw,36px);font-weight:800;margin-bottom:6px">${escapeHtml(name)}</h1>
 <div style="font-size:17px;color:#6B8A9E">${escapeHtml(town)}, MI${address ? " &middot; " + escapeHtml(address) : ""}</div>
 </div>
-<span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${featuredBadge}
+<div class="badges"><span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${featuredBadge}</div>
 </div>
-<div style="background:linear-gradient(135deg,#EFF6FF,#F5F7FA);border-radius:12px;padding:20px;margin-bottom:20px">
+<div class="hh">
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Happy Hour</div>
 <div style="font-size:24px;font-weight:800;color:#E8614D">${hoursDisplay || "See listing"}</div>
-<div style="font-size:16px;color:#4A6274;margin-top:4px">${escapeHtml(daysText)}</div>
+${daysText ? `<div style="font-size:16px;color:#4A6274;margin-top:4px">${escapeHtml(daysText)}</div>` : ""}
 </div>
 ${vibe ? `<p style="font-size:18px;color:#4A6274;font-style:italic;line-height:1.6;margin-bottom:20px">&ldquo;${escapeHtml(vibe)}&rdquo;</p>` : ""}
-<div style="margin-bottom:20px">
+<div style="margin-bottom:4px">
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Deals &amp; Specials</div>
 ${dealsHtml}
 </div>
-<div style="margin-top:14px;padding:10px 14px;background:#FFF8F0;border-radius:8px;border:1px solid #F0E0D0;font-size:13px;color:#8A7560;line-height:1.5">📋 Hours &amp; specials may vary. Call ahead to confirm, or <a href="/submit/?${submitParams.toString()}" style="color:#E8614D;font-weight:600">suggest an update</a> if something's changed.</div>
-<div style="display:flex;flex-wrap:wrap;gap:12px">
+<div class="actions">
 ${phoneBtn}
-<a href="${escapeAttr(mapsSearch)}" target="_blank" rel="noopener" class="bt bp">&#x1F4CD; Get Directions</a>
+<a href="${escapeAttr(mapsSearch)}" target="_blank" rel="noopener" class="bt bp" onclick='window.trackCta&&window.trackCta("cta_directions",${trackBase})'>&#x1F4CD; Get Directions</a>
 </div>
+<p class="note">Hours &amp; specials may vary. Call ahead to confirm, or <a href="/submit/?${submitParams.toString()}">suggest an update</a> if something&rsquo;s changed.</p>
 </div>
-<div class="me"><iframe src="${escapeAttr(mapEmbed)}" width="100%" height="300" style="border:0" allowfullscreen loading="lazy"></iframe></div>
+<div class="map-label">Location</div>
+<div class="me"><iframe src="${escapeAttr(mapEmbed)}" width="100%" height="300" style="border:0" allowfullscreen loading="lazy" title="Map of ${escapeAttr(name)}"></iframe></div>
 ${
   relatedHtml
     ? `<h2 class="sf" style="font-size:22px;margin:32px 0 16px">More Happy Hours in ${escapeHtml(regionLabel)}</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px">${relatedHtml}</div>`
     : ""
 }
-<div style="text-align:center;margin:32px 0"><a href="/" class="bt bp" style="font-size:18px;padding:16px 32px">&larr; Browse All Happy Hours</a></div>
+<div class="actions" style="justify-content:center;margin:32px 0">
+<a href="/regions/${escapeAttr(region)}" class="bt bo" style="flex:0 1 260px">Explore ${escapeHtml(regionLabel)}</a>
+<a href="/" class="bt bp" style="flex:0 1 260px">&larr; All Happy Hours</a>
+</div>
 <footer class="ft"><div class="sf" style="font-size:18px;font-weight:700;color:#2D6A8F;margin-bottom:6px">Michigan Happy Hour Guide</div>Built by <a href="https://solutionstud.io/">Solution Studio</a><br>Visit our sister site, <a href="https://traversecitywinetour.com">Traverse City Wine Tour</a><br>Listings are community-sourced &middot; Hours and deals may change &mdash; <a href="/submit/" style="color:#E8614D">suggest an update</a><br><span style="color:#A8BFCC">&copy; 2026 MichiganHappyHour.com</span></footer>
 </div>
 <script src="/js/cta-track.js" defer></script>
