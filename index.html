@@ -57,14 +57,21 @@ input,select,button{font-family:inherit}
 .btn-glow::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);animation:shimmer 3s infinite}
 .map-tooltip{position:absolute;z-index:50;width:320px;height:200px;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.25);border:2px solid #E8614D;display:none}
 .map-tooltip.show{display:block}
-.leaflet-popup-content-wrapper{border-radius:12px!important;padding:0!important;overflow:hidden}
-.leaflet-popup-content{margin:0!important;min-width:220px}
+.leaflet-popup-content-wrapper{border-radius:14px!important;padding:0!important;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.15)!important}
+.leaflet-popup-content{margin:0!important;min-width:240px;max-width:300px}
 .leaflet-popup-tip{border-top-color:#fff!important}
-.map-pin-popup{padding:14px 16px;font-family:'Inter',sans-serif}
-.map-pin-popup h4{font-size:16px;font-weight:700;color:#1B2838;margin:0 0 4px}
-.map-pin-popup p{font-size:13px;color:#6B8A9E;margin:0 0 3px;line-height:1.4}
-.map-pin-popup .deals{font-size:12px;color:#2D6A8F;font-weight:600;margin-top:6px}
-.map-pin-popup a{display:inline-block;margin-top:8px;padding:6px 14px;background:#2D6A8F;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600}
+.map-pin-popup{font-family:'Inter',sans-serif}
+.map-pin-popup .mpp-head{padding:14px 16px 10px;border-bottom:1px solid #EDF0F4}
+.map-pin-popup h4{font-family:'Playfair Display',Georgia,serif;font-size:18px;font-weight:700;color:#1B2838;margin:0 0 2px}
+.map-pin-popup .mpp-meta{font-size:13px;color:#8AA3B5;margin:0;line-height:1.4}
+.map-pin-popup .mpp-body{padding:10px 16px 6px}
+.map-pin-popup .mpp-time{font-size:17px;font-weight:800;color:#E8614D}
+.map-pin-popup .mpp-vibe{font-size:13px;color:#6B8A9E;font-style:italic;line-height:1.4;margin:8px 0}
+.map-pin-popup .mpp-deal{font-size:13px;color:#1B2838;line-height:1.4;margin-bottom:2px}
+.map-pin-popup .mpp-btns{display:flex;gap:6px;padding:8px 16px 14px}
+.map-pin-popup .mpp-btns a{flex:1;text-align:center;padding:8px 10px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none}
+.map-pin-popup .mpp-primary{background:#E8614D;color:#fff}
+.map-pin-popup .mpp-secondary{background:#F5F7FA;color:#4A6274;border:1px solid #D8E2EA}
 
 /* ===== MOBILE RESPONSIVE ===== */
 @media(max-width:768px){
@@ -320,12 +327,14 @@ function trackSpotCta(cta,l,source){
   }
 }
 
+function escapeMapHtml(s){
+  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
 function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLive}){
   const cc=catColors[l.cat]||"#2D6A8F";
-  const cardRef=useRef(null);
-  useEffect(()=>{if(highlighted&&cardRef.current)cardRef.current.scrollIntoView({behavior:"smooth",block:"center"});},[highlighted]);
   return(
-    <div ref={cardRef} id={`card-${l.id}`} className="card-hover" style={{
+    <div id={`card-${l.id}`} className="card-hover" style={{
       background:"#fff",borderRadius:16,overflow:"hidden",
       border:highlighted?"2px solid #E8614D":l.feat&&isT?"1.5px solid #E8614D":"1.5px solid #D8E2EA",
       boxShadow:highlighted?"0 8px 32px rgba(232,97,77,0.2)":"0 2px 12px rgba(45,106,143,0.06)",
@@ -387,6 +396,7 @@ function HappyHourMap({listings,onPinClick,highlightId}){
   const mapRef=useRef(null);
   const mapInst=useRef(null);
   const markersRef=useRef({});
+  const listingsKey=listings.map(l=>l.id).join(",");
 
   useEffect(()=>{
     if(!mapRef.current||mapInst.current)return;
@@ -401,42 +411,58 @@ function HappyHourMap({listings,onPinClick,highlightId}){
   useEffect(()=>{
     if(!mapInst.current)return;
     const map=mapInst.current;
-    // Clear old markers
     Object.values(markersRef.current).forEach(m=>map.removeLayer(m));
     markersRef.current={};
     if(!listings.length)return;
     const bounds=[];
     listings.forEach(l=>{
+      if(l.lat==null||l.lng==null)return;
       const cc=catColors[l.cat]||"#2D6A8F";
       const icon=window.L.divIcon({
-        className:'',
-        html:`<div style="width:${highlightId===l.id?20:14}px;height:${highlightId===l.id?20:14}px;border-radius:50%;background:${cc};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);transition:all 0.2s;${highlightId===l.id?'transform:scale(1.4);z-index:999;':''}"></div>`,
-        iconSize:[highlightId===l.id?20:14,highlightId===l.id?20:14],
-        iconAnchor:[highlightId===l.id?10:7,highlightId===l.id?10:7],
+        className:"",
+        html:`<div style="width:14px;height:14px;border-radius:50%;background:${cc};border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3)"></div>`,
+        iconSize:[14,14],
+        iconAnchor:[7,7],
       });
+      const slug=toSlug(l.name,l.town);
+      const mapsUrl="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(l.name+" "+(l.addr||"")+" "+l.town+" MI");
+      const dealsHtml=(l.deals||[]).slice(0,3).map(d=>`<div class="mpp-deal">→ ${escapeMapHtml(d)}</div>`).join("");
+      const vibe=l.vibe?`<div class="mpp-vibe">"${escapeMapHtml(String(l.vibe).slice(0,90))}${String(l.vibe).length>90?"…":""}"</div>`:"";
+      const trackPayload=JSON.stringify({id:l.id,name:l.name,town:l.town,page_type:"home",source:"map_popup"});
       const marker=window.L.marker([l.lat,l.lng],{icon}).addTo(map);
       marker.bindPopup(`<div class="map-pin-popup">
-        <h4>${l.name}</h4>
-        <p>${l.town} · ${l.addr}</p>
-        <p>${l.hh.s} – ${l.hh.e}</p>
-        <div class="deals">${l.deals.slice(0,2).join(' · ')}</div>
-        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name+' '+l.addr+' '+l.town+' MI')}" target="_blank" onclick='window.trackCta&&window.trackCta("cta_directions",${JSON.stringify({id:l.id,name:l.name,town:l.town,page_type:"home",source:"map_popup"})})'>Open in Google Maps →</a>
-      </div>`,{maxWidth:280});
-      marker.on('click',()=>{trackSpotCta("cta_map",l,"map_pin");onPinClick(l.id);});
+        <div class="mpp-head">
+          <h4>${escapeMapHtml(l.name)}</h4>
+          <p class="mpp-meta">${escapeMapHtml(l.town)}${l.addr?" · "+escapeMapHtml(l.addr):""} · <strong>${escapeMapHtml(l.cat||"")}</strong></p>
+        </div>
+        <div class="mpp-body">
+          <div class="mpp-time">${escapeMapHtml(l.hh.s)} – ${escapeMapHtml(l.hh.e)}</div>
+          ${vibe}
+          ${dealsHtml}
+        </div>
+        <div class="mpp-btns">
+          <a class="mpp-primary" href="/spots/${escapeMapHtml(slug)}" onclick='window.trackCta&&window.trackCta("cta_details",${trackPayload})'>View Details</a>
+          <a class="mpp-secondary" href="${mapsUrl}" target="_blank" rel="noopener" onclick='window.trackCta&&window.trackCta("cta_directions",${trackPayload})'>📍 Directions</a>
+        </div>
+      </div>`,{maxWidth:300,minWidth:240});
+      marker.on("click",()=>{
+        trackSpotCta("cta_map",l,"map_pin");
+        // Stay on the map — open popup card (Leaflet default) instead of scrolling to the list
+        if(typeof onPinClick==="function") onPinClick(l.id,{scrollToCard:false});
+      });
       markersRef.current[l.id]=marker;
       bounds.push([l.lat,l.lng]);
     });
     if(bounds.length>1)map.fitBounds(bounds,{padding:[40,40],maxZoom:13});
     else if(bounds.length===1)map.setView(bounds[0],13);
-  },[listings,highlightId]);
+  },[listingsKey]);
 
-  // Pan to highlighted
+  // Open popup when a list card asks to show this spot on the map
   useEffect(()=>{
-    if(highlightId&&markersRef.current[highlightId]&&mapInst.current){
-      const m=markersRef.current[highlightId];
-      mapInst.current.panTo(m.getLatLng(),{animate:true});
-      m.openPopup();
-    }
+    if(!highlightId||!markersRef.current[highlightId]||!mapInst.current)return;
+    const m=markersRef.current[highlightId];
+    mapInst.current.panTo(m.getLatLng(),{animate:true});
+    setTimeout(()=>m.openPopup(),150);
   },[highlightId]);
 
   return <div ref={mapRef} style={{width:"100%",height:"100%",borderRadius:16}}/>;
@@ -504,14 +530,16 @@ function App(){
 
   const scrollToFeatured=()=>{var el=document.getElementById("card-13");if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.transition="box-shadow 0.3s";el.style.boxShadow="0 0 0 3px #E8614D";setTimeout(function(){el.style.boxShadow="";},2500);}};
   const handleMapCardClick=(l)=>{
+    setShowMap(true);
     setMapHighlight(l.id);
-    document.getElementById('map-section')?.scrollIntoView({behavior:'smooth'});
-    setTimeout(()=>setMapHighlight(null),5000);
+    document.getElementById("map-section")?.scrollIntoView({behavior:"smooth",block:"center"});
+    setTimeout(()=>setMapHighlight(null),6000);
   };
 
-  const handlePinClick=(id)=>{
+  // Pin clicks keep the user on the map (popup). Optional soft highlight on the list card — no scroll.
+  const handlePinClick=(id,_opts)=>{
     setMapHighlight(id);
-    setTimeout(()=>setMapHighlight(null),5000);
+    setTimeout(()=>setMapHighlight(null),6000);
   };
 
   const scrollToListings=()=>{const el=document.getElementById("listings-top");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});};
