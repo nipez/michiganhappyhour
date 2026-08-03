@@ -138,6 +138,7 @@ export function toFullVenue(row) {
     town: row.town,
     address: row.address,
     phone: row.phone,
+    website: row.website || null,
     hh_start: row.hh_start,
     hh_end: row.hh_end,
     hh_days: parseJsonArray(row.hh_days),
@@ -149,6 +150,9 @@ export function toFullVenue(row) {
     collections: parseJsonArray(row.collections),
     spot_path: row.spot_path,
     status: row.status,
+    source: row.source || "curated",
+    external_id: row.external_id || null,
+    last_verified_at: row.last_verified_at || null,
     admin_notes: row.admin_notes,
     created_at: row.created_at,
     updated_at: row.updated_at

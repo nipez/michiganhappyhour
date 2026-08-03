@@ -372,8 +372,8 @@ function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLiv
             </div>
           </div>
           <div style={{textAlign:"right",flexShrink:0}}>
-            <div style={{fontWeight:800,fontSize:18,color:"#E8614D",whiteSpace:"nowrap"}}>{l.hh.s}–{l.hh.e}</div>
-            <div style={{fontSize:13,color:"#8AA3B5",marginTop:2,fontWeight:600}}>{isT?"Today":(l.hh.d.length===7?"Every day":l.hh.d.length+" days")}</div>
+            <div style={{fontWeight:800,fontSize:18,color:"#E8614D",whiteSpace:"nowrap"}}>{(l.hh.s&&l.hh.e)?(l.hh.s+"–"+l.hh.e):"Hours TBD"}</div>
+            <div style={{fontSize:13,color:"#8AA3B5",marginTop:2,fontWeight:600}}>{(l.hh.s&&l.hh.e)?(isT?"Today":(l.hh.d.length===7?"Every day":l.hh.d.length+" days")):"Call ahead"}</div>
           </div>
         </div>
         <div style={{padding:"10px 0 0 16px",display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
@@ -453,7 +453,7 @@ function HappyHourMap({listings,onPinClick,highlightId}){
           <p class="mpp-meta">${escapeMapHtml(l.town)}${l.addr?" · "+escapeMapHtml(l.addr):""} · <strong>${escapeMapHtml(l.cat||"")}</strong></p>
         </div>
         <div class="mpp-body">
-          <div class="mpp-time">${escapeMapHtml(l.hh.s)} – ${escapeMapHtml(l.hh.e)}</div>
+          <div class="mpp-time">${(l.hh&&l.hh.s&&l.hh.e)?escapeMapHtml(l.hh.s)+" – "+escapeMapHtml(l.hh.e):"Hours TBD — call ahead"}</div>
           ${vibe}
           ${dealsHtml}
         </div>
@@ -518,25 +518,25 @@ function App(){
   const [userLoc,setUserLoc]=useState(null);
   const [locLoading,setLocLoading]=useState(false);
   const [claimModal,setClaimModal]=useState(null);
-  const parseTime=(t)=>{const m=t.match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return 0;let h=parseInt(m[1]);const min=parseInt(m[2]);const ap=m[3].toUpperCase();if(ap==="PM"&&h!==12)h+=12;if(ap==="AM"&&h===12)h=0;return h*60+min;};
-  const isHappeningNow=(l)=>{const now=new Date();const mins=now.getHours()*60+now.getMinutes();const s=parseTime(l.hh.s);const e=parseTime(l.hh.e);return mins>=s&&mins<=e&&l.hh.d.includes(TODAY);};
+  const parseTime=(t)=>{if(!t)return null;const m=String(t).match(/(\d+):(\d+)\s*(AM|PM)/i);if(!m)return null;let h=parseInt(m[1]);const min=parseInt(m[2]);const ap=m[3].toUpperCase();if(ap==="PM"&&h!==12)h+=12;if(ap==="AM"&&h===12)h=0;return h*60+min;};
+  const isHappeningNow=(l)=>{const s=parseTime(l.hh&&l.hh.s);const e=parseTime(l.hh&&l.hh.e);if(s==null||e==null||!(l.hh.d||[]).length)return false;const now=new Date();const mins=now.getHours()*60+now.getMinutes();return mins>=s&&mins<=e&&l.hh.d.includes(TODAY);};
   const toggleFav=(id)=>{setFavs(prev=>{const next=prev.includes(id)?prev.filter(x=>x!==id):[...prev,id];try{localStorage.setItem('hh-favs',JSON.stringify(next));}catch{}return next;});};
   const haversine=(lat1,lng1,lat2,lng2)=>{const R=3959;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));};
   const getDist=(l)=>userLoc?haversine(userLoc.lat,userLoc.lng,l.lat,l.lng):null;
   const requestLocation=()=>{if(userLoc){setSort("near");return;}setLocLoading(true);navigator.geolocation.getCurrentPosition((pos)=>{setUserLoc({lat:pos.coords.latitude,lng:pos.coords.longitude});setSort("near");setLocLoading(false);},(err)=>{alert("Location access denied. Enable location to use Near Me sorting.");setLocLoading(false);},{enableHighAccuracy:false,timeout:8000});};
 
   const filtered=useMemo(()=>{
-    let r=listings.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):l.hh.d.includes(day))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||(l.deals||[]).some(d=>d.toLowerCase().includes(q.toLowerCase()))));
+    let r=listings.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):(!(l.hh.d||[]).length||l.hh.d.includes(day)))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||(l.deals||[]).some(d=>d.toLowerCase().includes(q.toLowerCase()))));
     if(sort==="near"&&userLoc)r.sort((a,b)=>haversine(userLoc.lat,userLoc.lng,a.lat,a.lng)-haversine(userLoc.lat,userLoc.lng,b.lat,b.lng));
     else if(sort==="name")r.sort((a,b)=>a.name.localeCompare(b.name));
     else if(sort==="rating")r.sort((a,b)=>b.r-a.r);
-    else if(sort==="time")r.sort((a,b)=>a.hh.s.localeCompare(b.hh.s));
+    else if(sort==="time")r.sort((a,b)=>{const as=a.hh&&a.hh.s||"ZZZ";const bs=b.hh&&b.hh.s||"ZZZ";return as.localeCompare(bs);});
     else r.sort((a,b)=>{const ri=REGIONS.findIndex(x=>x.id===a.reg)-REGIONS.findIndex(x=>x.id===b.reg);return ri!==0?ri:a.name.localeCompare(b.name);});
     return r;
   },[listings,day,reg,cat,q,sort,showFavs,favs,showNow,colFilter,userLoc]);
 
   const rc=useMemo(()=>{
-    const c={};listings.forEach(l=>{if(l.hh.d.includes(day)){c[l.reg]=(c[l.reg]||0)+1;}});
+    const c={};listings.forEach(l=>{if(!(l.hh.d||[]).length||l.hh.d.includes(day)){c[l.reg]=(c[l.reg]||0)+1;}});
     c.all=Object.values(c).reduce((a,b)=>a+b,0);return c;
   },[listings,day]);
 
@@ -677,7 +677,7 @@ function App(){
                   {fl.deals.slice(0,3).map((d,i)=><span key={i} style={{fontSize:14,color:"#2D6A8F",fontWeight:600,display:"flex",alignItems:"center",gap:4}}>✔️ {d}</span>)}
                 </div>
                 <div style={{fontSize:15,color:"#6B8A9E",marginBottom:12}}>
-                  <span style={{fontWeight:700,color:isT?"#E8614D":"#4A6274"}}>Happy Hour: </span>{fl.hh.s}–{fl.hh.e} · {fl.hh.d.length===7?"Every day":fl.hh.d.length+" days/week"}
+                  <span style={{fontWeight:700,color:isT?"#E8614D":"#4A6274"}}>Happy Hour: </span>{(fl.hh.s&&fl.hh.e)?(fl.hh.s+"–"+fl.hh.e):( "Hours TBD")} · {(fl.hh.s&&fl.hh.e)?(fl.hh.d.length===7?"Every day":fl.hh.d.length+" days/week"):"call ahead"}
                 </div>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                   <button onClick={()=>{trackSpotCta("cta_call",fl,"featured");if(fl.ph)window.location.href="tel:"+fl.ph;}} style={{flex:"1 1 auto",minWidth:0,padding:"10px 14px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#F5F7FA",color:"#4A6274",fontWeight:600,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>📞 {fl.ph}</button>

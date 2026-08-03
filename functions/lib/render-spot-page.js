@@ -294,8 +294,8 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 </div>
 <div class="hh">
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Happy Hour</div>
-<div style="font-size:24px;font-weight:800;color:#E8614D">${hoursDisplay || "See listing"}</div>
-${daysText ? `<div style="font-size:16px;color:#4A6274;margin-top:4px">${escapeHtml(daysText)}</div>` : ""}
+<div style="font-size:24px;font-weight:800;color:#E8614D">${hoursDisplay || "Hours TBD — call ahead"}</div>
+${hoursDisplay && daysText ? `<div style="font-size:16px;color:#4A6274;margin-top:4px">${escapeHtml(daysText)}</div>` : ""}
 </div>
 ${vibe ? `<p style="font-size:18px;color:#4A6274;font-style:italic;line-height:1.6;margin-bottom:20px">&ldquo;${escapeHtml(vibe)}&rdquo;</p>` : ""}
 <div style="margin-bottom:4px">
