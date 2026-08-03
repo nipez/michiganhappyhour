@@ -123,7 +123,21 @@ curl http://127.0.0.1:8788/api/stats
 **Admin → Events → mark the `cta_*` events as Key events**.  
 Explore report: rows = `spot_name`, values = event count.
 
+## Admin inbox
+
+Review listing submissions at `/admin/` (noindex).
+
+```bash
+printf '%s' 'your-new-password' | npx wrangler pages secret put ADMIN_PASSWORD --project-name=nwmichhappyhour
+```
+
+Open `https://michiganhappyhour.com/admin/` and unlock with that password.
+
+## Business / claim page
+
+`/for-business/` — claim & featured packages; form saves to D1 `submissions`.
+
 ## Next (planned)
 
-- Claimed listings + venue-facing monthly reports from D1
+- Venue-facing monthly reports from D1 aggregates
 - Move venue content from static HTML into D1 over time
