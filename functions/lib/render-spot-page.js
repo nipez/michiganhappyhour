@@ -95,11 +95,22 @@ export function renderSpotPage(venue, related = []) {
       ? `https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}&z=15&output=embed`
       : `https://www.google.com/maps?q=${mapsQuery}&z=15&output=embed`;
 
+  const schemaType = (() => {
+    const c = String(category || "").toLowerCase();
+    if (c.includes("brew")) return "Brewery";
+    if (c.includes("wine") || c.includes("winery") || c.includes("cidery")) return "Winery";
+    if (c.includes("distill")) return "Distillery";
+    if (c.includes("cocktail") || c.includes("taproom") || c.includes("bar") || c.includes("pub"))
+      return "BarOrPub";
+    return "Restaurant";
+  })();
+
   const ld = {
     "@context": "https://schema.org",
-    "@type": "Restaurant",
+    "@type": schemaType,
     name,
     description: vibe || desc,
+    url: canonical,
     address: {
       "@type": "PostalAddress",
       streetAddress: address,
@@ -115,6 +126,21 @@ export function renderSpotPage(venue, related = []) {
   };
   if (!ld.geo) delete ld.geo;
   if (!ld.telephone) delete ld.telephone;
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://michiganhappyhour.com/" },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: regionLabel,
+        item: `https://michiganhappyhour.com/regions/${region}.html`
+      },
+      { "@type": "ListItem", position: 3, name, item: canonical }
+    ]
+  };
 
   const dealsHtml = deals.length
     ? deals
@@ -166,6 +192,8 @@ export function renderSpotPage(venue, related = []) {
 <meta name="description" content="${escapeAttr(desc)}">
 <meta property="og:title" content="${escapeAttr(ogTitle)}">
 <meta property="og:description" content="${escapeAttr(desc)}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="${escapeAttr(canonical)}">
 <meta property="og:image" content="https://michiganhappyhour.com/img/hero.jpg">
 <meta property="og:site_name" content="Michigan Happy Hour Guide">
 <link rel="canonical" href="${escapeAttr(canonical)}">
@@ -175,6 +203,7 @@ export function renderSpotPage(venue, related = []) {
 <meta name="twitter:image" content="https://michiganhappyhour.com/img/hero.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
+<script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FA;color:#1B2838;-webkit-font-smoothing:antialiased}.sf{font-family:'Playfair Display',Georgia,serif}a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}.w{max-width:800px;margin:0 auto;padding:0 20px}.bc{padding:16px 0;font-size:15px;color:#8AA3B5}.bc a{color:#6B8A9E}.hb{background:linear-gradient(135deg,#1B2838,#2D4A5E);padding:20px 0}.hb .w{display:flex;align-items:center;justify-content:space-between}.hb a{color:#E8614D;font-weight:700;font-size:18px}.hb .sn{color:#fff;font-size:20px;font-weight:700}.cd{background:#fff;border-radius:16px;border:1.5px solid #D8E2EA;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(45,106,143,0.06)}.bg{display:inline-block;padding:5px 14px;border-radius:20px;font-size:15px;font-weight:600}.di{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:17px;line-height:1.5}.da{color:#E8614D;font-weight:700;flex-shrink:0}.bt{display:inline-flex;align-items:center;gap:6px;padding:14px 24px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none}.bp{background:linear-gradient(135deg,#2D6A8F,#E8614D);color:#fff}.bo{background:#F5F7FA;border:2px solid #D8E2EA;color:#4A6274}.nc{display:block;background:#fff;border-radius:12px;border:1.5px solid #D8E2EA;padding:16px 18px;transition:all 0.2s;text-decoration:none;color:inherit}.nc:hover{border-color:#E8614D;box-shadow:0 4px 16px rgba(232,97,77,0.1)}.ft{border-top:2px solid #D8E2EA;padding:32px 0;text-align:center;margin-top:40px;color:#8AA3B5;font-size:15px;line-height:2}.me{border-radius:12px;overflow:hidden;margin:20px 0;border:1.5px solid #D8E2EA}@media(max-width:600px){.w{padding:0 16px}.cd{padding:20px 18px}}</style>
 </head>
 <body>

@@ -557,20 +557,29 @@ function App(){
           })}
         </div>
 
-        {/* Region cards */}
+        {/* Region cards — filter on click; region hubs linked for SEO crawl equity */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(42%,170px),1fr))",gap:6,marginBottom:16}}>
           {REGIONS.map(r=>{
             const isA=reg===r.id,cnt=rc[r.id]||0;
-            return <button key={r.id} onClick={()=>{setReg(r.id);if(r.id!=="all"){setTimeout(()=>{const el=document.getElementById("listings-top");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},100);}}} style={{padding:0,borderRadius:12,border:isA?"3px solid #E8614D":"2px solid transparent",background:"#000",cursor:"pointer",overflow:"hidden",position:"relative",height:80,transition:"all 0.2s ease",boxShadow:isA?"0 4px 20px rgba(232,97,77,0.3)":"0 2px 8px rgba(0,0,0,0.1)"}}>
-              <img src={r.img} alt={r.name} style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",opacity:isA?0.35:0.3}}/>
-              <div style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",background:"linear-gradient(to top,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 100%)"}}></div>
-              <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"6px 10px"}}>
-                <span style={{fontSize:18}}>{r.emoji}</span>
-                <span style={{fontSize:"clamp(13px,2.5vw,16px)",fontWeight:isA?700:600,color:"#fff",textAlign:"center",lineHeight:1.2,textShadow:"0 1px 3px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.5)"}}>{r.name}</span>
-                <span style={{fontSize:16,color:"#fff",fontWeight:700,textShadow:"0 1px 3px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.5)"}}>{cnt}</span>
-              </div>
-            </button>;
+            const hub=r.id==="all"?null:`/regions/${r.id}.html`;
+            return <div key={r.id} style={{position:"relative",height:80}}>
+              <button type="button" onClick={()=>{setReg(r.id);if(r.id!=="all"){setTimeout(()=>{const el=document.getElementById("listings-top");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});},100);}}} style={{padding:0,borderRadius:12,border:isA?"3px solid #E8614D":"2px solid transparent",background:"#000",cursor:"pointer",overflow:"hidden",position:"absolute",inset:0,width:"100%",height:"100%",transition:"all 0.2s ease",boxShadow:isA?"0 4px 20px rgba(232,97,77,0.3)":"0 2px 8px rgba(0,0,0,0.1)"}}>
+                <img src={r.img} alt="" style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",objectFit:"cover",opacity:isA?0.35:0.3}}/>
+                <div style={{position:"absolute",top:0,left:0,width:"100%",height:"100%",background:"linear-gradient(to top,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 100%)"}}></div>
+                <div style={{position:"relative",zIndex:1,height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1,padding:"6px 10px"}}>
+                  <span style={{fontSize:18}} aria-hidden="true">{r.emoji}</span>
+                  <span style={{fontSize:"clamp(13px,2.5vw,16px)",fontWeight:isA?700:600,color:"#fff",textAlign:"center",lineHeight:1.2,textShadow:"0 1px 3px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.5)"}}>{r.name}</span>
+                  <span style={{fontSize:16,color:"#fff",fontWeight:700,textShadow:"0 1px 3px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.5)"}}>{cnt}</span>
+                </div>
+              </button>
+              {hub&&<a href={hub} aria-label={`${r.name} happy hour guide`} style={{position:"absolute",right:6,bottom:6,zIndex:2,fontSize:11,fontWeight:800,color:"#fff",background:"rgba(0,0,0,0.55)",padding:"3px 7px",borderRadius:8,textDecoration:"none",border:"1px solid rgba(255,255,255,0.35)"}}>Guide</a>}
+            </div>;
           })}
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"0 0 16px"}}>
+          {REGIONS.filter(r=>r.id!=="all").map(r=>(
+            <a key={"rl-"+r.id} href={`/regions/${r.id}.html`} style={{fontSize:13,fontWeight:600,color:"#2D6A8F",textDecoration:"none",padding:"4px 10px",borderRadius:999,border:"1px solid #D8E2EA",background:"#fff"}}>{r.name}</a>
+          ))}
         </div>
 
         {/* Guides + collections — early, before the long listing scroll */}
@@ -873,257 +882,249 @@ ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 <div style="max-width:800px;margin:0 auto;padding:20px;font-family:Inter,sans-serif">
 <h1>Michigan Happy Hour Guide — 180+ Happy Hours Across Michigan</h1>
 <p>The most comprehensive guide to happy hour deals in Michigan. From Detroit to Marquette, find the best drink specials, food deals, and late-night happy hours at 180+ bars, breweries, and restaurants.</p>
-<p><a href="/map/">View Interactive Map</a> · <a href="/blog/">Read Our Blog</a> · <a href="/submit/">Submit Your Spot</a></p>
+<p><a href="/map/">View Interactive Map</a> · <a href="/blog/">Read Our Blog</a> · <a href="/submit/">Submit Your Spot</a> · <a href="/for-business/">For Businesses</a></p>
 <h2><a href="/regions/traverse-city.html">Happy Hour in Traverse City</a> (18 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">The Parlor</a></strong> — Cocktail Bar in Traverse City. Happy hour 3:00 PM–7:00 PM. 50% off all drinks, 25% off full kitchen menu, All-night happy hour Mondays</li>
-<li><strong><a href="/spots/.html">7 Monks Taproom</a></strong> — Taproom in Traverse City. Happy hour 3:00 PM–6:00 PM. $5 sliders, $4 dirty fries, $2 off craft drafts</li>
-<li><strong><a href="/spots/.html">Sorellina</a></strong> — Restaurant in Traverse City. Happy hour 4:00 PM–6:00 PM. $5 personal pizzas, $5.50 house wines, $6 bruschetta &amp; caprese</li>
-<li><strong><a href="/spots/.html">Mama Lu&#x27;s Taco Shop</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $7 classic margaritas, $5 apps, $4 house wine</li>
-<li><strong><a href="/spots/.html">Right Brain Brewery</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–6:00 PM. $4.50 pints, $3.75 mug fills (members), Taco Night specials</li>
-<li><strong><a href="/spots/.html">Rare Bird Brewpub</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–5:30 PM. $1 off all pints, Half-off apps, $5 featured cocktail</li>
-<li><strong><a href="/spots/.html">North Peak Brewing</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–6:00 PM. $1 off all alcohol, $1 off appetizers &amp; pizzas</li>
-<li><strong><a href="/spots/.html">Left Foot Charley</a></strong> — Wine Bar in Traverse City. Happy hour 4:00 PM–6:00 PM. $5 wine tastings, Cheese plate specials, Half-off select bottles</li>
-<li><strong><a href="/spots/.html">Firefly</a></strong> — Restaurant in Traverse City. Happy hour 4:00 PM–7:00 PM. $8 craft cocktails, $6 wines, $5 bites menu</li>
-<li><strong><a href="/spots/.html">Smoke &amp; Porter</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $2 off craft beers, Discounted small plates, $5 well drinks</li>
-<li><strong><a href="/spots/.html">TC Whiskey Co.</a></strong> — Distillery in Traverse City. Happy hour 3:00 PM–7:00 PM. $6 cocktails, Extended HH til 8 PM on live music nights</li>
-<li><strong><a href="/spots/.html">The Little Fleet</a></strong> — Cocktail Bar in Traverse City. Happy hour 4:00 PM–6:00 PM. $5 draft beer, $8 margaritas, $8 negronis</li>
-<li><strong><a href="/spots/.html">The Filling Station</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–6:00 PM. $1 off pints, $5 pizza slices, Half-off appetizers</li>
-<li><strong><a href="/spots/.html">The Flying Noodle</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $5 apps, $4 off signature cocktails, $3 off wine</li>
-<li><strong><a href="/spots/.html">Low Bar</a></strong> — Cocktail Bar in Traverse City. Happy hour 4:00 PM–7:00 PM. $8 craft cocktails, Smoked drink specials, $6 featured old fashioned</li>
-<li><strong><a href="/spots/.html">The Burrow TC</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $5 wine, $5 cocktails, $4 beer</li>
-<li><strong><a href="/spots/.html">Bubba&#x27;s</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $2 well drinks (late night 9–close), $3 craft drafts, $8 burger &amp; beer Tuesdays</li>
-<li><strong><a href="/spots/.html">Lil Bo Bar</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $4 wells, $3 domestics, Half-off chili &amp; po&#x27; boys</li>
+<li><strong><a href="/spots/the-parlor-traverse-city.html">The Parlor</a></strong> — Cocktail Bar in Traverse City. Happy hour 3:00 PM–7:00 PM. 50% off all drinks, 25% off full kitchen menu, All-night happy hour Mondays</li>
+<li><strong><a href="/spots/7-monks-taproom-traverse-city.html">7 Monks Taproom</a></strong> — Taproom in Traverse City. Happy hour 3:00 PM–6:00 PM. $5 sliders, $4 dirty fries, $2 off craft drafts</li>
+<li><strong><a href="/spots/sorellina-traverse-city.html">Sorellina</a></strong> — Restaurant in Traverse City. Happy hour 4:00 PM–6:00 PM. $5 personal pizzas, $5.50 house wines, $6 bruschetta &amp; caprese</li>
+<li><strong><a href="/spots/mama-lu-s-taco-shop-traverse-city.html">Mama Lu's Taco Shop</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $7 classic margaritas, $5 apps, $4 house wine, $1 off beer</li>
+<li><strong><a href="/spots/right-brain-brewery-traverse-city.html">Right Brain Brewery</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–6:00 PM. $4.50 pints, $3.75 mug fills (members), Taco Night specials</li>
+<li><strong><a href="/spots/rare-bird-brewpub-traverse-city.html">Rare Bird Brewpub</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–5:30 PM. $1 off all pints, Half-off apps, $5 featured cocktail</li>
+<li><strong><a href="/spots/north-peak-brewing-traverse-city.html">North Peak Brewing</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–6:00 PM. $1 off all alcohol, $1 off appetizers &amp; pizzas</li>
+<li><strong><a href="/spots/left-foot-charley-traverse-city.html">Left Foot Charley</a></strong> — Wine Bar in Traverse City. Happy hour 4:00 PM–6:00 PM. $5 wine tastings, Cheese plate specials, Half-off select bottles</li>
+<li><strong><a href="/spots/firefly-traverse-city.html">Firefly</a></strong> — Restaurant in Traverse City. Happy hour 4:00 PM–7:00 PM. $8 craft cocktails, $6 wines, $5 bites menu</li>
+<li><strong><a href="/spots/smoke-porter-traverse-city.html">Smoke &amp; Porter</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $2 off craft beers, Discounted small plates, $5 well drinks</li>
+<li><strong><a href="/spots/tc-whiskey-co-traverse-city.html">TC Whiskey Co.</a></strong> — Distillery in Traverse City. Happy hour 3:00 PM–7:00 PM. $6 cocktails, Extended HH til 8 PM on live music nights</li>
+<li><strong><a href="/spots/the-little-fleet-traverse-city.html">The Little Fleet</a></strong> — Cocktail Bar in Traverse City. Happy hour 4:00 PM–6:00 PM. $5 draft beer, $8 margaritas, $8 negronis, $8 wine by the glass, $14 wings + draft beer (Wed–Sun)</li>
+<li><strong><a href="/spots/the-filling-station-traverse-city.html">The Filling Station</a></strong> — Brewery in Traverse City. Happy hour 3:00 PM–6:00 PM. $1 off pints, $5 pizza slices, Half-off appetizers</li>
+<li><strong><a href="/spots/the-flying-noodle-traverse-city.html">The Flying Noodle</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $5 apps, $4 off signature cocktails, $3 off wine, $2 off drafts</li>
+<li><strong><a href="/spots/low-bar-traverse-city.html">Low Bar</a></strong> — Cocktail Bar in Traverse City. Happy hour 4:00 PM–7:00 PM. $8 craft cocktails, Smoked drink specials, $6 featured old fashioned</li>
+<li><strong><a href="/spots/the-burrow-tc-traverse-city.html">The Burrow TC</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $5 wine, $5 cocktails, $4 beer, Rotating small plates</li>
+<li><strong><a href="/spots/bubba-s-traverse-city.html">Bubba's</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $2 well drinks (late night 9–close), $3 craft drafts, $8 burger &amp; beer Tuesdays, Half-off apps</li>
+<li><strong><a href="/spots/lil-bo-bar-traverse-city.html">Lil Bo Bar</a></strong> — Restaurant in Traverse City. Happy hour 3:00 PM–6:00 PM. $4 wells, $3 domestics, Half-off chili &amp; po' boys</li>
 </ul>
 <h2><a href="/regions/grand-rapids.html">Happy Hour in Grand Rapids</a> (20 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Founders Brewing Co.</a></strong> — Brewery in Grand Rapids. Happy hour 2:00 PM–6:00 PM. $2.50 off pints, $2 off flights, $5 flatbread pizzas</li>
-<li><strong><a href="/spots/.html">HopCat</a></strong> — Taproom in Grand Rapids. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas</li>
-<li><strong><a href="/spots/.html">Butcher&#x27;s Union</a></strong> — Restaurant in Grand Rapids. Happy hour 4:00 PM–6:00 PM. $6-$10 bites (burgers, deviled eggs, nachos), $4.75 draft beers, $8.50 cocktails</li>
-<li><strong><a href="/spots/.html">San Chez Bistro</a></strong> — Restaurant in Grand Rapids. Happy hour 2:00 PM–5:00 PM. Half-off wines &amp; drafts, Half-off sangria, $2 off specialty cocktails</li>
-<li><strong><a href="/spots/.html">Stella&#x27;s Lounge</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 4:00 PM–7:00 PM. $2 PBR drafts, $3 wells, $5 nachos</li>
-<li><strong><a href="/spots/.html">The Green Well</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. Half-off appetizers, Half-off draft beers, Half-off house wines</li>
-<li><strong><a href="/spots/.html">Brick and Porter</a></strong> — Restaurant in Grand Rapids. Happy hour 2:00 PM–6:00 PM. $3 wells, $4 select calls, Great artichoke dip</li>
-<li><strong><a href="/spots/.html">ROAM by Sanchez</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. Half-off menu: tostones, frites, hummus, Half-off mules &amp; margaritas, Half-off beer &amp; sangria</li>
-<li><strong><a href="/spots/.html">Archival Brewing</a></strong> — Brewery in Grand Rapids. Happy hour 3:00 PM–5:00 PM. 25% off drinks, 15% off appetizers</li>
-<li><strong><a href="/spots/.html">One Bourbon</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 4:00 PM–6:00 PM. Half off wine &amp; beer, $2 off house cocktails, 400+ bourbons &amp; whiskeys</li>
-<li><strong><a href="/spots/.html">Bistro Bella Vita</a></strong> — Wine Bar in Grand Rapids. Happy hour 3:00 PM–5:00 PM. $4 draft beers, $6 select wines, $8 bistro martinis</li>
-<li><strong><a href="/spots/.html">The Chop House</a></strong> — Restaurant in Grand Rapids. Happy hour 5:00 PM–6:00 PM. $7 select cocktails, $8 wines by the glass</li>
-<li><strong><a href="/spots/.html">Graydon&#x27;s Crossing</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $1 off wine by the glass, $2 off draught beer, $3 off cocktails</li>
-<li><strong><a href="/spots/.html">Birch Lodge</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $1.99 happy hour menu, $1.99 food &amp; drink items</li>
-<li><strong><a href="/spots/.html">Brickyard Tavern</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–7:00 PM. $4 taps, $5 off burgers, $2 off apps</li>
-<li><strong><a href="/spots/.html">The Winchester</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $7 Winchester Mule, $7 featured cocktail, $2.75 PBR</li>
-<li><strong><a href="/spots/.html">Carolina Lowcountry Kitchen</a></strong> — Restaurant in Grand Rapids. Happy hour 4:00 PM–6:00 PM. Half-off domestic drafts, Half-off house wine, $2 fresh raw oysters</li>
-<li><strong><a href="/spots/.html">Grand Rapids Brewing Co.</a></strong> — Brewery in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $1 off select drafts, $2 retros &amp; wells</li>
-<li><strong><a href="/spots/.html">The Friesian Gastropub</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $3.50 Tito&#x27;s vodka, $1 off drafts &amp; cans, 25% off select menu items</li>
-<li><strong><a href="/spots/.html">The Apartment Lounge</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 2:00 PM–9:00 PM. Michigan Monday specials, Sangria Tuesday, Wine &amp; Well Wednesday</li>
+<li><strong><a href="/spots/founders-brewing-co-grand-rapids.html">Founders Brewing Co.</a></strong> — Brewery in Grand Rapids. Happy hour 2:00 PM–6:00 PM. $2.50 off pints, $2 off flights, $5 flatbread pizzas</li>
+<li><strong><a href="/spots/hopcat-grand-rapids.html">HopCat</a></strong> — Taproom in Grand Rapids. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas, $8 BYO burgers</li>
+<li><strong><a href="/spots/butcher-s-union-grand-rapids.html">Butcher's Union</a></strong> — Restaurant in Grand Rapids. Happy hour 4:00 PM–6:00 PM. $6-$10 bites (burgers, deviled eggs, nachos), $4.75 draft beers, $8.50 cocktails, $19 sangria pitchers</li>
+<li><strong><a href="/spots/san-chez-bistro-grand-rapids.html">San Chez Bistro</a></strong> — Restaurant in Grand Rapids. Happy hour 2:00 PM–5:00 PM. Half-off wines &amp; drafts, Half-off sangria, $2 off specialty cocktails, $9 tapas menu</li>
+<li><strong><a href="/spots/stella-s-lounge-grand-rapids.html">Stella's Lounge</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 4:00 PM–7:00 PM. $2 PBR drafts, $3 wells, $5 nachos, Thursday $5 off burgers</li>
+<li><strong><a href="/spots/the-green-well-grand-rapids.html">The Green Well</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. Half-off appetizers, Half-off draft beers, Half-off house wines, Half-off classic cocktails</li>
+<li><strong><a href="/spots/brick-and-porter-grand-rapids.html">Brick and Porter</a></strong> — Restaurant in Grand Rapids. Happy hour 2:00 PM–6:00 PM. $3 wells, $4 select calls, Great artichoke dip, All day Thursday specials</li>
+<li><strong><a href="/spots/roam-by-sanchez-grand-rapids.html">ROAM by Sanchez</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. Half-off menu: tostones, frites, hummus, Half-off mules &amp; margaritas, Half-off beer &amp; sangria</li>
+<li><strong><a href="/spots/archival-brewing-grand-rapids.html">Archival Brewing</a></strong> — Brewery in Grand Rapids. Happy hour 3:00 PM–5:00 PM. 25% off drinks, 15% off appetizers</li>
+<li><strong><a href="/spots/one-bourbon-grand-rapids.html">One Bourbon</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 4:00 PM–6:00 PM. Half off wine &amp; beer, $2 off house cocktails, 400+ bourbons &amp; whiskeys</li>
+<li><strong><a href="/spots/bistro-bella-vita-grand-rapids.html">Bistro Bella Vita</a></strong> — Wine Bar in Grand Rapids. Happy hour 3:00 PM–5:00 PM. $4 draft beers, $6 select wines, $8 bistro martinis, $6 snacks &amp; $11 pizzas</li>
+<li><strong><a href="/spots/the-chop-house-grand-rapids.html">The Chop House</a></strong> — Restaurant in Grand Rapids. Happy hour 5:00 PM–6:00 PM. $7 select cocktails, $8 wines by the glass</li>
+<li><strong><a href="/spots/graydon-s-crossing-grand-rapids.html">Graydon's Crossing</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $1 off wine by the glass, $2 off draught beer, $3 off cocktails, $5 off beer pitchers</li>
+<li><strong><a href="/spots/birch-lodge-grand-rapids.html">Birch Lodge</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $1.99 happy hour menu, $1.99 food &amp; drink items</li>
+<li><strong><a href="/spots/brickyard-tavern-grand-rapids.html">Brickyard Tavern</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–7:00 PM. $4 taps, $5 off burgers, $2 off apps</li>
+<li><strong><a href="/spots/the-winchester-grand-rapids.html">The Winchester</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $7 Winchester Mule, $7 featured cocktail, $2.75 PBR, $5 house wine</li>
+<li><strong><a href="/spots/carolina-lowcountry-kitchen-grand-rapids.html">Carolina Lowcountry Kitchen</a></strong> — Restaurant in Grand Rapids. Happy hour 4:00 PM–6:00 PM. Half-off domestic drafts, Half-off house wine, $2 fresh raw oysters, $5 happy hour starters</li>
+<li><strong><a href="/spots/grand-rapids-brewing-co-grand-rapids.html">Grand Rapids Brewing Co.</a></strong> — Brewery in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $1 off select drafts, $2 retros &amp; wells</li>
+<li><strong><a href="/spots/the-friesian-gastropub-grand-rapids.html">The Friesian Gastropub</a></strong> — Restaurant in Grand Rapids. Happy hour 3:00 PM–6:00 PM. $3.50 Tito's vodka, $1 off drafts &amp; cans, 25% off select menu items</li>
+<li><strong><a href="/spots/the-apartment-lounge-grand-rapids.html">The Apartment Lounge</a></strong> — Cocktail Bar in Grand Rapids. Happy hour 2:00 PM–9:00 PM. Michigan Monday specials, Sangria Tuesday, Wine &amp; Well Wednesday, Thirsty Thursday, Sunday Bloody Mary Bar</li>
 </ul>
 <h2><a href="/regions/ann-arbor.html">Happy Hour in Ann Arbor</a> (20 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Zingerman&#x27;s Roadhouse</a></strong> — Restaurant in Ann Arbor. Happy hour 2:00 PM–6:00 PM. $2 off all 16oz drafts, BBQ tacos specials, Happy oysters</li>
-<li><strong><a href="/spots/.html">The Ravens Club</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $2 off appetizers, Select discounted cocktails, 130+ whiskeys</li>
-<li><strong><a href="/spots/.html">Jolly Pumpkin</a></strong> — Brewery in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $4 North Peak drafts, $5 Jolly Pumpkin drafts, $10 pizzas</li>
-<li><strong><a href="/spots/.html">Ashley&#x27;s</a></strong> — Taproom in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $4 Michigan beer pints, $7 select cocktails, $4 well drinks</li>
-<li><strong><a href="/spots/.html">Aventura</a></strong> — Wine Bar in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $3 off wine by the glass, $10 martini, Manhattan or Old Fashioned, 50% off bottled beer</li>
-<li><strong><a href="/spots/.html">HopCat Ann Arbor</a></strong> — Taproom in Ann Arbor. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas</li>
-<li><strong><a href="/spots/.html">Mani Osteria</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $5 prosecco, $7 Americano, $8 spritzes</li>
-<li><strong><a href="/spots/.html">The Blue Leprechaun</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–8:00 PM. $4 Michigan pints, $5 wells, Happy hour food specials</li>
-<li><strong><a href="/spots/.html">Grizzly Peak Brewing</a></strong> — Brewery in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $1 off house pints, $5 select appetizers, $6 wine by the glass</li>
-<li><strong><a href="/spots/.html">The Circ Bar</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 6:00 PM–9:00 PM. Discounted cocktails, Food specials, Rooftop patio vibes</li>
-<li><strong><a href="/spots/.html">Venue by 4M</a></strong> — Restaurant in Ann Arbor. Happy hour 3:00 PM–6:00 PM. Draft beer specials, Wine by the glass deals, Select food menu</li>
-<li><strong><a href="/spots/.html">Conor O&#x27;Neill&#x27;s</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–7:00 PM. $5 select pints, $6 Irish coffee, Weekly food specials</li>
-<li><strong><a href="/spots/.html">The Brown Jug</a></strong> — Restaurant in Ann Arbor. Happy hour 2:00 PM–4:00 PM. Half-off appetizers, $3 Coors/Miller/Labatt 22oz drafts, $5 Long Islands</li>
-<li><strong><a href="/spots/.html">Lowertown</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $9 margaritas, $4 Two Hearted, $7 gin &amp; tonics</li>
-<li><strong><a href="/spots/.html">Black Pearl</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–6:00 PM. Discounted apps (coconut shrimp, fish tacos), 200+ drink options, Wine specials</li>
-<li><strong><a href="/spots/.html">Haymaker Public House</a></strong> — Restaurant in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $2 off drafts, $6 wells, Half-off select apps</li>
-<li><strong><a href="/spots/.html">The Last Word</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 5:00 PM–7:00 PM. $9 classic cocktails, $5 beer &amp; wine, Small plates specials</li>
-<li><strong><a href="/spots/.html">Sava&#x27;s</a></strong> — Restaurant in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $5 select cocktails, $4 draft beer, Half-off appetizers</li>
-<li><strong><a href="/spots/.html">Mothfire Brewing</a></strong> — Brewery in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Snack specials</li>
-<li><strong><a href="/spots/.html">Old Town</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 10:00 PM–12:00 AM. 50% off select drinks, Monday $1 off Michigan alcohol</li>
+<li><strong><a href="/spots/zingerman-s-roadhouse-ann-arbor.html">Zingerman's Roadhouse</a></strong> — Restaurant in Ann Arbor. Happy hour 2:00 PM–6:00 PM. $2 off all 16oz drafts, BBQ tacos specials, Happy oysters, Fried pickles</li>
+<li><strong><a href="/spots/the-ravens-club-ann-arbor.html">The Ravens Club</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $2 off appetizers, Select discounted cocktails, 130+ whiskeys</li>
+<li><strong><a href="/spots/jolly-pumpkin-ann-arbor.html">Jolly Pumpkin</a></strong> — Brewery in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $4 North Peak drafts, $5 Jolly Pumpkin drafts, $10 pizzas</li>
+<li><strong><a href="/spots/ashley-s-ann-arbor.html">Ashley's</a></strong> — Taproom in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $4 Michigan beer pints, $7 select cocktails, $4 well drinks, $5 wines</li>
+<li><strong><a href="/spots/aventura-ann-arbor.html">Aventura</a></strong> — Wine Bar in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $3 off wine by the glass, $10 martini, Manhattan or Old Fashioned, 50% off bottled beer</li>
+<li><strong><a href="/spots/hopcat-ann-arbor-ann-arbor.html">HopCat Ann Arbor</a></strong> — Taproom in Ann Arbor. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas, $6 wine</li>
+<li><strong><a href="/spots/mani-osteria-ann-arbor.html">Mani Osteria</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $5 prosecco, $7 Americano, $8 spritzes, $4 Peroni, $4 crostini</li>
+<li><strong><a href="/spots/the-blue-leprechaun-ann-arbor.html">The Blue Leprechaun</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–8:00 PM. $4 Michigan pints, $5 wells, Happy hour food specials</li>
+<li><strong><a href="/spots/grizzly-peak-brewing-ann-arbor.html">Grizzly Peak Brewing</a></strong> — Brewery in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $1 off house pints, $5 select appetizers, $6 wine by the glass</li>
+<li><strong><a href="/spots/the-circ-bar-ann-arbor.html">The Circ Bar</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 6:00 PM–9:00 PM. Discounted cocktails, Food specials, Rooftop patio vibes</li>
+<li><strong><a href="/spots/venue-by-4m-ann-arbor.html">Venue by 4M</a></strong> — Restaurant in Ann Arbor. Happy hour 3:00 PM–6:00 PM. Draft beer specials, Wine by the glass deals, Select food menu, Tropic Thunder cocktail</li>
+<li><strong><a href="/spots/conor-o-neill-s-ann-arbor.html">Conor O'Neill's</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–7:00 PM. $5 select pints, $6 Irish coffee, Weekly food specials</li>
+<li><strong><a href="/spots/the-brown-jug-ann-arbor.html">The Brown Jug</a></strong> — Restaurant in Ann Arbor. Happy hour 2:00 PM–4:00 PM. Half-off appetizers, $3 Coors/Miller/Labatt 22oz drafts, $5 Long Islands, $4 premium pints</li>
+<li><strong><a href="/spots/lowertown-ann-arbor.html">Lowertown</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 4:00 PM–6:00 PM. $9 margaritas, $4 Two Hearted, $7 gin &amp; tonics, $9 wines</li>
+<li><strong><a href="/spots/black-pearl-ann-arbor.html">Black Pearl</a></strong> — Restaurant in Ann Arbor. Happy hour 4:00 PM–6:00 PM. Discounted apps (coconut shrimp, fish tacos), 200+ drink options, Wine specials</li>
+<li><strong><a href="/spots/haymaker-public-house-ann-arbor.html">Haymaker Public House</a></strong> — Restaurant in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $2 off drafts, $6 wells, Half-off select apps</li>
+<li><strong><a href="/spots/the-last-word-ann-arbor.html">The Last Word</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 5:00 PM–7:00 PM. $9 classic cocktails, $5 beer &amp; wine, Small plates specials</li>
+<li><strong><a href="/spots/sava-s-ann-arbor.html">Sava's</a></strong> — Restaurant in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $5 select cocktails, $4 draft beer, Half-off appetizers</li>
+<li><strong><a href="/spots/mothfire-brewing-ann-arbor.html">Mothfire Brewing</a></strong> — Brewery in Ann Arbor. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Snack specials</li>
+<li><strong><a href="/spots/old-town-ann-arbor.html">Old Town</a></strong> — Cocktail Bar in Ann Arbor. Happy hour 10:00 PM–12:00 AM. 50% off select drinks, Monday $1 off Michigan alcohol</li>
 </ul>
 <h2><a href="/regions/detroit.html">Happy Hour in Detroit</a> (20 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Grey Ghost</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $8 cocktails, $5 draft beers, $7 wine</li>
-<li><strong><a href="/spots/.html">The Sugar House</a></strong> — Cocktail Bar in Detroit. Happy hour 5:00 PM–7:00 PM. $8 classic cocktails, $5 draft beer, Seasonal specials</li>
-<li><strong><a href="/spots/.html">Batch Brewing Company</a></strong> — Brewery in Detroit. Happy hour 4:00 PM–6:00 PM. $1 off pints, $2 off flights, Rotating food specials</li>
-<li><strong><a href="/spots/.html">HopCat Detroit</a></strong> — Taproom in Detroit. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 draft beers, $6 specialty drinks</li>
-<li><strong><a href="/spots/.html">Dragonfly</a></strong> — Restaurant in Detroit. Happy hour 5:00 PM–7:00 PM. $5 menu items, $5 beer &amp; shot combo, $5 mocktails</li>
-<li><strong><a href="/spots/.html">Parc Detroit</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. $9 craft cocktails, $8-$11 wines, $12 small bites</li>
-<li><strong><a href="/spots/.html">The Shelby</a></strong> — Cocktail Bar in Detroit. Happy hour 5:00 PM–6:00 PM. $8 old fashioned, $8 daiquiri, $8 espresso martini</li>
-<li><strong><a href="/spots/.html">Green Dot Stables</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. $2.50-$5 sliders, $3 Michigan drafts, $4 wells</li>
-<li><strong><a href="/spots/.html">Anchor Bar</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. $5 well drinks, $8 Miller/PBR pitchers, $8 garbage can nachos</li>
-<li><strong><a href="/spots/.html">Firebird Tavern</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. Half-off beers &amp; wine, $5 small plates, Irish nachos</li>
-<li><strong><a href="/spots/.html">The Skip</a></strong> — Cocktail Bar in Detroit. Happy hour 4:00 PM–6:00 PM. $5 select beers, $6 well drinks, Rotating cocktail specials</li>
-<li><strong><a href="/spots/.html">The Block</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $6 happy hour menu, Famous salmon sliders, $6 classic margarita</li>
-<li><strong><a href="/spots/.html">Besa</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. Rotating craft cocktails, Discounted raw bar, Bistro fare specials</li>
-<li><strong><a href="/spots/.html">Motor City Wine</a></strong> — Wine Bar in Detroit. Happy hour 5:00 PM–7:00 PM. $6 select wines, $4 draft beers, Charcuterie specials</li>
-<li><strong><a href="/spots/.html">The Peterboro</a></strong> — Restaurant in Detroit. Happy hour 5:00 PM–7:00 PM. $6 craft cocktails, $4 beers, Scallion pancake specials</li>
-<li><strong><a href="/spots/.html">Standby</a></strong> — Cocktail Bar in Detroit. Happy hour 5:00 PM–7:00 PM. $8 select cocktails, $5 beer specials, Bar snacks</li>
-<li><strong><a href="/spots/.html">The Library</a></strong> — Cocktail Bar in Detroit. Happy hour 4:00 PM–7:00 PM. $7 classic cocktails, $5 draft beer, Happy hour oysters</li>
-<li><strong><a href="/spots/.html">Midtown Social</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $4 wine, $3 wells, $4 mystery beers</li>
-<li><strong><a href="/spots/.html">Detroit Shipping Company</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $5 draft beers, $6 cocktails, Food vendor specials</li>
-<li><strong><a href="/spots/.html">Bakersfield DET</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–7:00 PM. $5 house margaritas, $3 Tecate cans, $2 tacos</li>
+<li><strong><a href="/spots/grey-ghost-detroit.html">Grey Ghost</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $8 cocktails, $5 draft beers, $7 wine, Cheeseburger sliders &amp; crispy pork belly</li>
+<li><strong><a href="/spots/the-sugar-house-detroit.html">The Sugar House</a></strong> — Cocktail Bar in Detroit. Happy hour 5:00 PM–7:00 PM. $8 classic cocktails, $5 draft beer, Seasonal specials</li>
+<li><strong><a href="/spots/batch-brewing-company-detroit.html">Batch Brewing Company</a></strong> — Brewery in Detroit. Happy hour 4:00 PM–6:00 PM. $1 off pints, $2 off flights, Rotating food specials</li>
+<li><strong><a href="/spots/hopcat-detroit-detroit.html">HopCat Detroit</a></strong> — Taproom in Detroit. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 draft beers, $6 specialty drinks, Thu $9 burger + fries + draft</li>
+<li><strong><a href="/spots/dragonfly-detroit.html">Dragonfly</a></strong> — Restaurant in Detroit. Happy hour 5:00 PM–7:00 PM. $5 menu items, $5 beer &amp; shot combo, $5 mocktails, Caesar salad special</li>
+<li><strong><a href="/spots/parc-detroit-detroit.html">Parc Detroit</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. $9 craft cocktails, $8-$11 wines, $12 small bites, Espresso martini &amp; old fashioned specials</li>
+<li><strong><a href="/spots/the-shelby-detroit.html">The Shelby</a></strong> — Cocktail Bar in Detroit. Happy hour 5:00 PM–6:00 PM. $8 old fashioned, $8 daiquiri, $8 espresso martini, $10 beef tartare</li>
+<li><strong><a href="/spots/green-dot-stables-detroit.html">Green Dot Stables</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. $2.50-$5 sliders, $3 Michigan drafts, $4 wells</li>
+<li><strong><a href="/spots/anchor-bar-detroit.html">Anchor Bar</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. $5 well drinks, $8 Miller/PBR pitchers, $8 garbage can nachos, $3 sliders</li>
+<li><strong><a href="/spots/firebird-tavern-detroit.html">Firebird Tavern</a></strong> — Restaurant in Detroit. Happy hour 3:00 PM–6:00 PM. Half-off beers &amp; wine, $5 small plates, Irish nachos, Cauliflower dip</li>
+<li><strong><a href="/spots/the-skip-detroit.html">The Skip</a></strong> — Cocktail Bar in Detroit. Happy hour 4:00 PM–6:00 PM. $5 select beers, $6 well drinks, Rotating cocktail specials, Seasonal slushies</li>
+<li><strong><a href="/spots/the-block-detroit.html">The Block</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $6 happy hour menu, Famous salmon sliders, $6 classic margarita</li>
+<li><strong><a href="/spots/besa-detroit.html">Besa</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. Rotating craft cocktails, Discounted raw bar, Bistro fare specials</li>
+<li><strong><a href="/spots/motor-city-wine-detroit.html">Motor City Wine</a></strong> — Wine Bar in Detroit. Happy hour 5:00 PM–7:00 PM. $6 select wines, $4 draft beers, Charcuterie specials</li>
+<li><strong><a href="/spots/the-peterboro-detroit.html">The Peterboro</a></strong> — Restaurant in Detroit. Happy hour 5:00 PM–7:00 PM. $6 craft cocktails, $4 beers, Scallion pancake specials, General Tso's cauliflower</li>
+<li><strong><a href="/spots/standby-detroit.html">Standby</a></strong> — Cocktail Bar in Detroit. Happy hour 5:00 PM–7:00 PM. $8 select cocktails, $5 beer specials, Bar snacks</li>
+<li><strong><a href="/spots/the-library-detroit.html">The Library</a></strong> — Cocktail Bar in Detroit. Happy hour 4:00 PM–7:00 PM. $7 classic cocktails, $5 draft beer, Happy hour oysters, Small plates specials</li>
+<li><strong><a href="/spots/midtown-social-detroit.html">Midtown Social</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $4 wine, $3 wells, $4 mystery beers, $5 bartender choice cocktails</li>
+<li><strong><a href="/spots/detroit-shipping-company-detroit.html">Detroit Shipping Company</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–6:00 PM. $5 draft beers, $6 cocktails, Food vendor specials</li>
+<li><strong><a href="/spots/bakersfield-det-detroit.html">Bakersfield DET</a></strong> — Restaurant in Detroit. Happy hour 4:00 PM–7:00 PM. $5 house margaritas, $3 Tecate cans, $2 tacos, $5 queso</li>
 </ul>
 <h2><a href="/regions/kalamazoo.html">Happy Hour in Kalamazoo</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Bell&#x27;s Eccentric Cafe</a></strong> — Brewery in Kalamazoo. Happy hour 3:00 PM–6:00 PM. $1 off Bell&#x27;s pints, $5 appetizers, Live music nights</li>
-<li><strong><a href="/spots/.html">HopCat Kalamazoo</a></strong> — Taproom in Kalamazoo. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas</li>
-<li><strong><a href="/spots/.html">Brick and Brine</a></strong> — Restaurant in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $9 mushroom canapé, $9 salmon belly tartare, $9 chicken wings</li>
-<li><strong><a href="/spots/.html">Stamped Robin</a></strong> — Cocktail Bar in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $8 craft cocktails, $5 beer &amp; wine, Discounted small plates</li>
-<li><strong><a href="/spots/.html">Principle Food &amp; Drink</a></strong> — Restaurant in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $7 cocktails, $5 draft beer, Half-off select apps</li>
-<li><strong><a href="/spots/.html">One Well Brewing</a></strong> — Brewery in Kalamazoo. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Board game library</li>
-<li><strong><a href="/spots/.html">Kalamazoo Beer Exchange</a></strong> — Taproom in Kalamazoo. Happy hour 4:00 PM–6:00 PM. Stock market-style beer pricing, Prices drop when you buy, Market crash specials</li>
-<li><strong><a href="/spots/.html">600 Kitchen &amp; Bar</a></strong> — Restaurant in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $6 cocktails, $4 drafts, $5 wine</li>
-<li><strong><a href="/spots/.html">Louie&#x27;s Trophy House</a></strong> — Restaurant in Kalamazoo. Happy hour 3:00 PM–6:00 PM. $3 house wines, $4 wells, $5 appetizers</li>
-<li><strong><a href="/spots/.html">Latitude 42</a></strong> — Brewery in Portage. Happy hour 3:00 PM–6:00 PM. $1 off house pints, $5 apps, $6 wine</li>
+<li><strong><a href="/spots/bell-s-eccentric-cafe-kalamazoo.html">Bell's Eccentric Cafe</a></strong> — Brewery in Kalamazoo. Happy hour 3:00 PM–6:00 PM. $1 off Bell's pints, $5 appetizers, Live music nights</li>
+<li><strong><a href="/spots/hopcat-kalamazoo-kalamazoo.html">HopCat Kalamazoo</a></strong> — Taproom in Kalamazoo. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas, Thu $9 burger + fries + draft</li>
+<li><strong><a href="/spots/brick-and-brine-kalamazoo.html">Brick and Brine</a></strong> — Restaurant in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $9 mushroom canapé, $9 salmon belly tartare, $9 chicken wings, $10 bartender feature cocktail</li>
+<li><strong><a href="/spots/stamped-robin-kalamazoo.html">Stamped Robin</a></strong> — Cocktail Bar in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $8 craft cocktails, $5 beer &amp; wine, Discounted small plates</li>
+<li><strong><a href="/spots/principle-food-drink-kalamazoo.html">Principle Food &amp; Drink</a></strong> — Restaurant in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $7 cocktails, $5 draft beer, Half-off select apps</li>
+<li><strong><a href="/spots/one-well-brewing-kalamazoo.html">One Well Brewing</a></strong> — Brewery in Kalamazoo. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Board game library</li>
+<li><strong><a href="/spots/kalamazoo-beer-exchange-kalamazoo.html">Kalamazoo Beer Exchange</a></strong> — Taproom in Kalamazoo. Happy hour 4:00 PM–6:00 PM. Stock market-style beer pricing, Prices drop when you buy, Market crash specials</li>
+<li><strong><a href="/spots/600-kitchen-bar-kalamazoo.html">600 Kitchen &amp; Bar</a></strong> — Restaurant in Kalamazoo. Happy hour 4:00 PM–6:00 PM. $6 cocktails, $4 drafts, $5 wine, Bar bite specials</li>
+<li><strong><a href="/spots/louie-s-trophy-house-kalamazoo.html">Louie's Trophy House</a></strong> — Restaurant in Kalamazoo. Happy hour 3:00 PM–6:00 PM. $3 house wines, $4 wells, $5 appetizers</li>
+<li><strong><a href="/spots/latitude-42-portage.html">Latitude 42</a></strong> — Brewery in Portage. Happy hour 3:00 PM–6:00 PM. $1 off house pints, $5 apps, $6 wine</li>
 </ul>
-<h2><a href="/regions/lansing.html">Happy Hour in Lansing</a> (10 spots)</h2>
+<h2><a href="/regions/lansing.html">Happy Hour in Lansing &amp; East Lansing</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">HopCat East Lansing</a></strong> — Taproom in East Lansing. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas</li>
-<li><strong><a href="/spots/.html">Beggar&#x27;s Banquet</a></strong> — Restaurant in East Lansing. Happy hour 4:00 PM–6:00 PM. Half-off drinks, $5 sliders &amp; snacks, Wine Wednesday specials</li>
-<li><strong><a href="/spots/.html">Midtown Brewing Co.</a></strong> — Brewery in Lansing. Happy hour 3:00 PM–6:00 PM. $1 off house pints, $5 apps, $6 cocktails</li>
-<li><strong><a href="/spots/.html">Zoobie&#x27;s Old Town Tavern</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. $3-$6 appetizers, $2 PBR, $4 well highballs</li>
-<li><strong><a href="/spots/.html">Cask &amp; Co.</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. $5 cocktails, $4 draft beer, $5 select apps</li>
-<li><strong><a href="/spots/.html">FieldHouse</a></strong> — Restaurant in East Lansing. Happy hour 4:00 PM–7:00 PM. $5 craft shorts &amp; domestic tallboys, $6 house wine, $7 seasonal cocktails</li>
-<li><strong><a href="/spots/.html">Art&#x27;s Pub</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. $4 wells, $1 off drafts, Half-off apps</li>
-<li><strong><a href="/spots/.html">One North Kitchen &amp; Bar</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–7:00 PM. Half-off pizza &amp; appetizers, $4 well drinks, $1 off beers &amp; wine</li>
-<li><strong><a href="/spots/.html">Westgate Tavern &amp; Grill</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. Daily drink specials, $1 wings Wednesday, $11.99 sirloin specials</li>
-<li><strong><a href="/spots/.html">Sidebar East Lansing</a></strong> — Restaurant in East Lansing. Happy hour 3:00 PM–6:00 PM. $5 cocktails, $4 drafts, Bar snack specials</li>
+<li><strong><a href="/spots/hopcat-east-lansing-east-lansing.html">HopCat East Lansing</a></strong> — Taproom in East Lansing. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas, $6 wine</li>
+<li><strong><a href="/spots/beggar-s-banquet-east-lansing.html">Beggar's Banquet</a></strong> — Restaurant in East Lansing. Happy hour 4:00 PM–6:00 PM. Half-off drinks, $5 sliders &amp; snacks, Wine Wednesday specials</li>
+<li><strong><a href="/spots/midtown-brewing-co-lansing.html">Midtown Brewing Co.</a></strong> — Brewery in Lansing. Happy hour 3:00 PM–6:00 PM. $1 off house pints, $5 apps, $6 cocktails</li>
+<li><strong><a href="/spots/zoobie-s-old-town-tavern-lansing.html">Zoobie's Old Town Tavern</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. $3-$6 appetizers, $2 PBR, $4 well highballs, $5 wine, $6 cocktails</li>
+<li><strong><a href="/spots/cask-co-lansing.html">Cask &amp; Co.</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. $5 cocktails, $4 draft beer, $5 select apps</li>
+<li><strong><a href="/spots/fieldhouse-east-lansing.html">FieldHouse</a></strong> — Restaurant in East Lansing. Happy hour 4:00 PM–7:00 PM. $5 craft shorts &amp; domestic tallboys, $6 house wine, $7 seasonal cocktails, Tue $2 tacos, Thu $5 pizza</li>
+<li><strong><a href="/spots/art-s-pub-lansing.html">Art's Pub</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. $4 wells, $1 off drafts, Half-off apps</li>
+<li><strong><a href="/spots/one-north-kitchen-bar-lansing.html">One North Kitchen &amp; Bar</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–7:00 PM. Half-off pizza &amp; appetizers, $4 well drinks, $1 off beers &amp; wine</li>
+<li><strong><a href="/spots/westgate-tavern-grill-lansing.html">Westgate Tavern &amp; Grill</a></strong> — Restaurant in Lansing. Happy hour 3:00 PM–6:00 PM. Daily drink specials, $1 wings Wednesday, $11.99 sirloin specials</li>
+<li><strong><a href="/spots/sidebar-east-lansing-east-lansing.html">Sidebar East Lansing</a></strong> — Restaurant in East Lansing. Happy hour 3:00 PM–6:00 PM. $5 cocktails, $4 drafts, Bar snack specials</li>
 </ul>
 <h2><a href="/regions/holland.html">Happy Hour in Holland</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">New Holland Brewing</a></strong> — Brewery in Holland. Happy hour 2:00 PM–6:00 PM. $2 off all pints, $1 off Dragon&#x27;s Milk 10oz, $8 Dragon&#x27;s Milk Old Fashioned</li>
-<li><strong><a href="/spots/.html">HopCat Holland</a></strong> — Taproom in Holland. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas</li>
-<li><strong><a href="/spots/.html">Big Lake Brewing</a></strong> — Brewery in Holland. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Appetizer specials</li>
-<li><strong><a href="/spots/.html">Seventy Six</a></strong> — Restaurant in Holland. Happy hour 4:00 PM–6:00 PM. $7 cocktails, $5 beer &amp; wine, Discounted appetizers</li>
-<li><strong><a href="/spots/.html">Hops at 84 East</a></strong> — Taproom in Holland. Happy hour 3:00 PM–6:00 PM. $1 off craft pints, $5 apps, Half-off select pizzas</li>
-<li><strong><a href="/spots/.html">Boatwerks Waterfront</a></strong> — Restaurant in Holland. Happy hour 3:00 PM–6:00 PM. $5 draft beers, $6 house wine, $7 cocktails</li>
-<li><strong><a href="/spots/.html">The Curragh</a></strong> — Restaurant in Holland. Happy hour 4:00 PM–6:00 PM. $5 Irish pints, $6 whiskey specials, $5 appetizers</li>
-<li><strong><a href="/spots/.html">Waverly Stone</a></strong> — Restaurant in Holland. Happy hour 4:00 PM–6:00 PM. $8 cocktails, $5 beer &amp; wine, Half-off select starters</li>
-<li><strong><a href="/spots/.html">CitySen Lounge</a></strong> — Cocktail Bar in Holland. Happy hour 4:00 PM–7:00 PM. $6 cocktails, $4 draft beer, Food specials daily</li>
-<li><strong><a href="/spots/.html">Butch&#x27;s Dry Dock</a></strong> — Wine Bar in Holland. Happy hour 4:00 PM–6:00 PM. $6 select wines, $5 craft drafts, Appetizer specials</li>
+<li><strong><a href="/spots/new-holland-brewing-holland.html">New Holland Brewing</a></strong> — Brewery in Holland. Happy hour 2:00 PM–6:00 PM. $2 off all pints, $1 off Dragon's Milk 10oz, $8 Dragon's Milk Old Fashioned, $5 call drinks</li>
+<li><strong><a href="/spots/hopcat-holland-holland.html">HopCat Holland</a></strong> — Taproom in Holland. Happy hour 3:00 PM–5:30 PM. 50% off select apps, $4 local drafts, $6 mules &amp; meowgaritas, Thu $9 burger + fries + draft</li>
+<li><strong><a href="/spots/big-lake-brewing-holland.html">Big Lake Brewing</a></strong> — Brewery in Holland. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Appetizer specials</li>
+<li><strong><a href="/spots/seventy-six-holland.html">Seventy Six</a></strong> — Restaurant in Holland. Happy hour 4:00 PM–6:00 PM. $7 cocktails, $5 beer &amp; wine, Discounted appetizers</li>
+<li><strong><a href="/spots/hops-at-84-east-holland.html">Hops at 84 East</a></strong> — Taproom in Holland. Happy hour 3:00 PM–6:00 PM. $1 off craft pints, $5 apps, Half-off select pizzas</li>
+<li><strong><a href="/spots/boatwerks-waterfront-holland.html">Boatwerks Waterfront</a></strong> — Restaurant in Holland. Happy hour 3:00 PM–6:00 PM. $5 draft beers, $6 house wine, $7 cocktails, Sunset views</li>
+<li><strong><a href="/spots/the-curragh-holland.html">The Curragh</a></strong> — Restaurant in Holland. Happy hour 4:00 PM–6:00 PM. $5 Irish pints, $6 whiskey specials, $5 appetizers</li>
+<li><strong><a href="/spots/waverly-stone-holland.html">Waverly Stone</a></strong> — Restaurant in Holland. Happy hour 4:00 PM–6:00 PM. $8 cocktails, $5 beer &amp; wine, Half-off select starters</li>
+<li><strong><a href="/spots/citysen-lounge-holland.html">CitySen Lounge</a></strong> — Cocktail Bar in Holland. Happy hour 4:00 PM–7:00 PM. $6 cocktails, $4 draft beer, Food specials daily</li>
+<li><strong><a href="/spots/butch-s-dry-dock-holland.html">Butch's Dry Dock</a></strong> — Wine Bar in Holland. Happy hour 4:00 PM–6:00 PM. $6 select wines, $5 craft drafts, Appetizer specials</li>
 </ul>
 <h2><a href="/regions/muskegon.html">Happy Hour in Muskegon</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Pigeon Hill Brewing</a></strong> — Brewery in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off all pints, $2 off flights, Happy hour soft pretzels $5</li>
-<li><strong><a href="/spots/.html">Unruly Brewing</a></strong> — Brewery in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off house beers, $3 off pitchers, Smoked meat specials</li>
-<li><strong><a href="/spots/.html">Lake Bluff Grille</a></strong> — Restaurant in Muskegon. Happy hour 3:00 PM–5:30 PM. $2 off drafts &amp; seltzers, Discounted appetizers, All-day happy hour on Monday</li>
-<li><strong><a href="/spots/.html">18th Amendment Spirits Co.</a></strong> — Cocktail Bar in Muskegon. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 classic cocktails, Small plates specials</li>
-<li><strong><a href="/spots/.html">Liquid Assets</a></strong> — Cocktail Bar in Muskegon. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 wine pours, $4 select beers</li>
-<li><strong><a href="/spots/.html">46 Bar</a></strong> — Restaurant in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off all drinks, Discounted appetizers, Famous burger specials</li>
-<li><strong><a href="/spots/.html">Pints &amp; Quarts</a></strong> — Restaurant in Norton Shores. Happy hour 3:00 PM–6:00 PM. Quarter off appetizers on Thursday, Daily food specials, BOGO burgers Monday</li>
-<li><strong><a href="/spots/.html">The Deck</a></strong> — Restaurant in Muskegon. Happy hour 3:00 PM–5:00 PM. $2 off drafts, $5 BBQ sliders, Seasonal drink specials</li>
-<li><strong><a href="/spots/.html">North Grove Brewers</a></strong> — Brewery in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off pints, $3 off growler fills</li>
-<li><strong><a href="/spots/.html">Hank&#x27;s Tavern</a></strong> — Restaurant in Muskegon. Happy hour 11:00 AM–11:00 PM. Half off draft beer all day Tuesday, 25% off drinks all day Thursday</li>
+<li><strong><a href="/spots/pigeon-hill-brewing-muskegon.html">Pigeon Hill Brewing</a></strong> — Brewery in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off all pints, $2 off flights, Happy hour soft pretzels $5</li>
+<li><strong><a href="/spots/unruly-brewing-muskegon.html">Unruly Brewing</a></strong> — Brewery in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off house beers, $3 off pitchers, Smoked meat specials</li>
+<li><strong><a href="/spots/lake-bluff-grille-muskegon.html">Lake Bluff Grille</a></strong> — Restaurant in Muskegon. Happy hour 3:00 PM–5:30 PM. $2 off drafts &amp; seltzers, Discounted appetizers, All-day happy hour on Monday</li>
+<li><strong><a href="/spots/18th-amendment-spirits-co-muskegon.html">18th Amendment Spirits Co.</a></strong> — Cocktail Bar in Muskegon. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 classic cocktails, Small plates specials</li>
+<li><strong><a href="/spots/liquid-assets-muskegon.html">Liquid Assets</a></strong> — Cocktail Bar in Muskegon. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 wine pours, $4 select beers</li>
+<li><strong><a href="/spots/46-bar-muskegon.html">46 Bar</a></strong> — Restaurant in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off all drinks, Discounted appetizers, Famous burger specials</li>
+<li><strong><a href="/spots/pints-quarts-norton-shores.html">Pints &amp; Quarts</a></strong> — Restaurant in Norton Shores. Happy hour 3:00 PM–6:00 PM. Quarter off appetizers on Thursday, Daily food specials, BOGO burgers Monday</li>
+<li><strong><a href="/spots/the-deck-muskegon.html">The Deck</a></strong> — Restaurant in Muskegon. Happy hour 3:00 PM–5:00 PM. $2 off drafts, $5 BBQ sliders, Seasonal drink specials</li>
+<li><strong><a href="/spots/north-grove-brewers-muskegon.html">North Grove Brewers</a></strong> — Brewery in Muskegon. Happy hour 3:00 PM–6:00 PM. $1 off pints, $3 off growler fills</li>
+<li><strong><a href="/spots/hank-s-tavern-muskegon.html">Hank's Tavern</a></strong> — Restaurant in Muskegon. Happy hour 11:00 AM–11:00 PM. Half off draft beer all day Tuesday, 25% off drinks all day Thursday</li>
 </ul>
-<h2><a href="/regions/marquette.html">Happy Hour in Marquette (UP)</a> (10 spots)</h2>
+<h2><a href="/regions/marquette.html">Happy Hour in Marquette</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Ore Dock Brewing</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Rotating seasonal specials</li>
-<li><strong><a href="/spots/.html">Blackrocks Brewery</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off all beers, Cribbage and ring game at the bar</li>
-<li><strong><a href="/spots/.html">The Vierling</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off house brews, $5 whitefish dip, Appetizer specials</li>
-<li><strong><a href="/spots/.html">Lagniappe Cajun Creole Eatery</a></strong> — Restaurant in Marquette. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 Cajun appetizers, Discounted hurricanes</li>
-<li><strong><a href="/spots/.html">Iron Bay Restaurant &amp; Drinkery</a></strong> — Restaurant in Marquette. Happy hour 3:00 PM–6:00 PM. $2 off microbrews, $6 whitefish tacos, Discounted appetizers</li>
-<li><strong><a href="/spots/.html">Zephyr Wine Bar</a></strong> — Wine Bar in Marquette. Happy hour 4:00 PM–6:00 PM. $3 off wine flights, $5 featured wines by the glass, Charcuterie board specials</li>
-<li><strong><a href="/spots/.html">Stucko&#x27;s Pub &amp; Grill</a></strong> — Restaurant in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off pints, $5 burger &amp; fries combo, Half-off select apps</li>
-<li><strong><a href="/spots/.html">Portside Inn</a></strong> — Restaurant in Marquette. Happy hour 3:00 PM–5:30 PM. $1 off drafts, $5 onion rings, Soup &amp; sandwich combo $8</li>
-<li><strong><a href="/spots/.html">Drifa Brewing Co-op</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off all pints, Member discount on growlers</li>
-<li><strong><a href="/spots/.html">The Honorable</a></strong> — Cocktail Bar in Marquette. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 beer &amp; shot combo, Rotating small plates</li>
+<li><strong><a href="/spots/ore-dock-brewing-marquette.html">Ore Dock Brewing</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off pints, $2 off flights, Rotating seasonal specials</li>
+<li><strong><a href="/spots/blackrocks-brewery-marquette.html">Blackrocks Brewery</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off all beers, Cribbage and ring game at the bar</li>
+<li><strong><a href="/spots/the-vierling-marquette.html">The Vierling</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off house brews, $5 whitefish dip, Appetizer specials</li>
+<li><strong><a href="/spots/lagniappe-cajun-creole-eatery-marquette.html">Lagniappe Cajun Creole Eatery</a></strong> — Restaurant in Marquette. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 Cajun appetizers, Discounted hurricanes</li>
+<li><strong><a href="/spots/iron-bay-restaurant-drinkery-marquette.html">Iron Bay Restaurant &amp; Drinkery</a></strong> — Restaurant in Marquette. Happy hour 3:00 PM–6:00 PM. $2 off microbrews, $6 whitefish tacos, Discounted appetizers</li>
+<li><strong><a href="/spots/zephyr-wine-bar-marquette.html">Zephyr Wine Bar</a></strong> — Wine Bar in Marquette. Happy hour 4:00 PM–6:00 PM. $3 off wine flights, $5 featured wines by the glass, Charcuterie board specials</li>
+<li><strong><a href="/spots/stucko-s-pub-grill-marquette.html">Stucko's Pub &amp; Grill</a></strong> — Restaurant in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off pints, $5 burger &amp; fries combo, Half-off select apps</li>
+<li><strong><a href="/spots/portside-inn-marquette.html">Portside Inn</a></strong> — Restaurant in Marquette. Happy hour 3:00 PM–5:30 PM. $1 off drafts, $5 onion rings, Soup &amp; sandwich combo $8</li>
+<li><strong><a href="/spots/drifa-brewing-co-op-marquette.html">Drifa Brewing Co-op</a></strong> — Brewery in Marquette. Happy hour 3:00 PM–6:00 PM. $1 off all pints, Member discount on growlers</li>
+<li><strong><a href="/spots/the-honorable-marquette.html">The Honorable</a></strong> — Cocktail Bar in Marquette. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 beer &amp; shot combo, Rotating small plates</li>
 </ul>
 <h2><a href="/regions/tri-cities.html">Happy Hour in Saginaw / Bay City / Midland</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">WhichCraft Taproom</a></strong> — Taproom in Midland. Happy hour 3:00 PM–6:00 PM. $1 off all Michigan drafts, $2 off flights, Panini specials</li>
-<li><strong><a href="/spots/.html">Harvey&#x27;s Grill &amp; Bar</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–7:00 PM. $2 off cocktails, $4 domestic drafts, Discounted appetizers</li>
-<li><strong><a href="/spots/.html">Prost Wine Bar &amp; Charcuterie</a></strong> — Wine Bar in Bay City. Happy hour 4:00 PM–6:00 PM. $3 off wine flights, $5 featured wines, Charcuterie board specials</li>
-<li><strong><a href="/spots/.html">Retro Rocks</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–6:00 PM. $4 domestic bottles, $2 off craft drafts, Half-off select apps</li>
-<li><strong><a href="/spots/.html">Old City Hall</a></strong> — Restaurant in Bay City. Happy hour 3:00 PM–6:00 PM. $2 off Michigan beers, $5 appetizer specials, Discounted wine pours</li>
-<li><strong><a href="/spots/.html">Big Ugly Fish</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–6:00 PM. $5 swordfish skewers, $2 off all cocktails, $4 domestic drafts</li>
-<li><strong><a href="/spots/.html">Merl&#x27;s Tavern</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–7:00 PM. $3 wells, $2 PBR cans, $1 off all drafts</li>
-<li><strong><a href="/spots/.html">Frick&#x27;s Sports Bar</a></strong> — Restaurant in Midland. Happy hour 3:00 PM–6:00 PM. $1 off all drinks, $5 loaded nachos, Wing specials</li>
-<li><strong><a href="/spots/.html">The Public House</a></strong> — Cocktail Bar in Bay City. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 select beers, Shareable plates specials</li>
-<li><strong><a href="/spots/.html">Timbers Bar &amp; Grill</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–7:00 PM. $4 wells, $3 domestic drafts, Half-off appetizers</li>
+<li><strong><a href="/spots/whichcraft-taproom-midland.html">WhichCraft Taproom</a></strong> — Taproom in Midland. Happy hour 3:00 PM–6:00 PM. $1 off all Michigan drafts, $2 off flights, Panini specials</li>
+<li><strong><a href="/spots/harvey-s-grill-bar-saginaw.html">Harvey's Grill &amp; Bar</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–7:00 PM. $2 off cocktails, $4 domestic drafts, Discounted appetizers</li>
+<li><strong><a href="/spots/prost-wine-bar-charcuterie-bay-city.html">Prost Wine Bar &amp; Charcuterie</a></strong> — Wine Bar in Bay City. Happy hour 4:00 PM–6:00 PM. $3 off wine flights, $5 featured wines, Charcuterie board specials</li>
+<li><strong><a href="/spots/retro-rocks-saginaw.html">Retro Rocks</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–6:00 PM. $4 domestic bottles, $2 off craft drafts, Half-off select apps</li>
+<li><strong><a href="/spots/old-city-hall-bay-city.html">Old City Hall</a></strong> — Restaurant in Bay City. Happy hour 3:00 PM–6:00 PM. $2 off Michigan beers, $5 appetizer specials, Discounted wine pours</li>
+<li><strong><a href="/spots/big-ugly-fish-saginaw.html">Big Ugly Fish</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–6:00 PM. $5 swordfish skewers, $2 off all cocktails, $4 domestic drafts</li>
+<li><strong><a href="/spots/merl-s-tavern-saginaw.html">Merl's Tavern</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–7:00 PM. $3 wells, $2 PBR cans, $1 off all drafts</li>
+<li><strong><a href="/spots/frick-s-sports-bar-midland.html">Frick's Sports Bar</a></strong> — Restaurant in Midland. Happy hour 3:00 PM–6:00 PM. $1 off all drinks, $5 loaded nachos, Wing specials</li>
+<li><strong><a href="/spots/the-public-house-bay-city.html">The Public House</a></strong> — Cocktail Bar in Bay City. Happy hour 4:00 PM–6:00 PM. $2 off craft cocktails, $5 select beers, Shareable plates specials</li>
+<li><strong><a href="/spots/timbers-bar-grill-saginaw.html">Timbers Bar &amp; Grill</a></strong> — Restaurant in Saginaw. Happy hour 3:00 PM–7:00 PM. $4 wells, $3 domestic drafts, Half-off appetizers</li>
 </ul>
 <h2><a href="/regions/flint.html">Happy Hour in Flint</a> (10 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Tenacity Brewing</a></strong> — Brewery in Flint. Happy hour 3:00 PM–6:00 PM. $1 off all pints, $2 off flights, Food truck specials</li>
-<li><strong><a href="/spots/.html">Torch Bar &amp; Grill</a></strong> — Restaurant in Flint. Happy hour 11:00 AM–6:00 PM. $3 domestic drafts, $1 off all burgers, $4 wells</li>
-<li><strong><a href="/spots/.html">Soggy Bottom Bar</a></strong> — Cocktail Bar in Flint. Happy hour 4:00 PM–7:00 PM. $2 off craft cocktails, $5 whiskey pours, Rotating small plates</li>
-<li><strong><a href="/spots/.html">Redwood Steakhouse &amp; Brewery</a></strong> — Brewery in Grand Blanc. Happy hour 3:00 PM–6:00 PM. $2 off house brews, $6 select steaks, Half-off appetizers</li>
-<li><strong><a href="/spots/.html">Little Joe&#x27;s Tavern</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–7:00 PM. $3 wells, $2 off craft beers, Flight Night specials</li>
-<li><strong><a href="/spots/.html">The Loft</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–6:00 PM. $1 off all drinks, Food truck bites below, Patio drink specials</li>
-<li><strong><a href="/spots/.html">Market Tap</a></strong> — Taproom in Flint. Happy hour 3:00 PM–6:00 PM. $1 off all taps, $5 Michigan ciders, Rotating food specials</li>
-<li><strong><a href="/spots/.html">Churchill&#x27;s Food &amp; Spirits</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–7:00 PM. $4 wells, $5 craft drafts, Half-off select appetizers</li>
-<li><strong><a href="/spots/.html">Vic&#x27;s Place</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–6:00 PM. $3 domestics, $2 off cocktails, Wing specials</li>
-<li><strong><a href="/spots/.html">X Bar</a></strong> — Cocktail Bar in Flint. Happy hour 4:00 PM–7:00 PM. $2 off craft cocktails, $5 beer &amp; shot, DJ specials</li>
+<li><strong><a href="/spots/tenacity-brewing-flint.html">Tenacity Brewing</a></strong> — Brewery in Flint. Happy hour 3:00 PM–6:00 PM. $1 off all pints, $2 off flights, Food truck specials</li>
+<li><strong><a href="/spots/torch-bar-grill-flint.html">Torch Bar &amp; Grill</a></strong> — Restaurant in Flint. Happy hour 11:00 AM–6:00 PM. $3 domestic drafts, $1 off all burgers, $4 wells</li>
+<li><strong><a href="/spots/soggy-bottom-bar-flint.html">Soggy Bottom Bar</a></strong> — Cocktail Bar in Flint. Happy hour 4:00 PM–7:00 PM. $2 off craft cocktails, $5 whiskey pours, Rotating small plates</li>
+<li><strong><a href="/spots/redwood-steakhouse-brewery-grand-blanc.html">Redwood Steakhouse &amp; Brewery</a></strong> — Brewery in Grand Blanc. Happy hour 3:00 PM–6:00 PM. $2 off house brews, $6 select steaks, Half-off appetizers</li>
+<li><strong><a href="/spots/little-joe-s-tavern-flint.html">Little Joe's Tavern</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–7:00 PM. $3 wells, $2 off craft beers, Flight Night specials</li>
+<li><strong><a href="/spots/the-loft-flint.html">The Loft</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–6:00 PM. $1 off all drinks, Food truck bites below, Patio drink specials</li>
+<li><strong><a href="/spots/market-tap-flint.html">Market Tap</a></strong> — Taproom in Flint. Happy hour 3:00 PM–6:00 PM. $1 off all taps, $5 Michigan ciders, Rotating food specials</li>
+<li><strong><a href="/spots/churchill-s-food-spirits-flint.html">Churchill's Food &amp; Spirits</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–7:00 PM. $4 wells, $5 craft drafts, Half-off select appetizers</li>
+<li><strong><a href="/spots/vic-s-place-flint.html">Vic's Place</a></strong> — Restaurant in Flint. Happy hour 3:00 PM–6:00 PM. $3 domestics, $2 off cocktails, Wing specials</li>
+<li><strong><a href="/spots/x-bar-flint.html">X Bar</a></strong> — Cocktail Bar in Flint. Happy hour 4:00 PM–7:00 PM. $2 off craft cocktails, $5 beer &amp; shot, DJ specials</li>
 </ul>
 <h2><a href="/regions/leelanau.html">Happy Hour in Leelanau Peninsula</a> (7 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">The Cove</a></strong> — Restaurant in Leland. Happy hour 3:00 PM–5:00 PM. $5 local wines, $3 off appetizers, Whitefish dip special</li>
-<li><strong><a href="/spots/.html">Hop Lot Brewing</a></strong> — Brewery in Suttons Bay. Happy hour 3:00 PM–5:00 PM. $1 off pints, $2 off flights, Pretzel &amp; beer cheese $5</li>
-<li><strong><a href="/spots/.html">9 Bean Rows</a></strong> — Restaurant in Suttons Bay. Happy hour 4:30 PM–6:00 PM. $7 wine pours, Small plates from $6, Local cheese boards</li>
-<li><strong><a href="/spots/.html">Tandem Ciders</a></strong> — Cidery in Suttons Bay. Happy hour 3:00 PM–5:00 PM. $2 off cider flights, Seasonal cider specials, Cheese &amp; charcuterie deal</li>
-<li><strong><a href="/spots/.html">Fischer&#x27;s Happy Hour Tavern</a></strong> — Restaurant in Glen Arbor. Happy hour 3:00 PM–6:00 PM. $4 wells, $3 domestic drafts, Half-off loaded nachos</li>
-<li><strong><a href="/spots/.html">Black Star Farms</a></strong> — Wine Bar in Suttons Bay. Happy hour 4:00 PM–6:00 PM. $6 estate wines, Artisan cheese pairings, $4 off bottles to go</li>
-<li><strong><a href="/spots/.html">Blu</a></strong> — Restaurant in Glen Arbor. Happy hour 4:00 PM–6:00 PM. $6 cocktails, $5 wine pours, Flatbread specials</li>
-</ul>
-<h2><a href="/regions/old-mission.html">Happy Hour in Old Mission Peninsula</a> (4 spots)</h2>
-<ul>
-<li><strong><a href="/spots/.html">Chateau Chantal</a></strong> — Wine Bar in Old Mission. Happy hour 4:00 PM–6:00 PM. $6 wine by the glass, $5 flatbreads, Half-off charcuterie boards</li>
-<li><strong><a href="/spots/.html">Jolly Pumpkin at Mission Table</a></strong> — Brewery in Old Mission. Happy hour 3:00 PM–5:00 PM. $2 off sour ales, $5 flatbreads, Half-off starters</li>
-<li><strong><a href="/spots/.html">Bonobo Winery</a></strong> — Wine Bar in Old Mission. Happy hour 4:00 PM–6:00 PM. $5 wine by the glass, Small plate pairings, Sunset specials Fridays</li>
-<li><strong><a href="/spots/.html">2 Lads Winery</a></strong> — Wine Bar in Old Mission. Happy hour 4:00 PM–6:00 PM. $5 reserve pours, Cheese board specials, $3 off bottles</li>
-</ul>
-<h2><a href="/regions/elk-rapids.html">Happy Hour in Elk Rapids &amp; Torch Lake</a> (4 spots)</h2>
-<ul>
-<li><strong><a href="/spots/.html">Ethanology</a></strong> — Distillery in Elk Rapids. Happy hour 4:00 PM–6:00 PM. $7 craft cocktails, $5 spirit tastings, Small bites menu</li>
-<li><strong><a href="/spots/.html">Pearl&#x27;s New Orleans Kitchen</a></strong> — Restaurant in Elk Rapids. Happy hour 4:00 PM–6:00 PM. $6 hurricanes, $5 gumbo cups, $2 off wine &amp; beer</li>
-<li><strong><a href="/spots/.html">Short&#x27;s Torch Lake</a></strong> — Brewery in Alden. Happy hour 3:00 PM–5:00 PM. $1 off all pints, $5 pub pretzels, Flight specials</li>
-<li><strong><a href="/spots/.html">Riverwalk Grill</a></strong> — Restaurant in Elk Rapids. Happy hour 3:30 PM–5:30 PM. $5 house wines, $2 off drafts, Bruschetta specials</li>
-</ul>
-<h2><a href="/regions/bellaire-mancelona.html">Happy Hour in Bellaire &amp; Antrim County</a> (3 spots)</h2>
-<ul>
-<li><strong><a href="/spots/.html">Short&#x27;s Brewing Company</a></strong> — Brewery in Bellaire. Happy hour 3:00 PM–5:00 PM. $1 off all pints, $5 pub pretzels, $2 off flights</li>
-<li><strong><a href="/spots/.html">Lulu&#x27;s Bistro</a></strong> — Restaurant in Bellaire. Happy hour 4:00 PM–6:00 PM. $7 wines by the glass, Half-off starters, Seasonal cocktail specials</li>
-<li><strong><a href="/spots/.html">Short&#x27;s Pull Barn</a></strong> — Brewery in Bellaire. Happy hour 3:00 PM–5:00 PM. $1 off pints, $5 pizza slices, Live music weekends</li>
-</ul>
-<h2><a href="/regions/frankfort-benzie.html">Happy Hour in Frankfort &amp; Benzie</a> (4 spots)</h2>
-<ul>
-<li><strong><a href="/spots/.html">Stormcloud Brewing</a></strong> — Brewery in Frankfort. Happy hour 3:00 PM–5:00 PM. $1 off pints, $2 off flights, Pretzel &amp; mustard $4</li>
-<li><strong><a href="/spots/.html">The Hotel Frankfort</a></strong> — Restaurant in Frankfort. Happy hour 4:00 PM–6:00 PM. $6 cocktails, $5 wine pours, Oyster specials Thursdays</li>
-<li><strong><a href="/spots/.html">Iron Fish Distillery</a></strong> — Distillery in Thompsonville. Happy hour 3:00 PM–5:00 PM. $7 signature cocktails, Distillery tour + tasting combo, $5 snacks</li>
-<li><strong><a href="/spots/.html">Cold Creek Inn</a></strong> — Restaurant in Beulah. Happy hour 4:00 PM–6:00 PM. $5 wells, $4 domestic drafts, Half-off starters</li>
+<li><strong><a href="/spots/the-cove-leland.html">The Cove</a></strong> — Restaurant in Leland. Happy hour 3:00 PM–5:00 PM. $5 local wines, $3 off appetizers, Whitefish dip special</li>
+<li><strong><a href="/spots/hop-lot-brewing-suttons-bay.html">Hop Lot Brewing</a></strong> — Brewery in Suttons Bay. Happy hour 3:00 PM–5:00 PM. $1 off pints, $2 off flights, Pretzel &amp; beer cheese $5</li>
+<li><strong><a href="/spots/9-bean-rows-suttons-bay.html">9 Bean Rows</a></strong> — Restaurant in Suttons Bay. Happy hour 4:30 PM–6:00 PM. $7 wine pours, Small plates from $6, Local cheese boards</li>
+<li><strong><a href="/spots/tandem-ciders-suttons-bay.html">Tandem Ciders</a></strong> — Cidery in Suttons Bay. Happy hour 3:00 PM–5:00 PM. $2 off cider flights, Seasonal cider specials, Cheese &amp; charcuterie deal</li>
+<li><strong><a href="/spots/fischer-s-happy-hour-tavern-leland.html">Fischer's Happy Hour Tavern</a></strong> — Restaurant in Leland. Happy hour 3:00 PM–6:00 PM. $4 wells, $3 domestic drafts, Half-off loaded nachos</li>
+<li><strong><a href="/spots/black-star-farms-suttons-bay.html">Black Star Farms</a></strong> — Wine Bar in Suttons Bay. Happy hour 4:00 PM–6:00 PM. $6 estate wines, Artisan cheese pairings, $4 off bottles to go</li>
+<li><strong><a href="/spots/blu-glen-arbor.html">Blu</a></strong> — Restaurant in Glen Arbor. Happy hour 4:00 PM–6:00 PM. $6 cocktails, $5 wine pours, Flatbread specials</li>
 </ul>
 <h2><a href="/regions/charlevoix-petoskey.html">Happy Hour in Charlevoix &amp; Petoskey</a> (6 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">Beards Brewery</a></strong> — Brewery in Petoskey. Happy hour 3:00 PM–5:00 PM. $1 off pints, $5 pub bites, Monday $3 pints all day</li>
-<li><strong><a href="/spots/.html">Palette Bistro</a></strong> — Restaurant in Petoskey. Happy hour 4:00 PM–6:00 PM. $7 wines, Half-off small plates, $8 featured cocktail</li>
-<li><strong><a href="/spots/.html">Castle Farms Winery</a></strong> — Wine Bar in Charlevoix. Happy hour 4:00 PM–6:00 PM. $5 tastings, Cheese &amp; wine pairing specials, Live music Fridays</li>
-<li><strong><a href="/spots/.html">Tap 30 Pourhouse</a></strong> — Taproom in Charlevoix. Happy hour 3:00 PM–6:00 PM. $2 off all taps, Wing Wednesday $0.75 wings, $5 cocktail of the day</li>
-<li><strong><a href="/spots/.html">City Park Grill</a></strong> — Restaurant in Petoskey. Happy hour 4:00 PM–6:00 PM. $6 house cocktails, $5 wines, Half-off bar bites</li>
-<li><strong><a href="/spots/.html">Petoskey Brewing</a></strong> — Brewery in Petoskey. Happy hour 3:00 PM–5:00 PM. $1 off all pints, $5 soft pretzels, Flight deals</li>
+<li><strong><a href="/spots/beards-brewery-petoskey.html">Beards Brewery</a></strong> — Brewery in Petoskey. Happy hour 3:00 PM–5:00 PM. $1 off pints, $5 pub bites, Monday $3 pints all day</li>
+<li><strong><a href="/spots/palette-bistro-petoskey.html">Palette Bistro</a></strong> — Restaurant in Petoskey. Happy hour 4:00 PM–6:00 PM. $7 wines, Half-off small plates, $8 featured cocktail</li>
+<li><strong><a href="/spots/castle-farms-winery-charlevoix.html">Castle Farms Winery</a></strong> — Wine Bar in Charlevoix. Happy hour 4:00 PM–6:00 PM. $5 tastings, Cheese &amp; wine pairing specials, Live music Fridays</li>
+<li><strong><a href="/spots/tap-30-pourhouse-charlevoix.html">Tap 30 Pourhouse</a></strong> — Taproom in Charlevoix. Happy hour 3:00 PM–6:00 PM. $2 off all taps, Wing Wednesday $0.75 wings, $5 cocktail of the day</li>
+<li><strong><a href="/spots/city-park-grill-petoskey.html">City Park Grill</a></strong> — Restaurant in Petoskey. Happy hour 4:00 PM–6:00 PM. $6 house cocktails, $5 wines, Half-off bar bites</li>
+<li><strong><a href="/spots/petoskey-brewing-petoskey.html">Petoskey Brewing</a></strong> — Brewery in Petoskey. Happy hour 3:00 PM–5:00 PM. $1 off all pints, $5 soft pretzels, Flight deals</li>
 </ul>
-<h2><a href="/regions/mackinaw.html">Happy Hour in Mackinaw &amp; Mackinac</a> (4 spots)</h2>
+<h2><a href="/regions/old-mission.html">Happy Hour in Old Mission Peninsula</a> (4 spots)</h2>
 <ul>
-<li><strong><a href="/spots/.html">The Dixie Saloon</a></strong> — Restaurant in Mackinaw City. Happy hour 3:00 PM–6:00 PM. $4 wells, $5 burgers, Live music weekends</li>
-<li><strong><a href="/spots/.html">Horn&#x27;s Gaslight Bar</a></strong> — Cocktail Bar in Mackinac Island. Happy hour 3:00 PM–5:30 PM. $6 island cocktails, $4 drafts, Perch basket special</li>
-<li><strong><a href="/spots/.html">Gate House at Mission Point</a></strong> — Restaurant in Mackinac Island. Happy hour 4:00 PM–6:00 PM. $8 craft cocktails, Sunset appetizer menu, Wine flight specials</li>
-<li><strong><a href="/spots/.html">Audie&#x27;s Restaurant</a></strong> — Restaurant in Mackinaw City. Happy hour 3:00 PM–5:00 PM. $5 local wines, $4 drafts, Whitefish slider special</li>
+<li><strong><a href="/spots/chateau-chantal-old-mission.html">Chateau Chantal</a></strong> — Wine Bar in Old Mission. Happy hour 4:00 PM–6:00 PM. $6 wine by the glass, $5 flatbreads, Half-off charcuterie boards</li>
+<li><strong><a href="/spots/jolly-pumpkin-at-mission-table-old-mission.html">Jolly Pumpkin at Mission Table</a></strong> — Brewery in Old Mission. Happy hour 3:00 PM–5:00 PM. $2 off sour ales, $5 flatbreads, Half-off starters</li>
+<li><strong><a href="/spots/bonobo-winery-old-mission.html">Bonobo Winery</a></strong> — Wine Bar in Old Mission. Happy hour 4:00 PM–6:00 PM. $5 wine by the glass, Small plate pairings, Sunset specials Fridays</li>
+<li><strong><a href="/spots/2-lads-winery-old-mission.html">2 Lads Winery</a></strong> — Wine Bar in Old Mission. Happy hour 4:00 PM–6:00 PM. $5 reserve pours, Cheese board specials, $3 off bottles</li>
 </ul>
-<h2>Curated Collections</h2>
+<h2><a href="/regions/elk-rapids.html">Happy Hour in Elk Rapids &amp; Torch Lake</a> (4 spots)</h2>
 <ul>
-<li><a href="/collections/best-patios.html">Best Patios & Rooftops</a> — 40 outdoor happy hour spots</li>
-<li><a href="/collections/best-late-night.html">Best Late-Night Happy Hours</a> — 24 spots with evening deals</li>
+<li><strong><a href="/spots/ethanology-elk-rapids.html">Ethanology</a></strong> — Distillery in Elk Rapids. Happy hour 4:00 PM–6:00 PM. $7 craft cocktails, $5 spirit tastings, Small bites menu</li>
+<li><strong><a href="/spots/pearl-s-new-orleans-kitchen-elk-rapids.html">Pearl's New Orleans Kitchen</a></strong> — Restaurant in Elk Rapids. Happy hour 4:00 PM–6:00 PM. $6 hurricanes, $5 gumbo cups, $2 off wine &amp; beer</li>
+<li><strong><a href="/spots/short-s-torch-lake-alden.html">Short's Torch Lake</a></strong> — Brewery in Alden. Happy hour 3:00 PM–5:00 PM. $1 off all pints, $5 pub pretzels, Flight specials</li>
+<li><strong><a href="/spots/riverwalk-grill-elk-rapids.html">Riverwalk Grill</a></strong> — Restaurant in Elk Rapids. Happy hour 3:30 PM–5:30 PM. $5 house wines, $2 off drafts, Bruschetta specials</li>
 </ul>
-<h2>Happy Hour Guides</h2>
+<h2><a href="/regions/frankfort-benzie.html">Happy Hour in Frankfort &amp; Benzie County</a> (4 spots)</h2>
 <ul>
+<li><strong><a href="/spots/stormcloud-brewing-frankfort.html">Stormcloud Brewing</a></strong> — Brewery in Frankfort. Happy hour 3:00 PM–5:00 PM. $1 off pints, $2 off flights, Pretzel &amp; mustard $4</li>
+<li><strong><a href="/spots/the-hotel-frankfort-frankfort.html">The Hotel Frankfort</a></strong> — Restaurant in Frankfort. Happy hour 4:00 PM–6:00 PM. $6 cocktails, $5 wine pours, Oyster specials Thursdays</li>
+<li><strong><a href="/spots/iron-fish-distillery-thompsonville.html">Iron Fish Distillery</a></strong> — Distillery in Thompsonville. Happy hour 3:00 PM–5:00 PM. $7 signature cocktails, Distillery tour + tasting combo, $5 snacks</li>
+<li><strong><a href="/spots/cold-creek-inn-beulah.html">Cold Creek Inn</a></strong> — Restaurant in Beulah. Happy hour 4:00 PM–6:00 PM. $5 wells, $4 domestic drafts, Half-off starters</li>
+</ul>
+<h2><a href="/regions/mackinaw.html">Happy Hour in Mackinaw City &amp; Mackinac Island</a> (4 spots)</h2>
+<ul>
+<li><strong><a href="/spots/the-dixie-saloon-mackinaw-city.html">The Dixie Saloon</a></strong> — Restaurant in Mackinaw City. Happy hour 3:00 PM–6:00 PM. $4 wells, $5 burgers, Live music weekends</li>
+<li><strong><a href="/spots/horn-s-gaslight-bar-mackinac-island.html">Horn's Gaslight Bar</a></strong> — Cocktail Bar in Mackinac Island. Happy hour 3:00 PM–5:30 PM. $6 island cocktails, $4 drafts, Perch basket special</li>
+<li><strong><a href="/spots/gate-house-at-mission-point-mackinac-island.html">Gate House at Mission Point</a></strong> — Restaurant in Mackinac Island. Happy hour 4:00 PM–6:00 PM. $8 craft cocktails, Sunset appetizer menu, Wine flight specials</li>
+<li><strong><a href="/spots/audie-s-restaurant-mackinaw-city.html">Audie's Restaurant</a></strong> — Restaurant in Mackinaw City. Happy hour 3:00 PM–5:00 PM. $5 local wines, $4 drafts, Whitefish slider special</li>
+</ul>
+<h2><a href="/regions/bellaire-mancelona.html">Happy Hour in Bellaire &amp; Antrim County</a> (3 spots)</h2>
+<ul>
+<li><strong><a href="/spots/short-s-brewing-company-bellaire.html">Short's Brewing Company</a></strong> — Brewery in Bellaire. Happy hour 3:00 PM–5:00 PM. $1 off all pints, $5 pub pretzels, $2 off flights</li>
+<li><strong><a href="/spots/lulu-s-bistro-bellaire.html">Lulu's Bistro</a></strong> — Restaurant in Bellaire. Happy hour 4:00 PM–6:00 PM. $7 wines by the glass, Half-off starters, Seasonal cocktail specials</li>
+<li><strong><a href="/spots/short-s-pull-barn-bellaire.html">Short's Pull Barn</a></strong> — Brewery in Bellaire. Happy hour 3:00 PM–5:00 PM. $1 off pints, $5 pizza slices, Live music weekends</li>
+</ul>
+<h2>Guides</h2><ul>
 <li><a href="/blog/detroit-happy-hour-guide.html">Detroit Happy Hour Guide</a></li>
 <li><a href="/blog/grand-rapids-happy-hour-guide.html">Grand Rapids Happy Hour Guide</a></li>
 <li><a href="/blog/ann-arbor-happy-hour-guide.html">Ann Arbor Happy Hour Guide</a></li>
 <li><a href="/blog/traverse-city-happy-hour-guide.html">Traverse City Happy Hour Guide</a></li>
-<li><a href="/blog/michigan-happy-hour-laws.html">Michigan Happy Hour Laws</a></li>
 <li><a href="/blog/best-brewery-happy-hours-michigan.html">Best Brewery Happy Hours in Michigan</a></li>
-<li><a href="/for-business/">For businesses — claim &amp; feature</a></li>
-</ul>
-</div>
-</noscript>
+<li><a href="/collections/best-patios.html">Best Patio Happy Hours</a></li>
+<li><a href="/collections/best-late-night.html">Best Late-Night Happy Hours</a></li>
+</ul></div></noscript>
 </body>
 </html>

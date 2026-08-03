@@ -154,9 +154,16 @@ Spot detail URLs (`/spots/*.html`) are **rendered live from D1** by a Pages Func
 
 `/for-business/` — claim & featured packages; form saves to D1 `submissions`.
 
+## SEO notes
+
+- Sitemap: `sitemap.xml` (regenerate when venues change)
+- Spot pages + homepage listings should stay linked via real `/spots/{slug}.html` URLs
+- `/admin/`, `/api/`, thanks page, and `index-backup.html` are disallowed / noindex
+
 ## Next (planned)
 
 - Venue-facing monthly reports from D1 aggregates
 - One-click “apply submission → venue” from the admin inbox
 - Email alerts on new submissions
+- Homepage performance: replace Babel-in-browser compile for Core Web Vitals
 

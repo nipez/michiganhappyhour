@@ -1,3 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /submit/thanks.html
+Disallow: /index-backup.html
+Disallow: /api/
+
 Sitemap: https://michiganhappyhour.com/sitemap.xml
