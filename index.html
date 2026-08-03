@@ -33,6 +33,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="/js/cta-track.js" defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#F5F7FA;color:#1B2838;-webkit-font-smoothing:antialiased}
@@ -313,6 +314,12 @@ function Badge({children,color="#2D6A8F",bg="#EDF2F6"}){
   return <span style={{display:"inline-block",padding:"6px 14px",borderRadius:24,fontSize:18,fontWeight:600,color,background:bg,letterSpacing:0.3,whiteSpace:"nowrap"}}>{children}</span>;
 }
 
+function trackSpotCta(cta,l,source){
+  if(typeof window.trackCta==="function"){
+    window.trackCta(cta,{id:l.id,name:l.name,town:l.town,page_type:"home",source:source||"card"});
+  }
+}
+
 function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLive}){
   const cc=catColors[l.cat]||"#2D6A8F";
   const cardRef=useRef(null);
@@ -365,10 +372,10 @@ function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLiv
         </div>
         {l.ph && <div style={{fontSize:15,color:"#8AA3B5",marginTop:4}}><span style={{fontWeight:600}}>Phone: </span>{l.ph}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:12}}>
-          <button onClick={()=>{if(l.ph)window.location.href="tel:"+l.ph;}} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontWeight:600,fontSize:15,cursor:"pointer"}}>📞 Call</button>
-          <button onClick={()=>onMapClick(l)} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontWeight:600,fontSize:15,cursor:"pointer"}}>🗺️ Map</button>
-          <a href={"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(l.name+" "+l.addr+" "+l.town+" MI")} target="_blank" rel="noopener" style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #E8614D",background:"#FFF5F3",color:"#E8614D",fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"block"}}>📍 Directions</a>
-          <a href={"/spots/"+toSlug(l.name,l.town)+".html"} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #2D6A8F",background:"#EFF6FF",color:"#2D6A8F",fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"block"}}>🔗 Details</a>
+          <button onClick={()=>{trackSpotCta("cta_call",l,"card");if(l.ph)window.location.href="tel:"+l.ph;}} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontWeight:600,fontSize:15,cursor:"pointer"}}>📞 Call</button>
+          <button onClick={()=>{trackSpotCta("cta_map",l,"card");onMapClick(l);}} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontWeight:600,fontSize:15,cursor:"pointer"}}>🗺️ Map</button>
+          <a href={"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(l.name+" "+l.addr+" "+l.town+" MI")} target="_blank" rel="noopener" onClick={()=>trackSpotCta("cta_directions",l,"card")} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #E8614D",background:"#FFF5F3",color:"#E8614D",fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"block"}}>📍 Directions</a>
+          <a href={"/spots/"+toSlug(l.name,l.town)+".html"} onClick={()=>trackSpotCta("cta_details",l,"card")} style={{padding:"11px 10px",borderRadius:10,border:"1.5px solid #2D6A8F",background:"#EFF6FF",color:"#2D6A8F",fontWeight:700,fontSize:15,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"block"}}>🔗 Details</a>
         </div>
       </div>
     </div>
@@ -413,9 +420,9 @@ function HappyHourMap({listings,onPinClick,highlightId}){
         <p>${l.town} · ${l.addr}</p>
         <p>${l.hh.s} – ${l.hh.e}</p>
         <div class="deals">${l.deals.slice(0,2).join(' · ')}</div>
-        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name+' '+l.addr+' '+l.town+' MI')}" target="_blank">Open in Google Maps →</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.name+' '+l.addr+' '+l.town+' MI')}" target="_blank" onclick='window.trackCta&&window.trackCta("cta_directions",${JSON.stringify({id:l.id,name:l.name,town:l.town,page_type:"home",source:"map_popup"})})'>Open in Google Maps →</a>
       </div>`,{maxWidth:280});
-      marker.on('click',()=>onPinClick(l.id));
+      marker.on('click',()=>{trackSpotCta("cta_map",l,"map_pin");onPinClick(l.id);});
       markersRef.current[l.id]=marker;
       bounds.push([l.lat,l.lng]);
     });
@@ -605,8 +612,8 @@ function App(){
                   <span style={{fontWeight:700,color:isT?"#E8614D":"#4A6274"}}>Happy Hour: </span>{fl.hh.s}–{fl.hh.e} · {fl.hh.d.length===7?"Every day":fl.hh.d.length+" days/week"}
                 </div>
                 <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                  <button onClick={()=>{if(fl.ph)window.location.href="tel:"+fl.ph;}} style={{flex:"1 1 auto",minWidth:0,padding:"10px 14px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#F5F7FA",color:"#4A6274",fontWeight:600,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>📞 {fl.ph}</button>
-                  <button onClick={()=>{const el=document.getElementById("card-"+fl.id);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.boxShadow="0 0 0 3px #E8614D";setTimeout(()=>el.style.boxShadow="",2500);}}} style={{flex:"1 1 auto",minWidth:0,padding:"10px 14px",borderRadius:10,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:600,fontSize:14,cursor:"pointer"}}>See Full Details ↓</button>
+                  <button onClick={()=>{trackSpotCta("cta_call",fl,"featured");if(fl.ph)window.location.href="tel:"+fl.ph;}} style={{flex:"1 1 auto",minWidth:0,padding:"10px 14px",borderRadius:10,border:"1.5px solid #D8E2EA",background:"#F5F7FA",color:"#4A6274",fontWeight:600,fontSize:14,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:5}}>📞 {fl.ph}</button>
+                  <button onClick={()=>{trackSpotCta("cta_details",fl,"featured");const el=document.getElementById("card-"+fl.id);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.boxShadow="0 0 0 3px #E8614D";setTimeout(()=>el.style.boxShadow="",2500);}}} style={{flex:"1 1 auto",minWidth:0,padding:"10px 14px",borderRadius:10,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:600,fontSize:14,cursor:"pointer"}}>See Full Details ↓</button>
                 </div>
               </div>
             </div>;

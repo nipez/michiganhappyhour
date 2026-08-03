@@ -3,6 +3,12 @@
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4NCRX2Y71B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4NCRX2Y71B');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Michigan Happy Hour Map — 180+ Spots Mapped | MichiganHappyHour.com</title>
@@ -219,8 +225,8 @@ SPOTS.forEach(function(s) {
     s.dl +
     '</div>' +
     '<div class="p-btns">' +
-    '<a href="' + s.s + '" class="p-btn p-btn-primary">View Details</a>' +
-    '<a href="' + mapsUrl + '" target="_blank" rel="noopener" class="p-btn p-btn-secondary">📍 Directions</a>' +
+    '<a href="' + s.s + '" class="p-btn p-btn-primary" onclick=\'window.trackCta&&window.trackCta("cta_details",'+JSON.stringify({id:s.s,name:s.n,town:s.t,page_type:"map",source:"map_popup"})+')\'>View Details</a>' +
+    '<a href="' + mapsUrl + '" target="_blank" rel="noopener" class="p-btn p-btn-secondary" onclick=\'window.trackCta&&window.trackCta("cta_directions",'+JSON.stringify({id:s.s,name:s.n,town:s.t,page_type:"map",source:"map_popup"})+')\'>📍 Directions</a>' +
     '</div>';
   
   marker.bindPopup(popup, {maxWidth: 300, minWidth: 240});
@@ -331,7 +337,17 @@ function locateMe() {
     alert('Unable to get your location.');
   });
 }
+
+document.getElementById('featured-cta').addEventListener('click', function() {
+  var name = document.getElementById('featured-name').textContent;
+  if (window.trackCta) window.trackCta('cta_details', {id: this.getAttribute('href'), name: name, page_type: 'map', source: 'map_featured'});
+});
+document.getElementById('featured-dir').addEventListener('click', function() {
+  var name = document.getElementById('featured-name').textContent;
+  if (window.trackCta) window.trackCta('cta_directions', {id: this.getAttribute('href'), name: name, page_type: 'map', source: 'map_featured'});
+});
 </script>
 
+<script src="/js/cta-track.js" defer></script>
 </body>
 </html>

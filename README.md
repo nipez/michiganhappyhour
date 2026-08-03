@@ -72,6 +72,23 @@ sitemap.xml
 robots.txt
 ```
 
+## Analytics (GA4)
+
+CTA tracking is live via `/js/cta-track.js` and homepage card handlers.
+
+| Event | When it fires |
+| --- | --- |
+| `spot_view` | Spot detail page load |
+| `cta_call` | Call button / tel link |
+| `cta_map` | Map button / map pin |
+| `cta_directions` | Directions / Google Maps link |
+| `cta_details` | Details / View Details link |
+
+Params include `spot_name`, `town`, `spot_id`, `page_type`, `source`.
+
+In GA4: **Admin → Events → mark the `cta_*` events as Key events**.  
+Then build an Explore report with rows = `spot_name`, values = event count.
+
 ## Next (planned)
 
 - Supabase for venue data / submissions
