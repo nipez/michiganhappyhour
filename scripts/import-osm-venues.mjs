@@ -276,7 +276,8 @@ function elementToVenue(el, regionHint) {
   const external_id = `osm:${el.type}/${el.id}`;
   const phone = tags.phone || tags["contact:phone"] || null;
   const website = tags.website || tags["contact:website"] || tags.url || null;
-  const hasHhTag = Boolean(tags.happy_hour);
+  const opening_hours = tags.opening_hours || tags["opening_hours:kitchen"] || null;
+  const hasHhTag = Boolean(tags.happy_hour || tags.happy_hours);
 
   return {
     name,
@@ -288,6 +289,7 @@ function elementToVenue(el, regionHint) {
     address: buildAddress(tags),
     phone,
     website,
+    opening_hours,
     hh_start: null,
     hh_end: null,
     hh_days: ALL_DAYS,
@@ -311,7 +313,7 @@ function venueInsertSql(v) {
   // Upsert on external_id. Never touch curated rows (they have NULL external_id /
   // source curated). Re-imports refresh OSM fields only.
   return (
-    "INSERT INTO venues (name,category,region,region_name,region_color,town,address,phone,website,hh_start,hh_end,hh_days,deals,vibe,lat,lng,featured,collections,spot_path,status,source,external_id,admin_notes) VALUES (" +
+    "INSERT INTO venues (name,category,region,region_name,region_color,town,address,phone,website,opening_hours,hh_start,hh_end,hh_days,deals,vibe,lat,lng,featured,collections,spot_path,status,source,external_id,admin_notes) VALUES (" +
     [
       sqlStr(v.name),
       sqlStr(v.category),
@@ -322,6 +324,7 @@ function venueInsertSql(v) {
       sqlStr(v.address),
       sqlStr(v.phone),
       sqlStr(v.website),
+      sqlStr(v.opening_hours),
       sqlStr(v.hh_start),
       sqlStr(v.hh_end),
       sqlStr(JSON.stringify(v.hh_days)),
@@ -348,6 +351,7 @@ function venueInsertSql(v) {
       "address=COALESCE(excluded.address, venues.address)",
       "phone=COALESCE(excluded.phone, venues.phone)",
       "website=COALESCE(excluded.website, venues.website)",
+      "opening_hours=COALESCE(excluded.opening_hours, venues.opening_hours)",
       "lat=excluded.lat",
       "lng=excluded.lng",
       "spot_path=excluded.spot_path",

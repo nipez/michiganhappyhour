@@ -90,13 +90,15 @@ export const REGION_META = {
     name: "Holland",
     emoji: "🌷",
     blurb:
-      "Downtown Holland happy hours mix brewery classics with lakeshore dining — real hours and drink specials."
+      "Downtown Holland happy hours mix brewery classics with lakeshore dining — real hours and drink specials.",
+    blog: "/blog/holland-happy-hour-guide"
   },
   muskegon: {
     name: "Muskegon",
     emoji: "⚓",
     blurb:
-      "Port-city happy hours with beach-town energy — craft beer, waterfront decks, and downtown bars."
+      "Port-city happy hours with beach-town energy — craft beer, waterfront decks, and downtown bars.",
+    blog: "/blog/muskegon-happy-hour-guide"
   },
   marquette: {
     name: "Marquette (UP)",

@@ -85,6 +85,9 @@ function coerceVenuePayload(body, { partial = false } = {}) {
   if (body.town !== undefined) set("town", String(body.town || "").trim());
   if (body.address !== undefined) set("address", String(body.address || "").trim() || null);
   if (body.phone !== undefined) set("phone", String(body.phone || "").trim() || null);
+  if (body.website !== undefined) set("website", String(body.website || "").trim() || null);
+  if (body.opening_hours !== undefined)
+    set("opening_hours", String(body.opening_hours || "").trim() || null);
   if (body.hh_start !== undefined) set("hh_start", String(body.hh_start || "").trim() || null);
   if (body.hh_end !== undefined) set("hh_end", String(body.hh_end || "").trim() || null);
   if (body.hh_days !== undefined) set("hh_days", JSON.stringify(normalizeDays(body.hh_days)));

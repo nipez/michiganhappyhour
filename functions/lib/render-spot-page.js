@@ -115,6 +115,8 @@ export function renderSpotPage(venue, related = []) {
   const address = venue.address || "";
   const category = venue.category || "Restaurant";
   const phone = venue.phone || "";
+  const website = venue.website || "";
+  const openingHours = venue.opening_hours || "";
   const vibe = venue.vibe || "";
   const hhStart = venue.hh_start || "";
   const hhEnd = venue.hh_end || "";
@@ -132,6 +134,11 @@ export function renderSpotPage(venue, related = []) {
   const hoursDisplay = [hhStart, hhEnd].filter(Boolean).join(" &ndash; ");
   const realDeals = verifiedDeals(deals);
   const showPlaceholderDeals = !realDeals.length;
+  const websiteHref = website
+    ? /^https?:\/\//i.test(website)
+      ? website
+      : `https://${website}`
+    : "";
 
   const submitParams = new URLSearchParams({
     name,
@@ -154,6 +161,8 @@ export function renderSpotPage(venue, related = []) {
     ".";
   if (seo.hasHours) {
     about += ` Happy hour runs ${hhStart}–${hhEnd}${days.length ? ` (${days.length === 7 ? "every day" : days.length + " days/week"})` : ""}.`;
+  } else if (openingHours) {
+    about += ` Business hours are listed as ${openingHours}. Happy hour specials can change — call or stop in to confirm what's pouring today.`;
   } else {
     about += ` Hours and drink specials can change — call or stop in to confirm what's pouring today.`;
   }
@@ -196,10 +205,14 @@ export function renderSpotPage(venue, related = []) {
       lat != null && lng != null
         ? { "@type": "GeoCoordinates", latitude: lat, longitude: lng }
         : undefined,
-    telephone: phone || undefined
+    telephone: phone || undefined,
+    sameAs: websiteHref || undefined,
+    openingHours: openingHours || undefined
   };
   if (!ld.geo) delete ld.geo;
   if (!ld.telephone) delete ld.telephone;
+  if (!ld.sameAs) delete ld.sameAs;
+  if (!ld.openingHours) delete ld.openingHours;
 
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -252,10 +265,20 @@ export function renderSpotPage(venue, related = []) {
   const phoneBtn = phone
     ? `<a href="tel:${escapeAttr(phone)}" class="bt bo" data-cta="cta_call" onclick='window.trackCta&&window.trackCta("cta_call",${trackBase})'>&#x1F4DE; ${escapeHtml(phone)}</a>`
     : "";
+  const websiteBtn = websiteHref
+    ? `<a href="${escapeAttr(websiteHref)}" target="_blank" rel="noopener" class="bt bo" onclick='window.trackCta&&window.trackCta("cta_website",${trackBase})'>&#x1F310; Website</a>`
+    : "";
 
   const featuredBadge = venue.featured
     ? `<span class="bg" style="background:#FFF0ED;color:#E8614D">Featured</span>`
     : "";
+  const openHoursBlock =
+    !hoursDisplay && openingHours
+      ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #D8E2EA">
+<div style="font-size:13px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Business hours</div>
+<div style="font-size:15px;color:#4A6274;line-height:1.45">${escapeHtml(openingHours)}</div>
+</div>`
+      : "";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -338,6 +361,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Happy Hour</div>
 <div style="font-size:24px;font-weight:800;color:#E8614D">${hoursDisplay || "Hours TBD — call ahead"}</div>
 ${hoursDisplay && daysText ? `<div style="font-size:16px;color:#4A6274;margin-top:4px">${escapeHtml(daysText)}</div>` : ""}
+${openHoursBlock}
 </div>
 <p style="font-size:17px;color:#4A6274;line-height:1.65;margin:0 0 20px">${escapeHtml(about)}</p>
 ${
@@ -356,6 +380,7 @@ ${
 </div>
 <div class="actions">
 ${phoneBtn}
+${websiteBtn}
 <a href="${escapeAttr(mapsSearch)}" target="_blank" rel="noopener" class="bt bp" onclick='window.trackCta&&window.trackCta("cta_directions",${trackBase})'>&#x1F4CD; Get Directions</a>
 </div>
 <p class="note">Hours &amp; specials may vary. Call ahead to confirm, or <a href="/submit/?${submitParams.toString()}">suggest an update</a> if something&rsquo;s changed.</p>

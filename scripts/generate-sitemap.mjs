@@ -54,6 +54,8 @@ const STATIC = [
   { loc: "/blog/lansing-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/kalamazoo-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/flint-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
+  { loc: "/blog/holland-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
+  { loc: "/blog/muskegon-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/traverse-city-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/best-brewery-happy-hours-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/michigan-happy-hour-laws", priority: "0.75", changefreq: "weekly" },

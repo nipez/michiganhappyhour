@@ -505,6 +505,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
         + '<div class="field"><b>Email:</b> '+esc(s.email||'—')+' · <b>Phone:</b> '+esc(s.phone||'—')+'</div>'
         + '<div class="field"><b>Notes:</b> '+esc(s.notes||'—')+'</div>'
         + '<div class="row" style="margin-top:12px">'
+        + '<button class="ghost publish-venue-btn" data-id="'+s.id+'" style="border-color:#059669;color:#059669">Publish to venues</button>'
         + ['new','reviewed','published','rejected'].map(function(st){
             return '<button class="ghost status-btn" data-id="'+s.id+'" data-status="'+st+'">Mark '+st+'</button>';
           }).join('')
@@ -524,6 +525,27 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
           alert(result.data.error || 'Update failed');
           return;
         }
+        loadSubmissions();
+      });
+    });
+
+    list.querySelectorAll('.publish-venue-btn').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var id = Number(btn.getAttribute('data-id'));
+        if (!confirm('Create or update a published venue from this submission?')) return;
+        btn.disabled = true;
+        var result = await api('/api/admin/submissions', {
+          method: 'POST',
+          body: JSON.stringify({ id: id, action: 'publish_venue' })
+        });
+        btn.disabled = false;
+        if (handleAuthFailure(result, msg)) return;
+        if (!result.res.ok || !result.data.ok) {
+          alert(result.data.error || 'Publish failed');
+          return;
+        }
+        alert((result.data.created ? 'Created' : 'Updated') + ' venue #' + result.data.venue_id +
+          (result.data.spot_path ? '\n' + result.data.spot_path : ''));
         loadSubmissions();
       });
     });

@@ -1,8 +1,70 @@
+import { slugify } from "../_venues.js";
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": "86400"
+};
+
+const REGION_META = {
+  "traverse-city": { name: "Traverse City", color: "#E8614D" },
+  leelanau: { name: "Leelanau Peninsula", color: "#0D9488" },
+  "old-mission": { name: "Old Mission Peninsula", color: "#7C3AED" },
+  "elk-rapids": { name: "Elk Rapids & Torch Lake", color: "#2563EB" },
+  "frankfort-benzie": { name: "Frankfort & Benzie", color: "#0891B2" },
+  "charlevoix-petoskey": { name: "Charlevoix & Petoskey", color: "#DB2777" },
+  "bellaire-mancelona": { name: "Bellaire & Mancelona", color: "#65A30D" },
+  mackinaw: { name: "Mackinaw & Mackinac", color: "#EA580C" },
+  "grand-rapids": { name: "Grand Rapids", color: "#4F46E5" },
+  "ann-arbor": { name: "Ann Arbor", color: "#CA8A04" },
+  detroit: { name: "Detroit", color: "#DC2626" },
+  kalamazoo: { name: "Kalamazoo", color: "#9333EA" },
+  lansing: { name: "Lansing", color: "#16A34A" },
+  holland: { name: "Holland", color: "#0284C7" },
+  muskegon: { name: "Muskegon", color: "#0F766E" },
+  marquette: { name: "Marquette", color: "#B45309" },
+  "tri-cities": { name: "Saginaw/Bay City", color: "#BE123C" },
+  flint: { name: "Flint", color: "#4338CA" }
+};
+
+const TOWN_REGION = {
+  "traverse city": "traverse-city",
+  "suttons bay": "leelanau",
+  leland: "leelanau",
+  "glen arbor": "leelanau",
+  "old mission": "old-mission",
+  "elk rapids": "elk-rapids",
+  alden: "elk-rapids",
+  frankfort: "frankfort-benzie",
+  beulah: "frankfort-benzie",
+  thompsonville: "frankfort-benzie",
+  charlevoix: "charlevoix-petoskey",
+  petoskey: "charlevoix-petoskey",
+  bellaire: "bellaire-mancelona",
+  mancelona: "bellaire-mancelona",
+  "mackinaw city": "mackinaw",
+  "mackinac island": "mackinaw",
+  "grand rapids": "grand-rapids",
+  "ann arbor": "ann-arbor",
+  ypsilanti: "ann-arbor",
+  detroit: "detroit",
+  ferndale: "detroit",
+  royal: "detroit",
+  "royal oak": "detroit",
+  hamtramck: "detroit",
+  kalamazoo: "kalamazoo",
+  lansing: "lansing",
+  "east lansing": "lansing",
+  holland: "holland",
+  zeeland: "holland",
+  muskegon: "muskegon",
+  "norton shores": "muskegon",
+  marquette: "marquette",
+  saginaw: "tri-cities",
+  "bay city": "tri-cities",
+  midland: "tri-cities",
+  flint: "flint"
 };
 
 function json(data, status = 200) {
@@ -27,6 +89,81 @@ function checkAuth(request, env) {
   const token = getBearer(request);
   if (!token || token !== env.ADMIN_PASSWORD) return { ok: false, reason: "bad_token" };
   return { ok: true };
+}
+
+function guessRegion(town, hint) {
+  const h = String(hint || "").trim().toLowerCase();
+  if (h && REGION_META[h]) return h;
+  const t = String(town || "").trim().toLowerCase();
+  if (TOWN_REGION[t]) return TOWN_REGION[t];
+  for (const [key, region] of Object.entries(TOWN_REGION)) {
+    if (t.includes(key) || key.includes(t)) return region;
+  }
+  return "traverse-city";
+}
+
+function parseSchedule(raw) {
+  const text = String(raw || "").trim();
+  if (!text) return { hh_start: null, hh_end: null, hh_days: [] };
+
+  const timeRe =
+    /(\d{1,2}(?::\d{2})?\s*(?:am|pm))\s*[-–—to]+\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm))/i;
+  const m = text.match(timeRe);
+  let hh_start = null;
+  let hh_end = null;
+  if (m) {
+    hh_start = normalizeClock(m[1]);
+    hh_end = normalizeClock(m[2]);
+  }
+
+  const days = [];
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
+  for (const d of dayNames) {
+    if (new RegExp(`\\b${d}\\b`, "i").test(text)) days.push(d);
+  }
+  if (/\b(every\s*day|daily|7\s*days)\b/i.test(text)) {
+    return { hh_start, hh_end, hh_days: dayNames };
+  }
+  if (/\bmon\s*[-–—]\s*fri\b/i.test(text) || /\bweekdays?\b/i.test(text)) {
+    return {
+      hh_start,
+      hh_end,
+      hh_days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    };
+  }
+  return { hh_start, hh_end, hh_days: days };
+}
+
+function normalizeClock(token) {
+  const t = String(token || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "");
+  const m = t.match(/^(\d{1,2})(?::(\d{2}))?(am|pm)$/);
+  if (!m) return String(token).trim();
+  let h = Number(m[1]);
+  const min = m[2] || "00";
+  const ap = m[3].toUpperCase();
+  const h12 = h % 12 || 12;
+  return `${h12}:${min} ${ap}`;
+}
+
+function parseDeals(raw) {
+  const text = String(raw || "").trim();
+  if (!text) return [];
+  return text
+    .split(/[\n;|]+/)
+    .map((s) => s.replace(/^[-•*]\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, 8);
 }
 
 export async function onRequestOptions() {
@@ -83,7 +220,9 @@ export async function onRequestGet(context) {
 
 /**
  * POST /api/admin/submissions
- * Body: { id, status }  status = new | reviewed | published | rejected
+ * Body:
+ *   { id, status }  status = new | reviewed | published | rejected
+ *   { id, action: "publish_venue", region? }  → upsert into venues + mark published
  * Authorization: Bearer <ADMIN_PASSWORD>
  */
 export async function onRequestPost(context) {
@@ -106,9 +245,18 @@ export async function onRequestPost(context) {
   }
 
   const id = Number(body.id);
+  if (!Number.isFinite(id)) {
+    return json({ ok: false, error: "id required" }, 400);
+  }
+
+  const action = String(body.action || "").trim();
+  if (action === "publish_venue") {
+    return publishSubmissionToVenue(env, id, body);
+  }
+
   const status = String(body.status || "").trim();
   const allowed = ["new", "reviewed", "published", "rejected"];
-  if (!Number.isFinite(id) || !allowed.includes(status)) {
+  if (!allowed.includes(status)) {
     return json({ ok: false, error: "id and valid status required", allowed }, 400);
   }
 
@@ -117,5 +265,146 @@ export async function onRequestPost(context) {
     return json({ ok: true, id, status });
   } catch (err) {
     return json({ ok: false, error: "Update failed", detail: String(err && err.message ? err.message : err) }, 500);
+  }
+}
+
+async function publishSubmissionToVenue(env, id, body) {
+  const sub = await env.DB.prepare(`SELECT * FROM submissions WHERE id = ?`).bind(id).first();
+  if (!sub) return json({ ok: false, error: "Submission not found" }, 404);
+
+  const name = String(sub.name || "").trim();
+  const town = String(sub.town || "").trim();
+  if (!name || !town) {
+    return json({ ok: false, error: "Submission missing name or town" }, 400);
+  }
+
+  const region = guessRegion(town, body.region || sub.region);
+  const meta = REGION_META[region] || { name: town, color: "#E8614D" };
+  const schedule = parseSchedule(sub.happy_hour_schedule);
+  const deals = parseDeals(sub.deals);
+  const vibe = String(sub.vibe || "").trim() || null;
+  const phone = String(sub.phone || "").trim() || null;
+  const website = String(sub.website || "").trim() || null;
+  const address = String(sub.address || "").trim() || null;
+  const category = String(sub.category || "").trim() || "Restaurant";
+  const spot_path = `../spots/${slugify(name, town)}.html`;
+  const hh_days = JSON.stringify(
+    schedule.hh_days.length
+      ? schedule.hh_days
+      : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  );
+  const dealsJson = JSON.stringify(
+    deals.length ? deals : ["Ask about today's drink & food specials"]
+  );
+
+  try {
+    const existing = await env.DB.prepare(
+      `SELECT id FROM venues
+       WHERE lower(name) = lower(?) AND lower(town) = lower(?)
+       ORDER BY CASE status WHEN 'published' THEN 0 WHEN 'draft' THEN 1 ELSE 2 END, id
+       LIMIT 1`
+    )
+      .bind(name, town)
+      .first();
+
+    let venueId;
+    let created = false;
+
+    if (existing?.id) {
+      venueId = existing.id;
+      await env.DB.prepare(
+        `UPDATE venues SET
+          category = COALESCE(?, category),
+          region = ?,
+          region_name = ?,
+          region_color = ?,
+          address = COALESCE(?, address),
+          phone = COALESCE(?, phone),
+          website = COALESCE(?, website),
+          hh_start = COALESCE(?, hh_start),
+          hh_end = COALESCE(?, hh_end),
+          hh_days = ?,
+          deals = ?,
+          vibe = COALESCE(?, vibe),
+          spot_path = COALESCE(spot_path, ?),
+          status = 'published',
+          source = CASE WHEN source IS NULL OR source = '' THEN 'curated' ELSE source END,
+          last_verified_at = date('now'),
+          admin_notes = TRIM(COALESCE(admin_notes,'') || ?),
+          updated_at = datetime('now')
+         WHERE id = ?`
+      )
+        .bind(
+          category,
+          region,
+          meta.name,
+          meta.color,
+          address,
+          phone,
+          website,
+          schedule.hh_start,
+          schedule.hh_end,
+          hh_days,
+          dealsJson,
+          vibe,
+          spot_path,
+          `\nPublished from submission #${id}`,
+          venueId
+        )
+        .run();
+    } else {
+      const max = await env.DB.prepare(`SELECT COALESCE(MAX(id), 0) AS m FROM venues`).first();
+      venueId = Number(max?.m || 0) + 1;
+      created = true;
+      await env.DB.prepare(
+        `INSERT INTO venues (
+          id, name, category, region, region_name, region_color, town, address, phone, website,
+          hh_start, hh_end, hh_days, deals, vibe, featured, collections, spot_path, status,
+          source, last_verified_at, admin_notes, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, '[]', ?, 'published', 'curated', date('now'), ?, datetime('now'))`
+      )
+        .bind(
+          venueId,
+          name,
+          category,
+          region,
+          meta.name,
+          meta.color,
+          town,
+          address,
+          phone,
+          website,
+          schedule.hh_start,
+          schedule.hh_end,
+          hh_days,
+          dealsJson,
+          vibe,
+          spot_path,
+          `Published from submission #${id}`
+        )
+        .run();
+    }
+
+    await env.DB.prepare(`UPDATE submissions SET status = 'published' WHERE id = ?`).bind(id).run();
+
+    const venue = await env.DB.prepare(`SELECT * FROM venues WHERE id = ?`).bind(venueId).first();
+    return json({
+      ok: true,
+      id,
+      status: "published",
+      venue_id: venueId,
+      created,
+      spot_path: venue?.spot_path || spot_path,
+      region
+    });
+  } catch (err) {
+    return json(
+      {
+        ok: false,
+        error: "Publish to venue failed",
+        detail: String(err && err.message ? err.message : err)
+      },
+      500
+    );
   }
 }

@@ -84,6 +84,8 @@ export function toListVenue(row) {
     deals: parseJsonArray(row.deals),
     vibe: row.vibe || "",
     ph: row.phone || "",
+    web: row.website || "",
+    oh: row.opening_hours || "",
     lat: row.lat,
     lng: row.lng
   };
@@ -139,6 +141,7 @@ export function toFullVenue(row) {
     address: row.address,
     phone: row.phone,
     website: row.website || null,
+    opening_hours: row.opening_hours || null,
     hh_start: row.hh_start,
     hh_end: row.hh_end,
     hh_days: parseJsonArray(row.hh_days),
