@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "michiganhappyhour",
   "compatibility_date": "2026-08-03",
-  // Static site lives at the repo root (no build step).
+  // Static site at repo root. Homepage JSX is prebuilt: npm run build:home → js/homepage.js
   "pages_build_output_dir": ".",
   "d1_databases": [
     {

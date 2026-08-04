@@ -12,8 +12,11 @@ Static site for [michiganhappyhour.com](https://michiganhappyhour.com) — happy
 
 ```bash
 npm install
+npm run build:home   # compile src/homepage.jsx → js/homepage.js (no Babel in the browser)
 npm run dev
 ```
+
+Homepage UI source lives in `src/homepage.jsx`. After editing it, run `npm run build:home` and commit both the source and `js/homepage.js`.
 
 ## Connect Cloudflare Pages to this GitHub repo
 
@@ -31,7 +34,7 @@ The live site was deployed with a **direct zip upload**. Cloudflare cannot attac
    | --- | --- |
    | Production branch | `main` |
    | Framework preset | None |
-   | Build command | *(leave empty)* |
+   | Build command | `npm run build` (or leave empty if `js/homepage.js` is committed) |
    | Build output directory | `/` |
 
 6. **Save and Deploy**. Confirm the new `*.pages.dev` URL looks correct.
