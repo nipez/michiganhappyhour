@@ -35,22 +35,37 @@ export function canonicalSpotPath(row) {
   return `/spots/${venueSlug(row)}`;
 }
 
+function isPlaceholderDeal(d) {
+  const s = String(d || "").toLowerCase();
+  if (!s) return true;
+  return (
+    s.includes("ask about today") ||
+    s.includes("call for current") ||
+    s.includes("not verified") ||
+    s.includes("call ahead")
+  );
+}
+
+function verifiedDeals(deals) {
+  return deals.map((d) => String(d || "").trim()).filter((d) => d && !isPlaceholderDeal(d));
+}
+
 /** Compact deal hook for titles (keep SERP titles readable). */
 function dealHook(deals) {
-  const first = (deals[0] || "").trim();
+  const first = (verifiedDeals(deals)[0] || "").trim();
   if (!first) return "";
   // Prefer short price-led hooks
   const short = first.replace(/\s+/g, " ");
   return short.length <= 42 ? short : short.slice(0, 39).replace(/\s+\S*$/, "") + "…";
 }
 
-function buildSpotSeo(name, town, hhStart, hhEnd, deals) {
+function buildSpotSeo(name, town, hhStart, hhEnd, deals, category = "") {
   const hoursLine = [hhStart, hhEnd].filter(Boolean).join("–");
-  const topDeals = deals.slice(0, 3).map((d) => String(d).trim()).filter(Boolean);
-  const dealsPhrase = topDeals.length ? topDeals.join(", ") : "drink & food specials";
+  const realDeals = verifiedDeals(deals);
+  const hasHours = Boolean(hhStart && hhEnd);
+  const cat = (category || "spot").toLowerCase();
   const hook = dealHook(deals);
 
-  // Prefer deal hook in title for CTR; fall back to city
   let title;
   if (hook && `${name} Happy Hour | ${hook}`.length <= 60) {
     title = `${name} Happy Hour | ${hook}`;
@@ -60,14 +75,18 @@ function buildSpotSeo(name, town, hhStart, hhEnd, deals) {
     title = `${name} Happy Hour | ${town}`;
   }
 
-  // Description: lead with deals for CTR on brand + happy-hour queries
-  let desc = `${dealsPhrase} — ${name} happy hour`;
-  if (hoursLine) desc += ` ${hoursLine}`;
-  desc += ` in ${town}, MI. Hours, specials, and directions.`;
+  let desc;
+  if (realDeals.length && hasHours) {
+    desc = `${realDeals.slice(0, 3).join(", ")} — ${name} happy hour ${hoursLine} in ${town}, MI. Hours, specials, and directions.`;
+  } else if (hasHours) {
+    desc = `${name} happy hour ${hoursLine} in ${town}, MI. See deals, map, and details for this ${cat}.`;
+  } else {
+    desc = `Looking for happy hour at ${name} in ${town}, MI? See location, map, and how to confirm today's ${cat} specials.`;
+  }
   desc = desc.slice(0, 160);
 
   const ogTitle = `${name} Happy Hour | ${town}, MI`;
-  return { title, desc, ogTitle };
+  return { title, desc, ogTitle, hasVerifiedDeals: realDeals.length > 0, hasHours };
 }
 
 export function normalizeSpotSlug(raw) {
@@ -107,9 +126,12 @@ export function renderSpotPage(venue, related = []) {
   const regionLabel = venue.region_name || REGION_LABELS[region] || town;
   const slug = venueSlug(venue);
   const canonical = `https://michiganhappyhour.com/spots/${slug}`;
-  const { title, desc, ogTitle } = buildSpotSeo(name, town, hhStart, hhEnd, deals);
+  const seo = buildSpotSeo(name, town, hhStart, hhEnd, deals, category);
+  const { title, desc, ogTitle } = seo;
   const daysText = days.join(", ");
   const hoursDisplay = [hhStart, hhEnd].filter(Boolean).join(" &ndash; ");
+  const realDeals = verifiedDeals(deals);
+  const showPlaceholderDeals = !realDeals.length;
 
   const submitParams = new URLSearchParams({
     name,
@@ -117,8 +139,28 @@ export function renderSpotPage(venue, related = []) {
     address,
     category,
     hours: `${daysText} ${hhStart} – ${hhEnd}`.trim(),
-    deals: deals.join(", ")
+    deals: realDeals.join(", ")
   });
+
+  const aboutBits = [
+    `${name} is a ${String(category || "happy hour spot").toLowerCase()} in ${town}, Michigan`,
+    address ? `at ${address}` : null,
+    regionLabel ? `in the ${regionLabel} area` : null
+  ].filter(Boolean);
+  let about =
+    aboutBits[0] +
+    (aboutBits[1] ? ` ${aboutBits[1]}` : "") +
+    (aboutBits[2] ? `, ${aboutBits[2]}` : "") +
+    ".";
+  if (seo.hasHours) {
+    about += ` Happy hour runs ${hhStart}–${hhEnd}${days.length ? ` (${days.length === 7 ? "every day" : days.length + " days/week"})` : ""}.`;
+  } else {
+    about += ` Hours and drink specials can change — call or stop in to confirm what's pouring today.`;
+  }
+  if (vibe && !/midweek pour|openstreetmap|not verified|auto-discovered/i.test(vibe)) {
+    about += ` ${vibe.replace(/^["“]|["”]$/g, "")}`;
+    if (!/[.!?]$/.test(about.trim())) about += ".";
+  }
 
   const mapsQuery = encodeURIComponent([name, address, town, "MI"].filter(Boolean).join(" "));
   const mapsSearch = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
@@ -174,14 +216,14 @@ export function renderSpotPage(venue, related = []) {
     ]
   };
 
-  const dealsHtml = deals.length
-    ? deals
+  const dealsHtml = realDeals.length
+    ? realDeals
         .map(
           (d) =>
             `<div class="di"><span class="da">&rarr;</span><span>${escapeHtml(d)}</span></div>`
         )
         .join("\n")
-    : `<div class="di"><span class="da">&rarr;</span><span>Call for current specials</span></div>`;
+    : `<div class="di"><span class="da">&rarr;</span><span>Ask about today&rsquo;s drink &amp; food specials</span></div>`;
 
   const relatedHtml = related.length
     ? related
@@ -297,10 +339,20 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <div style="font-size:24px;font-weight:800;color:#E8614D">${hoursDisplay || "Hours TBD — call ahead"}</div>
 ${hoursDisplay && daysText ? `<div style="font-size:16px;color:#4A6274;margin-top:4px">${escapeHtml(daysText)}</div>` : ""}
 </div>
-${vibe ? `<p style="font-size:18px;color:#4A6274;font-style:italic;line-height:1.6;margin-bottom:20px">&ldquo;${escapeHtml(vibe)}&rdquo;</p>` : ""}
+<p style="font-size:17px;color:#4A6274;line-height:1.65;margin:0 0 20px">${escapeHtml(about)}</p>
+${
+  vibe && !/midweek pour|openstreetmap|not verified|auto-discovered/i.test(vibe)
+    ? `<p style="font-size:18px;color:#4A6274;font-style:italic;line-height:1.6;margin-bottom:20px">&ldquo;${escapeHtml(vibe)}&rdquo;</p>`
+    : ""
+}
 <div style="margin-bottom:4px">
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Deals &amp; Specials</div>
 ${dealsHtml}
+${
+  showPlaceholderDeals
+    ? `<p style="font-size:14px;color:#8AA3B5;margin-top:8px;line-height:1.5">Know the current specials? <a href="/submit/?${submitParams.toString()}">Send an update</a> and help fellow Michigan drinkers.</p>`
+    : ""
+}
 </div>
 <div class="actions">
 ${phoneBtn}

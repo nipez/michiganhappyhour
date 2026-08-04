@@ -76,13 +76,15 @@ export const REGION_META = {
     name: "Kalamazoo",
     emoji: "🍻",
     blurb:
-      "Home of Bell’s and a deep craft scene — brewery pints, downtown cocktails, and food specials with real hours."
+      "Home of Bell's and a deep craft scene — brewery pints, downtown cocktails, and food specials with real hours.",
+    blog: "/blog/kalamazoo-happy-hour-guide"
   },
   lansing: {
     name: "Lansing & East Lansing",
     emoji: "🏛️",
     blurb:
-      "Capitol after-work and campus weeknights covered — real hours and specials across Lansing and East Lansing."
+      "Capitol after-work and campus weeknights covered — real hours and specials across Lansing and East Lansing.",
+    blog: "/blog/lansing-happy-hour-guide"
   },
   holland: {
     name: "Holland",
@@ -112,7 +114,8 @@ export const REGION_META = {
     name: "Flint",
     emoji: "🔧",
     blurb:
-      "Vehicle City’s after-work scene spans converted firehouse breweries, longtime taverns, and downtown cocktail spots."
+      "Vehicle City's after-work scene spans converted firehouse breweries, longtime taverns, and downtown cocktail spots.",
+    blog: "/blog/flint-happy-hour-guide"
   }
 };
 
