@@ -18,7 +18,18 @@ const REGION_LABELS = {
   muskegon: "Muskegon",
   marquette: "Marquette",
   "tri-cities": "Saginaw / Bay City",
-  flint: "Flint"
+  flint: "Flint",
+  "port-huron": "Port Huron & Thumb",
+  jackson: "Jackson",
+  "battle-creek": "Battle Creek",
+  "southwest-mi": "SW Michigan",
+  "monroe-adrian": "Monroe & Adrian",
+  "mount-pleasant": "Mount Pleasant",
+  cadillac: "Cadillac",
+  "west-shore": "Ludington & Manistee",
+  "northeast-mi": "Northeast Michigan",
+  "up-west": "Western UP",
+  "up-east": "Eastern UP"
 };
 
 export function venueSlug(row) {

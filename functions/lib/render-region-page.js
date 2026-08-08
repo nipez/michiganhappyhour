@@ -119,6 +119,72 @@ export const REGION_META = {
     blurb:
       "Vehicle City's after-work scene spans converted firehouse breweries, longtime taverns, and downtown cocktail spots.",
     blog: "/blog/flint-happy-hour-guide"
+  },
+  "port-huron": {
+    name: "Port Huron & Thumb",
+    emoji: "⚓",
+    blurb:
+      "Blue Water Bridge energy — downtown Port Huron pubs, marina decks, and Thumb-side taverns with real after-work hours."
+  },
+  jackson: {
+    name: "Jackson",
+    emoji: "🚂",
+    blurb:
+      "Downtown Jackson and the Cascades corridor — brewery pints, classic taverns, and weeknight drink specials."
+  },
+  "battle-creek": {
+    name: "Battle Creek",
+    emoji: "🥣",
+    blurb:
+      "Cereal City after-work: taprooms, riverfront spots, and neighborhood bars with practical happy hour windows."
+  },
+  "southwest-mi": {
+    name: "SW Michigan",
+    emoji: "🏖️",
+    blurb:
+      "Benton Harbor, St. Joseph, and Niles — lakeshore decks, brewery pours, and harbor-town happy hours."
+  },
+  "monroe-adrian": {
+    name: "Monroe & Adrian",
+    emoji: "🌽",
+    blurb:
+      "Southeast Michigan beyond Detroit — Monroe riverfront and Adrian downtown spots with real specials."
+  },
+  "mount-pleasant": {
+    name: "Mount Pleasant",
+    emoji: "🎓",
+    blurb:
+      "Central Michigan campus and downtown — craft beer, cocktails, and weeknight deals around CMU."
+  },
+  cadillac: {
+    name: "Cadillac",
+    emoji: "🌲",
+    blurb:
+      "North-central Michigan’s lake-town after-work scene — pubs, brewery pours, and downtown specials."
+  },
+  "west-shore": {
+    name: "Ludington & Manistee",
+    emoji: "🌅",
+    blurb:
+      "Lake Michigan west shore — Ludington and Manistee waterfront bars, breweries, and sunset decks."
+  },
+  "northeast-mi": {
+    name: "Northeast Michigan",
+    emoji: "🌲",
+    blurb:
+      "Alpena, Gaylord, and Grayling — Up North taverns and brewery stops along the northeast corridor."
+  },
+  "up-west": {
+    name: "Western UP",
+    emoji: "❄️",
+    blurb:
+      "Houghton–Hancock and Iron Mountain — Keweenaw and western UP pubs with Superior-side energy."
+  },
+  "up-east": {
+    name: "Eastern UP",
+    emoji: "🚢",
+    blurb:
+      "Sault Ste. Marie and Escanaba — locks-town and bayfront happy hours across the eastern UP."
   }
 };
 

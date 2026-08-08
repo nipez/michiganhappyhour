@@ -34,7 +34,18 @@ const REGIONS = [
   "elk-rapids",
   "frankfort-benzie",
   "mackinaw",
-  "bellaire-mancelona"
+  "bellaire-mancelona",
+  "port-huron",
+  "jackson",
+  "battle-creek",
+  "southwest-mi",
+  "monroe-adrian",
+  "mount-pleasant",
+  "cadillac",
+  "west-shore",
+  "northeast-mi",
+  "up-west",
+  "up-east"
 ];
 
 const STATIC = [

@@ -25,7 +25,18 @@ const REGION_META = {
   muskegon: { name: "Muskegon", color: "#0F766E" },
   marquette: { name: "Marquette", color: "#B45309" },
   "tri-cities": { name: "Saginaw/Bay City", color: "#BE123C" },
-  flint: { name: "Flint", color: "#4338CA" }
+  flint: { name: "Flint", color: "#4338CA" },
+  "port-huron": { name: "Port Huron & Thumb", color: "#0E7490" },
+  jackson: { name: "Jackson", color: "#A16207" },
+  "battle-creek": { name: "Battle Creek", color: "#B91C1C" },
+  "southwest-mi": { name: "SW Michigan", color: "#047857" },
+  "monroe-adrian": { name: "Monroe & Adrian", color: "#7C2D12" },
+  "mount-pleasant": { name: "Mount Pleasant", color: "#1D4ED8" },
+  cadillac: { name: "Cadillac", color: "#365314" },
+  "west-shore": { name: "Ludington & Manistee", color: "#0369A1" },
+  "northeast-mi": { name: "Northeast Michigan", color: "#6D28D9" },
+  "up-west": { name: "Western UP", color: "#92400E" },
+  "up-east": { name: "Eastern UP", color: "#1E3A5F" }
 };
 
 const TOWN_REGION = {
@@ -64,7 +75,32 @@ const TOWN_REGION = {
   saginaw: "tri-cities",
   "bay city": "tri-cities",
   midland: "tri-cities",
-  flint: "flint"
+  flint: "flint",
+  "port huron": "port-huron",
+  marysville: "port-huron",
+  "bad axe": "port-huron",
+  jackson: "jackson",
+  "battle creek": "battle-creek",
+  "benton harbor": "southwest-mi",
+  "st joseph": "southwest-mi",
+  "st. joseph": "southwest-mi",
+  niles: "southwest-mi",
+  monroe: "monroe-adrian",
+  adrian: "monroe-adrian",
+  "mount pleasant": "mount-pleasant",
+  "mt pleasant": "mount-pleasant",
+  cadillac: "cadillac",
+  ludington: "west-shore",
+  manistee: "west-shore",
+  alpena: "northeast-mi",
+  gaylord: "northeast-mi",
+  grayling: "northeast-mi",
+  houghton: "up-west",
+  hancock: "up-west",
+  "iron mountain": "up-west",
+  "sault ste marie": "up-east",
+  "sault ste. marie": "up-east",
+  escanaba: "up-east"
 };
 
 function json(data, status = 200) {
