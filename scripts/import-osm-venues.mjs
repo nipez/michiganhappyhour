@@ -8,6 +8,7 @@
  *   node scripts/import-osm-venues.mjs --apply-remote
  *   node scripts/import-osm-venues.mjs --apply-local
  *   node scripts/import-osm-venues.mjs --dry-run     # fetch only, no SQL write
+ *   node scripts/import-osm-venues.mjs --only=port-huron,jackson  # limit hubs by region id
  *
  * Respects OSM usage policy: identifiable UA, paced requests.
  */
@@ -40,7 +41,18 @@ const REGION_META = {
   muskegon: { name: "Muskegon", color: "#0F766E" },
   marquette: { name: "Marquette", color: "#B45309" },
   "tri-cities": { name: "Saginaw/Bay City", color: "#BE123C" },
-  flint: { name: "Flint", color: "#4338CA" }
+  flint: { name: "Flint", color: "#4338CA" },
+  "port-huron": { name: "Port Huron & Thumb", color: "#0E7490" },
+  jackson: { name: "Jackson", color: "#A16207" },
+  "battle-creek": { name: "Battle Creek", color: "#B91C1C" },
+  "southwest-mi": { name: "SW Michigan", color: "#047857" },
+  "monroe-adrian": { name: "Monroe & Adrian", color: "#7C2D12" },
+  "mount-pleasant": { name: "Mount Pleasant", color: "#1D4ED8" },
+  cadillac: { name: "Cadillac", color: "#365314" },
+  "west-shore": { name: "Ludington & Manistee", color: "#0369A1" },
+  "northeast-mi": { name: "Northeast Michigan", color: "#6D28D9" },
+  "up-west": { name: "Western UP", color: "#92400E" },
+  "up-east": { name: "Eastern UP", color: "#1E3A5F" }
 };
 
 /** Search hubs: region id + lat/lng + radius meters. Overlaps OK; we dedupe by OSM id. */
@@ -69,7 +81,27 @@ const HUBS = [
   { region: "tri-cities", lat: 43.4195, lng: -83.9508, r: 16000 },
   { region: "tri-cities", lat: 43.5945, lng: -83.8889, r: 14000 },
   { region: "tri-cities", lat: 43.6156, lng: -84.2472, r: 14000 },
-  { region: "flint", lat: 43.0125, lng: -83.6875, r: 14000 }
+  { region: "flint", lat: 43.0125, lng: -83.6875, r: 14000 },
+  // Coverage gap markets
+  { region: "port-huron", lat: 42.9709, lng: -82.4249, r: 18000 },
+  { region: "port-huron", lat: 43.7464, lng: -82.9994, r: 22000 }, // Bad Axe / Thumb
+  { region: "jackson", lat: 42.2459, lng: -84.4013, r: 15000 },
+  { region: "battle-creek", lat: 42.3212, lng: -85.1797, r: 15000 },
+  { region: "southwest-mi", lat: 42.1167, lng: -86.4542, r: 16000 }, // Benton Harbor / St. Joe
+  { region: "southwest-mi", lat: 41.8298, lng: -86.2542, r: 14000 }, // Niles
+  { region: "monroe-adrian", lat: 41.9164, lng: -83.3977, r: 14000 },
+  { region: "monroe-adrian", lat: 41.8975, lng: -84.0372, r: 14000 },
+  { region: "mount-pleasant", lat: 43.5978, lng: -84.7675, r: 14000 },
+  { region: "cadillac", lat: 44.2519, lng: -85.4012, r: 16000 },
+  { region: "west-shore", lat: 43.9553, lng: -86.4526, r: 14000 }, // Ludington
+  { region: "west-shore", lat: 44.2475, lng: -86.3242, r: 14000 }, // Manistee
+  { region: "northeast-mi", lat: 45.0617, lng: -83.4327, r: 16000 }, // Alpena
+  { region: "northeast-mi", lat: 45.0275, lng: -84.6747, r: 16000 }, // Gaylord
+  { region: "northeast-mi", lat: 44.6614, lng: -84.7147, r: 14000 }, // Grayling
+  { region: "up-west", lat: 47.1211, lng: -88.5694, r: 20000 }, // Houghton / Hancock
+  { region: "up-west", lat: 45.8202, lng: -88.0659, r: 16000 }, // Iron Mountain
+  { region: "up-east", lat: 46.4953, lng: -84.3453, r: 16000 }, // Sault Ste. Marie
+  { region: "up-east", lat: 45.7453, lng: -87.0646, r: 16000 } // Escanaba
 ];
 
 const ALL_DAYS = [
@@ -365,10 +397,24 @@ function venueInsertSql(v) {
   );
 }
 
+function parseOnlyRegions() {
+  const arg = process.argv.find((a) => a.startsWith("--only="));
+  if (!arg) return null;
+  const set = new Set(
+    arg
+      .slice("--only=".length)
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+  );
+  return set.size ? set : null;
+}
+
 async function main() {
   const applyRemote = process.argv.includes("--apply-remote");
   const applyLocal = process.argv.includes("--apply-local");
   const dryRun = process.argv.includes("--dry-run");
+  const only = parseOnlyRegions();
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -376,11 +422,18 @@ async function main() {
   const existing = fetchExistingFromD1(true);
   console.log(`  ${existing.length} existing rows`);
 
+  const hubs = only ? HUBS.filter((h) => only.has(h.region)) : HUBS;
+  if (!hubs.length) {
+    console.error("No hubs matched --only filter.");
+    process.exit(1);
+  }
+  if (only) console.log(`Filtering hubs to: ${[...only].join(", ")} (${hubs.length} hubs)`);
+
   const byOsm = new Map();
-  for (let i = 0; i < HUBS.length; i++) {
-    const hub = HUBS[i];
+  for (let i = 0; i < hubs.length; i++) {
+    const hub = hubs[i];
     process.stdout.write(
-      `[${i + 1}/${HUBS.length}] ${hub.region} @ ${hub.lat},${hub.lng} r=${hub.r}… `
+      `[${i + 1}/${hubs.length}] ${hub.region} @ ${hub.lat},${hub.lng} r=${hub.r}… `
     );
     try {
       const data = await overpass(hub);

@@ -25,6 +25,17 @@ const REGIONS=[
   {id:"marquette",name:"Marquette (UP)",emoji:"🏔️",img:"img/charcuterie.jpg"},
   {id:"tri-cities",name:"Saginaw / Bay City / Midland",emoji:"🏙️",img:"img/wine-cheese.jpg"},
   {id:"flint",name:"Flint",emoji:"🔧",img:"img/friends-wine.jpg"},
+  {id:"port-huron",name:"Port Huron & Thumb",emoji:"⚓",img:"img/old-fashioned.jpg"},
+  {id:"jackson",name:"Jackson",emoji:"🚂",img:"img/friends-wine.jpg"},
+  {id:"battle-creek",name:"Battle Creek",emoji:"🥣",img:"img/daytime-cheers.jpg"},
+  {id:"southwest-mi",name:"SW Michigan",emoji:"🏖️",img:"img/tropical-drinks.jpg"},
+  {id:"monroe-adrian",name:"Monroe & Adrian",emoji:"🌽",img:"img/charcuterie.jpg"},
+  {id:"mount-pleasant",name:"Mount Pleasant",emoji:"🎓",img:"img/cheers-cocktails.jpg"},
+  {id:"cadillac",name:"Cadillac",emoji:"🌲",img:"img/nightlife.jpg"},
+  {id:"west-shore",name:"Ludington & Manistee",emoji:"🌅",img:"img/tropical-drinks.jpg"},
+  {id:"northeast-mi",name:"Northeast Michigan",emoji:"🌲",img:"img/chalkboard.jpg"},
+  {id:"up-west",name:"Western UP",emoji:"❄️",img:"img/wine-cheese.jpg"},
+  {id:"up-east",name:"Eastern UP",emoji:"🚢",img:"img/hero.jpg"},
 ];
 
 const CATS=["All","Wine Bar","Brewery","Restaurant","Cocktail Bar","Taproom","Distillery","Cidery"];
@@ -48,7 +59,18 @@ const REGION_CENTERS={
   muskegon:{lat:43.2342,lng:-86.2484},
   marquette:{lat:46.5436,lng:-87.3954},
   "tri-cities":{lat:43.5,lng:-84.0},
-  flint:{lat:43.0125,lng:-83.6875}
+  flint:{lat:43.0125,lng:-83.6875},
+  "port-huron":{lat:42.9709,lng:-82.4249},
+  jackson:{lat:42.2459,lng:-84.4013},
+  "battle-creek":{lat:42.3212,lng:-85.1797},
+  "southwest-mi":{lat:42.1098,lng:-86.48},
+  "monroe-adrian":{lat:41.9,lng:-83.7},
+  "mount-pleasant":{lat:43.5978,lng:-84.7675},
+  cadillac:{lat:44.2519,lng:-85.4012},
+  "west-shore":{lat:44.1,lng:-86.4},
+  "northeast-mi":{lat:45.0,lng:-84.2},
+  "up-west":{lat:46.5,lng:-88.3},
+  "up-east":{lat:46.2,lng:-85.5}
 };
 const REGION_IDS=new Set(REGIONS.map(r=>r.id));
 function haversineMi(lat1,lng1,lat2,lng2){const R=3959;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
