@@ -155,7 +155,17 @@ Spot detail URLs (`/spots/*.html`) are **rendered live from D1** by a Pages Func
 
 ## Business / claim page
 
-`/for-business/` — claim & featured packages; form saves to D1 `submissions`.
+`/for-business/` — claim (free to request) & featured (**$79/mo**) packages; form saves to D1 `submissions` as `submission_type=claim_request`.
+
+Spot PDPs, region pages, homepage cards, and `/submit/` deep-link into the form with venue context.
+
+Optional lead alert — set a Zapier/Make/Slack webhook secret:
+
+```bash
+printf '%s' 'https://hooks.zapier.com/...' | npx wrangler pages secret put LEAD_WEBHOOK_URL --project-name=nwmichhappyhour
+```
+
+Admin **Submissions** can filter by `claim_request`. After payment/verify, toggle **Featured** on the venue.
 
 ## SEO notes
 
@@ -166,7 +176,6 @@ Spot detail URLs (`/spots/*.html`) are **rendered live from D1** by a Pages Func
 ## Next (planned)
 
 - Venue-facing monthly reports from D1 aggregates
-- One-click “apply submission → venue” from the admin inbox
-- Email alerts on new submissions
-- Homepage performance: replace Babel-in-browser compile for Core Web Vitals
+- Stripe Checkout / Payment Link once a few featured leads convert
+- Claimed badge field on venues (beyond manual Featured)
 

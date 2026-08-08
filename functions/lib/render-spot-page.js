@@ -160,6 +160,17 @@ export function renderSpotPage(venue, related = []) {
     hours: `${daysText} ${hhStart} – ${hhEnd}`.trim(),
     deals: realDeals.join(", ")
   });
+  const claimParams = new URLSearchParams({
+    name,
+    town,
+    interest: venue.featured ? "claim" : "featured",
+    hours: hoursDisplay
+      ? `${daysText} ${hhStart} – ${hhEnd}`.trim()
+      : "see current listing",
+    deals: realDeals.length ? realDeals.slice(0, 3).join("; ") : "see current listing"
+  });
+  if (website) claimParams.set("website", website);
+  if (phone) claimParams.set("phone", phone);
 
   const aboutBits = [
     `${name} is a ${String(category || "happy hour spot").toLowerCase()} in ${town}, Michigan`,
@@ -310,6 +321,13 @@ export function renderSpotPage(venue, related = []) {
     page_type: "spot",
     source: "spot_pdp"
   });
+  const claimTrack = JSON.stringify({
+    id: venue.id || slug,
+    name,
+    town,
+    page_type: "spot",
+    source: "spot_claim_cta"
+  });
 
   const phoneBtn = phone
     ? `<a href="tel:${escapeAttr(phone)}" class="bt bo" data-cta="cta_call" onclick='window.trackCta&&window.trackCta("cta_call",${trackBase})'>&#x1F4DE; ${escapeHtml(phone)}</a>`
@@ -434,6 +452,15 @@ ${websiteBtn}
 <a href="${escapeAttr(mapsSearch)}" target="_blank" rel="noopener" class="bt bp" onclick='window.trackCta&&window.trackCta("cta_directions",${trackBase})'>&#x1F4CD; Get Directions</a>
 </div>
 <p class="note">Hours &amp; specials may vary. Call ahead to confirm, or <a href="/submit/?${submitParams.toString()}">suggest an update</a> if something&rsquo;s changed.</p>
+</div>
+<div class="cd" style="margin-top:16px;background:linear-gradient(135deg,#FFF8F3,#EFF6FF);border-color:#F0D0C4">
+<div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Own this spot?</div>
+<div class="sf" style="font-size:22px;font-weight:700;color:#1B2838;margin-bottom:8px">Claim or feature ${escapeHtml(name)}</div>
+<p style="font-size:16px;color:#4A6274;line-height:1.55;margin:0 0 14px;max-width:42ch">Update specials anytime, get monthly call/directions stats, and optionally take priority placement in ${escapeHtml(regionLabel)}.</p>
+<div class="actions" style="margin-top:0">
+<a href="/for-business/?${claimParams.toString()}#claim" class="bt bp" onclick='window.trackCta&&window.trackCta("cta_claim",${claimTrack})'>Claim / feature this listing</a>
+<a href="/submit/?${submitParams.toString()}" class="bt bo">Suggest a free update</a>
+</div>
 </div>
 <div class="map-label">Location</div>
 <div class="me"><iframe src="${escapeAttr(mapEmbed)}" width="100%" height="300" style="border:0" allowfullscreen loading="lazy" title="Map of ${escapeAttr(name)}"></iframe></div>
