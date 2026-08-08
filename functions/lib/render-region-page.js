@@ -104,7 +104,8 @@ export const REGION_META = {
     name: "Marquette (UP)",
     emoji: "🏔️",
     blurb:
-      "Lake Superior energy — craft beer patios, waterfront pubs, and wine bars with real hours."
+      "Lake Superior energy — craft beer patios, waterfront pubs, and wine bars with real hours.",
+    blog: "/blog/marquette-happy-hour-guide"
   },
   "tri-cities": {
     name: "Saginaw / Bay City / Midland",
@@ -166,8 +167,12 @@ export function renderRegionPage(regionId, venues, allRegionCounts = {}) {
 
   const count = venues.length;
   const name = meta.name;
-  const title = `${name} Happy Hour Guide (${new Date().getFullYear()}) | ${count}+ Spots`;
-  const desc = `${name} happy hours with real hours and specials — ${count} spots mapped across the area. Filter, map, and plan after-work without guessing. Updated weekly.`.slice(
+  const year = new Date().getFullYear();
+  const title =
+    `Best ${name} Happy Hours (${year}) | ${count} Spots`.length <= 60
+      ? `Best ${name} Happy Hours (${year}) | ${count} Spots`
+      : `${name} Happy Hour Guide (${year}) | ${count} Spots`;
+  const desc = `Find the best ${name} happy hours — ${count} bars, breweries & restaurants with hours, drink specials, and maps. Updated ${year}.`.slice(
     0,
     160
   );
