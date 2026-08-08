@@ -207,12 +207,23 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
           <div>
             <h2 id="report-title">Venue report</h2>
             <div class="meta" id="report-meta"></div>
+            <div class="meta" id="report-contact"></div>
           </div>
-          <button class="primary" id="copy-summary-btn" type="button">Copy summary</button>
+          <div class="row">
+            <a class="btn ghost" id="open-listing-btn" href="#" target="_blank" rel="noopener">Open listing</a>
+            <a class="btn ghost" id="open-claim-btn" href="#" target="_blank" rel="noopener">Claim form</a>
+            <a class="btn primary" id="mailto-pitch-btn" href="#">Email pitch</a>
+          </div>
         </div>
         <div class="metrics" id="report-metrics"></div>
-        <label class="field-label" for="summary-text">Outreach blurb</label>
-        <textarea id="summary-text" class="summary" readonly></textarea>
+        <label class="field-label" for="pitch-text">Featured pitch ($79/mo)</label>
+        <textarea id="pitch-text" class="summary" readonly></textarea>
+        <div class="row" style="margin:8px 0 14px">
+          <button class="primary" id="copy-pitch-btn" type="button">Copy pitch</button>
+          <button class="ghost" id="copy-summary-btn" type="button">Copy KPI summary</button>
+        </div>
+        <label class="field-label" for="summary-text">KPI summary</label>
+        <textarea id="summary-text" class="summary" readonly style="min-height:140px"></textarea>
         <div id="copy-ok" class="ok hidden">Copied to clipboard.</div>
         <h2 style="margin-top:18px">Recent events</h2>
         <div style="overflow:auto">
@@ -226,17 +237,53 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       <div class="card">
         <div class="row" style="justify-content:space-between">
           <h2>Top spots for outreach</h2>
-          <span class="chip hot" id="top-label">by CTA taps</span>
+          <div class="row">
+            <span class="chip hot" id="top-label">by CTA taps</span>
+            <button class="ghost" id="export-top-csv" type="button">Export CSV</button>
+          </div>
         </div>
-        <p class="meta">Ranked by Call + Map + Directions + Details. Click a row to open that venue’s report.</p>
+        <p class="meta">Ranked by Call + Map + Directions + Details (+ website/claim). Click a row to open that venue’s report + pitch.</p>
         <div style="overflow:auto">
           <table>
             <thead>
               <tr>
-                <th>#</th><th>Spot</th><th>Town</th><th>Views</th><th>Call</th><th>Map</th><th>Directions</th><th>Details</th><th>CTAs</th>
+                <th>#</th><th>Spot</th><th>Town</th><th>Phone</th><th>Feat</th><th>Views</th><th>Call</th><th>Map</th><th>Dir</th><th>CTAs</th>
               </tr>
             </thead>
             <tbody id="top-spots"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <h2>Cold outreach targets</h2>
+          <div class="row">
+            <select id="cold-region" class="ghost" style="padding:10px 12px;width:auto;margin:0">
+              <option value="">Priority markets</option>
+              <option value="detroit">Detroit</option>
+              <option value="grand-rapids">Grand Rapids</option>
+              <option value="ann-arbor">Ann Arbor</option>
+              <option value="traverse-city">Traverse City</option>
+              <option value="lansing">Lansing</option>
+              <option value="kalamazoo">Kalamazoo</option>
+              <option value="holland">Holland</option>
+              <option value="muskegon">Muskegon</option>
+              <option value="marquette">Marquette</option>
+              <option value="flint">Flint</option>
+            </select>
+            <button class="ghost" id="export-cold-csv" type="button">Export CSV</button>
+          </div>
+        </div>
+        <p class="meta">Published, not featured, has phone — curated first. Use while CTA volume is still ramping.</p>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th><th>Spot</th><th>Town</th><th>Region</th><th>Phone</th><th>Source</th><th>Pitch</th>
+              </tr>
+            </thead>
+            <tbody id="cold-targets"></tbody>
           </table>
         </div>
       </div>
@@ -601,10 +648,46 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     if (current) sel.value = current;
   }
 
+  var lastTopRows = [];
+  var lastColdRows = [];
+  var lastPitch = '';
+
+  function downloadCsv(filename, rows, columns){
+    if (!rows || !rows.length) { alert('Nothing to export.'); return; }
+    var lines = [columns.join(',')];
+    rows.forEach(function(r){
+      lines.push(columns.map(function(col){
+        var v = r[col] == null ? '' : String(r[col]);
+        if (/[",\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+        return v;
+      }).join(','));
+    });
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function openSpotInReport(spot, town){
+    var key = spot + '||' + (town || '');
+    var sel = document.getElementById('spot-select');
+    if (![].some.call(sel.options, function(o){ return o.value === key; })) {
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = spot + (town ? ' · ' + town : '');
+      sel.appendChild(opt);
+    }
+    sel.value = key;
+    loadSpotReport();
+  }
+
   function renderTop(rows){
+    lastTopRows = rows || [];
     var body = document.getElementById('top-spots');
     if (!rows || !rows.length) {
-      body.innerHTML = '<tr><td colspan="9">No CTA events in this period yet. Browse the site to generate traffic.</td></tr>';
+      body.innerHTML = '<tr><td colspan="10">No CTA events in this period yet — use cold targets below.</td></tr>';
       return;
     }
     body.innerHTML = rows.map(function(r, i){
@@ -612,29 +695,58 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
         + '<td>'+(i+1)+'</td>'
         + '<td><strong>'+esc(r.spot_name)+'</strong></td>'
         + '<td>'+esc(r.town||'—')+'</td>'
+        + '<td>'+esc(r.phone||'—')+'</td>'
+        + '<td>'+(r.featured ? '★' : '—')+'</td>'
         + '<td>'+esc(r.spot_view)+'</td>'
         + '<td>'+esc(r.cta_call)+'</td>'
         + '<td>'+esc(r.cta_map)+'</td>'
         + '<td>'+esc(r.cta_directions)+'</td>'
-        + '<td>'+esc(r.cta_details)+'</td>'
         + '<td><strong>'+esc(r.total_cta)+'</strong></td>'
         + '</tr>';
     }).join('');
 
     body.querySelectorAll('tr.clickable').forEach(function(tr){
       tr.addEventListener('click', function(){
-        var spot = tr.getAttribute('data-spot');
-        var town = tr.getAttribute('data-town') || '';
-        var key = spot + '||' + town;
-        var sel = document.getElementById('spot-select');
-        if (![].some.call(sel.options, function(o){ return o.value === key; })) {
-          var opt = document.createElement('option');
-          opt.value = key;
-          opt.textContent = spot + (town ? ' · ' + town : '');
-          sel.appendChild(opt);
+        openSpotInReport(tr.getAttribute('data-spot'), tr.getAttribute('data-town') || '');
+      });
+    });
+  }
+
+  function renderCold(rows){
+    lastColdRows = rows || [];
+    var body = document.getElementById('cold-targets');
+    if (!rows || !rows.length) {
+      body.innerHTML = '<tr><td colspan="7">No cold targets for this filter.</td></tr>';
+      return;
+    }
+    body.innerHTML = rows.map(function(r, i){
+      var mailto = 'mailto:?subject=' + encodeURIComponent('Featured listing for ' + (r.spot_name || ''))
+        + '&body=' + encodeURIComponent(r.pitch_text || '');
+      return '<tr>'
+        + '<td>'+(i+1)+'</td>'
+        + '<td><strong>'+esc(r.spot_name)+'</strong><div class="meta" style="margin:0">'+esc(r.category||'')+'</div></td>'
+        + '<td>'+esc(r.town||'—')+'</td>'
+        + '<td>'+esc(r.region||'—')+'</td>'
+        + '<td>'+(r.phone ? '<a href="tel:'+esc(r.phone)+'">'+esc(r.phone)+'</a>' : '—')+'</td>'
+        + '<td>'+esc(r.source||'—')+'</td>'
+        + '<td class="row">'
+        + '<button class="ghost cold-copy" data-i="'+i+'" type="button">Copy</button>'
+        + '<a class="btn ghost" href="'+mailto+'">Email</a>'
+        + '<a class="btn ghost" href="'+esc(r.claim_url)+'" target="_blank" rel="noopener">Claim</a>'
+        + '</td>'
+        + '</tr>';
+    }).join('');
+
+    body.querySelectorAll('.cold-copy').forEach(function(btn){
+      btn.addEventListener('click', async function(){
+        var row = lastColdRows[Number(btn.getAttribute('data-i'))];
+        if (!row || !row.pitch_text) return;
+        try {
+          await navigator.clipboard.writeText(row.pitch_text);
+          showOk(reportsMsg, 'Pitch copied for ' + row.spot_name);
+        } catch (e) {
+          alert(row.pitch_text);
         }
-        sel.value = key;
-        loadSpotReport();
       });
     });
   }
@@ -644,7 +756,21 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     if (!report) { box.classList.add('hidden'); return; }
     box.classList.remove('hidden');
     document.getElementById('report-title').textContent = report.spot_name + (report.town ? ' · ' + report.town : '');
-    document.getElementById('report-meta').textContent = 'Last ' + report.days + ' days · total events ' + report.counts.total_events;
+    document.getElementById('report-meta').textContent = 'Last ' + report.days + ' days · total events ' + report.counts.total_events
+      + (report.venue && report.venue.featured ? ' · FEATURED' : '');
+    var contactBits = [];
+    if (report.venue && report.venue.phone) contactBits.push('Phone: ' + report.venue.phone);
+    if (report.venue && report.venue.website) contactBits.push('Web: ' + report.venue.website);
+    if (report.venue && report.venue.region) contactBits.push('Region: ' + report.venue.region);
+    document.getElementById('report-contact').textContent = contactBits.join(' · ') || 'No venue match in D1 for contact fields.';
+
+    document.getElementById('open-listing-btn').href = report.listing_url || '#';
+    document.getElementById('open-claim-btn').href = report.claim_url || '/for-business/#claim';
+    lastPitch = report.pitch_text || '';
+    document.getElementById('mailto-pitch-btn').href = 'mailto:?subject='
+      + encodeURIComponent('Featured listing for ' + report.spot_name)
+      + '&body=' + encodeURIComponent(lastPitch);
+
     var c = report.counts;
     document.getElementById('report-metrics').innerHTML = [
       ['Views', c.spot_view],
@@ -652,10 +778,13 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       ['Map', c.cta_map],
       ['Directions', c.cta_directions],
       ['Details', c.cta_details],
+      ['Website', c.cta_website || 0],
+      ['Claim', c.cta_claim || 0],
       ['All CTAs', c.total_cta]
     ].map(function(pair){
       return '<div class="metric"><div class="n">'+esc(pair[1])+'</div><div class="l">'+esc(pair[0])+'</div></div>';
     }).join('');
+    document.getElementById('pitch-text').value = report.pitch_text || '';
     document.getElementById('summary-text').value = report.summary_text || '';
     document.getElementById('copy-ok').classList.add('hidden');
 
@@ -676,7 +805,11 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     hideError(reportsMsg);
     var days = document.getElementById('days-select').value || '30';
     var town = document.getElementById('town-filter').value.trim();
-    var q = '?days=' + encodeURIComponent(days) + (town ? '&town=' + encodeURIComponent(town) : '');
+    var region = document.getElementById('cold-region').value;
+    var q = '?days=' + encodeURIComponent(days)
+      + (town ? '&town=' + encodeURIComponent(town) : '')
+      + (region ? '&region=' + encodeURIComponent(region) : '')
+      + '&limit=40';
     var result = await api('/api/admin/reports' + q);
     if (handleAuthFailure(result, reportsMsg)) return;
     if (!result.res.ok || !result.data.ok) {
@@ -687,6 +820,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     app.classList.remove('hidden');
     fillSpotSelect(result.data.spots || []);
     renderTop(result.data.top_spots || []);
+    renderCold(result.data.outreach_targets || []);
     document.getElementById('top-label').textContent = town ? ('by CTA taps · ' + town) : 'by CTA taps';
   }
 
@@ -759,17 +893,32 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     clearTimeout(venueQTimer);
     venueQTimer = setTimeout(loadVenues, 250);
   });
-  document.getElementById('copy-summary-btn').addEventListener('click', async function(){
-    var text = document.getElementById('summary-text').value;
+  async function copyField(id){
+    var el = document.getElementById(id);
+    var text = el && el.value;
     if (!text) return;
     try {
       await navigator.clipboard.writeText(text);
       document.getElementById('copy-ok').classList.remove('hidden');
+      document.getElementById('copy-ok').textContent = id === 'pitch-text' ? 'Pitch copied.' : 'KPI summary copied.';
     } catch (e) {
-      document.getElementById('summary-text').select();
+      el.select();
       document.execCommand('copy');
       document.getElementById('copy-ok').classList.remove('hidden');
     }
+  }
+  document.getElementById('copy-summary-btn').addEventListener('click', function(){ copyField('summary-text'); });
+  document.getElementById('copy-pitch-btn').addEventListener('click', function(){ copyField('pitch-text'); });
+  document.getElementById('cold-region').addEventListener('change', loadReports);
+  document.getElementById('export-top-csv').addEventListener('click', function(){
+    downloadCsv('top-spots-outreach.csv', lastTopRows, [
+      'spot_name','town','phone','featured','spot_view','cta_call','cta_map','cta_directions','cta_details','total_cta','listing_url','claim_url'
+    ]);
+  });
+  document.getElementById('export-cold-csv').addEventListener('click', function(){
+    downloadCsv('cold-outreach-targets.csv', lastColdRows, [
+      'spot_name','town','region','phone','website','source','category','listing_url','claim_url'
+    ]);
   });
   pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
 
