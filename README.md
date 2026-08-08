@@ -167,6 +167,26 @@ printf '%s' 'https://hooks.zapier.com/...' | npx wrangler pages secret put LEAD_
 
 Admin **Submissions** can filter by `claim_request`. After verify, toggle **Claimed / verified owner** on the venue (green Verified badge). After payment, also toggle **Featured**. Publishing a `claim_request` marks the venue claimed automatically.
 
+### Featured Stripe checkout ($79/mo)
+
+Online checkout is available when these Pages secrets are set on `nwmichhappyhour`:
+
+```bash
+printf '%s' 'rk_live_...' | npx wrangler pages secret put STRIPE_SECRET_KEY --project-name=nwmichhappyhour
+printf '%s' 'whsec_...' | npx wrangler pages secret put STRIPE_WEBHOOK_SECRET --project-name=nwmichhappyhour
+# optional — otherwise Checkout creates an inline $79/mo price
+printf '%s' 'price_...' | npx wrangler pages secret put STRIPE_PRICE_ID --project-name=nwmichhappyhour
+```
+
+Webhook endpoint: `https://michiganhappyhour.com/api/stripe-webhook`  
+Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
+
+Successful payment sets `featured=1` + `claimed=1` on the matching venue.
+
+### Owner KPI report links
+
+Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v=&t=`). Uses `REPORT_SECRET` if set, otherwise `ADMIN_PASSWORD`.
+
 ## SEO notes
 
 - Sitemap: `sitemap.xml` — rebuild with `node scripts/generate-sitemap.mjs` after venue imports, then resubmit in GSC
@@ -175,7 +195,6 @@ Admin **Submissions** can filter by `claim_request`. After verify, toggle **Clai
 
 ## Next (planned)
 
-- Venue-facing monthly reports from D1 aggregates
-- Stripe Checkout / Payment Link once a few featured leads convert
-- Claimed badge field on venues (beyond manual Featured)
+- Stripe Customer Portal for self-serve cancel/update card
+- Email receipts / lead alerts beyond `LEAD_WEBHOOK_URL`
 

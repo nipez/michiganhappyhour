@@ -155,21 +155,21 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     <div class="plan featured">
       <h3 class="sf">Featured</h3>
       <div style="font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800;color:var(--coral)">$79<span style="font-size:16px;font-weight:700;color:var(--muted)">/mo</span></div>
-      <p style="color:var(--muted);font-size:14px;margin-top:-4px">Billed monthly after we confirm fit. Cancel anytime.</p>
+      <p style="color:var(--muted);font-size:14px;margin-top:-4px">Monthly via Stripe. Cancel anytime.</p>
       <ul>
         <li>Priority placement in your region</li>
         <li>Homepage &amp; map callouts</li>
         <li>Guide &amp; collection mentions where relevant</li>
         <li>Everything in Claimed</li>
       </ul>
-      <a class="btn btn-primary" href="#claim" data-interest="featured">Request featured</a>
+      <a class="btn btn-primary" href="#claim" data-interest="featured" id="featured-cta">Start Featured checkout</a>
     </div>
   </div>
 </section>
 
 <section class="section" id="claim">
-  <h2 class="sf">Request a claim or featured spot</h2>
-  <p class="lead">Tell us who you are and which listing to verify. We’ll reply with next steps — Featured spots invoice at $79/mo after confirmation.</p>
+  <h2 class="sf">Request a claim or Featured spot</h2>
+  <p class="lead">Tell us who you are and which listing to verify. Choose Featured to pay $79/mo online (Stripe) — or request a free claim first.</p>
   <div class="form-card">
     <form id="biz-form">
       <input type="hidden" name="submission_type" value="claim_request">
@@ -227,7 +227,10 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       <label>How can we verify you manage this spot?</label>
       <textarea name="notes" rows="2" placeholder="e.g. Call the restaurant line and ask for me"></textarea>
       <div style="position:absolute;left:-9999px" aria-hidden="true"><input name="company" tabindex="-1" autocomplete="off"></div>
-      <button class="btn btn-primary" type="submit" id="biz-btn">Submit request</button>
+      <div class="cta-row" style="margin-top:4px">
+        <button class="btn btn-primary" type="submit" id="biz-btn">Submit request</button>
+        <button class="btn btn-secondary" type="button" id="pay-btn" style="display:none;color:#fff;border-color:transparent;background:linear-gradient(135deg,#2D6A8F,#E8614D)">Pay $79/mo with Stripe</button>
+      </div>
       <div id="form-msg" class="note"></div>
     </form>
   </div>
@@ -245,8 +248,10 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
 (function(){
   var form = document.getElementById('biz-form');
   var btn = document.getElementById('biz-btn');
+  var payBtn = document.getElementById('pay-btn');
   var msg = document.getElementById('form-msg');
   var interest = document.getElementById('interest');
+  var checkoutReady = false;
 
   function mapInterest(raw){
     var v = String(raw || '').toLowerCase();
@@ -256,6 +261,24 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     if (v === 'claim' || v.indexOf('claim') >= 0) return 'Claim existing listing';
     return '';
   }
+
+  function wantsFeatured(){
+    var v = (interest.value || '').toLowerCase();
+    return v.indexOf('feature') >= 0 || v.indexOf('both') >= 0;
+  }
+
+  function syncPayButton(){
+    payBtn.style.display = checkoutReady && wantsFeatured() ? 'inline-flex' : 'none';
+  }
+
+  fetch('/api/checkout').then(function(r){ return r.json(); }).then(function(d){
+    checkoutReady = !!(d && d.ok && d.configured);
+    syncPayButton();
+    if (checkoutReady) {
+      var cta = document.getElementById('featured-cta');
+      if (cta) cta.textContent = 'Pay $79/mo with Stripe';
+    }
+  }).catch(function(){});
 
   // Prefill from spot PDP / homepage deep links: /for-business/?name=&town=&interest=#claim
   try {
@@ -273,16 +296,60 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     if (mapped) interest.value = mapped;
   } catch (e) {}
 
+  interest.addEventListener('change', syncPayButton);
   document.querySelectorAll('[data-interest]').forEach(function(a){
     a.addEventListener('click', function(){
       var mapped = mapInterest(a.getAttribute('data-interest'));
       if (mapped) interest.value = mapped;
+      syncPayButton();
+      if (checkoutReady && a.getAttribute('data-interest') === 'featured') {
+        setTimeout(function(){ payBtn.focus(); }, 50);
+      }
     });
   });
+
+  function startCheckout(){
+    msg.textContent = '';
+    var payload = {
+      name: form.elements.namedItem('name').value.trim(),
+      town: form.elements.namedItem('town').value.trim(),
+      email: form.elements.namedItem('email').value.trim(),
+      contact_name: form.elements.namedItem('contact_name').value.trim()
+    };
+    if (!payload.name || !payload.town || !payload.email) {
+      msg.style.color = '#E8614D';
+      msg.textContent = 'Name, town, and email are required for checkout.';
+      return;
+    }
+    payBtn.disabled = true;
+    payBtn.textContent = 'Redirecting to Stripe…';
+    fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().then(function(d){ return {r:r,d:d}; }); })
+    .then(function(x){
+      if (!x.r.ok || !x.d.ok || !x.d.url) throw new Error(x.d.error || 'checkout failed');
+      if (window.trackCta) window.trackCta('cta_checkout', { name: payload.name, town: payload.town, page_type:'for_business', source:'stripe_checkout' });
+      location.href = x.d.url;
+    }).catch(function(err){
+      msg.style.color = '#E8614D';
+      msg.textContent = err.message || 'Checkout unavailable. Submit the request and we’ll invoice you.';
+      payBtn.disabled = false;
+      payBtn.textContent = 'Pay $79/mo with Stripe';
+    });
+  }
+
+  payBtn.addEventListener('click', startCheckout);
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
     msg.textContent = '';
+    // Featured + checkout ready → go straight to Stripe
+    if (checkoutReady && wantsFeatured()) {
+      startCheckout();
+      return;
+    }
     btn.disabled = true;
     btn.textContent = 'Sending…';
     var fd = new FormData(form);
@@ -303,6 +370,7 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       form.reset();
       btn.disabled = false;
       btn.textContent = 'Submit request';
+      syncPayButton();
     }).catch(function(){
       msg.style.color = '#E8614D';
       msg.textContent = 'Could not save. Try again or email hello@michiganhappyhour.com.';
