@@ -195,7 +195,6 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 
 ## Next (planned)
 
-- Venue-facing monthly reports from D1 aggregates
-- Stripe Checkout / Payment Link once a few featured leads convert
-- Claimed badge field on venues (beyond manual Featured)
+- Stripe Customer Portal for self-serve cancel/update card
+- Email receipts / lead alerts beyond `LEAD_WEBHOOK_URL`
 
