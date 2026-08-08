@@ -761,6 +761,18 @@ function App(){
               <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Muskegon happy hours</div>
             </a>
+            <a href="/blog/marquette-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Marquette happy hours</div>
+            </a>
+            <a href="/blog/detroit-patio-happy-hours" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit patio happy hours</div>
+            </a>
+            <a href="/blog/late-night-happy-hour-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Late-night happy hours</div>
+            </a>
             <a href="/collections/best-breweries" style={{display:"block",padding:"16px",borderRadius:14,background:"#FFF7ED",border:"1.5px solid #D4A017",textDecoration:"none"}}>
               <div style={{fontSize:13,color:"#B45309",fontWeight:700,marginBottom:4}}>COLLECTION</div>
               <div style={{fontSize:16,fontWeight:700,color:"#92400E"}}>Best brewery happy hours</div>

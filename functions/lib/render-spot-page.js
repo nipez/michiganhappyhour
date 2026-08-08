@@ -65,27 +65,39 @@ function buildSpotSeo(name, town, hhStart, hhEnd, deals, category = "") {
   const hasHours = Boolean(hhStart && hhEnd);
   const cat = (category || "spot").toLowerCase();
   const hook = dealHook(deals);
+  const year = new Date().getFullYear();
 
+  // CTR-first titles: lead with hours/deals when we have them; otherwise local intent.
   let title;
-  if (hook && `${name} Happy Hour | ${hook}`.length <= 60) {
-    title = `${name} Happy Hour | ${hook}`;
-  } else if (`${name} Happy Hour | ${town}, MI`.length <= 60) {
-    title = `${name} Happy Hour | ${town}, MI`;
+  const withHours = `${name} Happy Hour ${hoursLine} | ${town}`;
+  const withHook = `${name} Happy Hour | ${hook}`;
+  const withTown = `${name} Happy Hour | ${town}, MI`;
+  const nearMe = `Happy Hour at ${name} | ${town}, MI`;
+  if (hasHours && withHours.length <= 60) {
+    title = withHours;
+  } else if (hook && withHook.length <= 60) {
+    title = withHook;
+  } else if (withTown.length <= 60) {
+    title = withTown;
+  } else if (nearMe.length <= 60) {
+    title = nearMe;
   } else {
     title = `${name} Happy Hour | ${town}`;
   }
 
   let desc;
   if (realDeals.length && hasHours) {
-    desc = `${realDeals.slice(0, 3).join(", ")} — ${name} happy hour ${hoursLine} in ${town}, MI. Hours, specials, and directions.`;
+    desc = `${realDeals.slice(0, 3).join(", ")} at ${name} — happy hour ${hoursLine} in ${town}, MI. Updated ${year}: hours, specials, map & directions.`;
   } else if (hasHours) {
-    desc = `${name} happy hour ${hoursLine} in ${town}, MI. See deals, map, and details for this ${cat}.`;
+    desc = `${name} happy hour runs ${hoursLine} in ${town}, MI. See current ${cat} specials, map pin, and directions — updated ${year}.`;
   } else {
-    desc = `Looking for happy hour at ${name} in ${town}, MI? See location, map, and how to confirm today's ${cat} specials.`;
+    desc = `Happy hour at ${name} in ${town}, MI — location, map, phone, and how to confirm today's ${cat} drink specials. Updated ${year}.`;
   }
   desc = desc.slice(0, 160);
 
-  const ogTitle = `${name} Happy Hour | ${town}, MI`;
+  const ogTitle = hasHours
+    ? `${name} Happy Hour ${hoursLine} | ${town}, MI`
+    : `${name} Happy Hour | ${town}, MI`;
   return { title, desc, ogTitle, hasVerifiedDeals: realDeals.length > 0, hasHours };
 }
 
@@ -229,6 +241,43 @@ export function renderSpotPage(venue, related = []) {
     ]
   };
 
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `What time is happy hour at ${name}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: seo.hasHours
+            ? `Happy hour at ${name} in ${town} runs ${hhStart}–${hhEnd}${daysText ? ` on ${daysText}` : ""}. Hours can change — call ahead to confirm.`
+            : `Happy hour hours at ${name} in ${town} are not verified yet. Call ahead or check their website for today's specials window.`
+        }
+      },
+      {
+        "@type": "Question",
+        name: `What are the happy hour deals at ${name}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: realDeals.length
+            ? `${name} happy hour specials include: ${realDeals.slice(0, 4).join("; ")}.`
+            : `${name} posts rotating drink and food specials. Ask your server about today's happy hour menu when you arrive.`
+        }
+      },
+      {
+        "@type": "Question",
+        name: `Where is ${name} located?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: address
+            ? `${name} is at ${address}, ${town}, MI.`
+            : `${name} is in ${town}, Michigan${regionLabel ? ` (${regionLabel})` : ""}.`
+        }
+      }
+    ]
+  };
+
   const dealsHtml = realDeals.length
     ? realDeals
         .map(
@@ -309,6 +358,7 @@ export function renderSpotPage(venue, related = []) {
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>
 <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
+<script type="application/ld+json">${JSON.stringify(faqLd)}</script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Inter',-apple-system,sans-serif;background:#F5F7FA;color:#1B2838;-webkit-font-smoothing:antialiased}
@@ -352,7 +402,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <div class="cd">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
 <div>
-<h1 class="sf" style="font-size:clamp(28px,5vw,36px);font-weight:800;margin-bottom:6px">${escapeHtml(name)}</h1>
+<h1 class="sf" style="font-size:clamp(28px,5vw,36px);font-weight:800;margin-bottom:6px">${escapeHtml(name)} Happy Hour</h1>
 <div style="font-size:17px;color:#6B8A9E">${escapeHtml(town)}, MI${address ? " &middot; " + escapeHtml(address) : ""}</div>
 </div>
 <div class="badges"><span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${featuredBadge}</div>
