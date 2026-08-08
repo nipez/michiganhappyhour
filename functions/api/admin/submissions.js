@@ -189,6 +189,7 @@ export async function onRequestGet(context) {
   const url = new URL(request.url);
   const status = (url.searchParams.get("status") || "").trim();
   const type = (url.searchParams.get("type") || "").trim();
+  const includeArchived = url.searchParams.get("include_archived") === "1";
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 50) || 50, 1), 200);
 
   try {
@@ -197,6 +198,9 @@ export async function onRequestGet(context) {
     if (status) {
       clauses.push("status = ?");
       binds.push(status);
+    } else if (!includeArchived) {
+      // Default inbox hides archived test/junk submissions
+      clauses.push("status != 'archived'");
     }
     if (type) {
       clauses.push("submission_type = ?");
@@ -230,7 +234,7 @@ export async function onRequestGet(context) {
 /**
  * POST /api/admin/submissions
  * Body:
- *   { id, status }  status = new | reviewed | published | rejected
+ *   { id, status }  status = new | reviewed | published | rejected | archived
  *   { id, action: "publish_venue", region? }  → upsert into venues + mark published
  * Authorization: Bearer <ADMIN_PASSWORD>
  */
@@ -264,7 +268,7 @@ export async function onRequestPost(context) {
   }
 
   const status = String(body.status || "").trim();
-  const allowed = ["new", "reviewed", "published", "rejected"];
+  const allowed = ["new", "reviewed", "published", "rejected", "archived"];
   if (!allowed.includes(status)) {
     return json({ ok: false, error: "id and valid status required", allowed }, 400);
   }

@@ -300,11 +300,12 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
             <option value="update">update</option>
           </select>
           <select id="status-filter" class="ghost" style="padding:10px 12px;width:auto;margin:0">
-            <option value="">All statuses</option>
+            <option value="">Active (hide archived)</option>
             <option value="new">new</option>
             <option value="reviewed">reviewed</option>
             <option value="published">published</option>
             <option value="rejected">rejected</option>
+            <option value="archived">archived</option>
           </select>
           <button class="ghost" id="refresh-btn" type="button">Refresh</button>
         </div>
@@ -571,9 +572,11 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
         + '<div class="field"><b>Notes:</b> '+esc(s.notes||'—')+'</div>'
         + (isClaim ? '<div class="field" style="color:#B45309"><b>Next:</b> Reply to confirm, then toggle Featured on the venue after payment / claim verify.</div>' : '')
         + '<div class="row" style="margin-top:12px">'
-        + '<button class="ghost publish-venue-btn" data-id="'+s.id+'" style="border-color:#059669;color:#059669">Publish to venues</button>'
-        + ['new','reviewed','published','rejected'].map(function(st){
-            return '<button class="ghost status-btn" data-id="'+s.id+'" data-status="'+st+'">Mark '+st+'</button>';
+        + (s.status === 'archived' ? '' : '<button class="ghost publish-venue-btn" data-id="'+s.id+'" style="border-color:#059669;color:#059669">Publish to venues</button>')
+        + ['new','reviewed','published','rejected','archived'].map(function(st){
+            var label = st === 'archived' ? 'Archive' : ('Mark '+st);
+            var style = st === 'archived' ? ' style="border-color:#9CA3AF;color:#4B5563"' : '';
+            return '<button class="ghost status-btn" data-id="'+s.id+'" data-status="'+st+'"'+style+'>'+label+'</button>';
           }).join('')
         + '</div></div>';
     }).join('');
