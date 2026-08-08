@@ -153,6 +153,18 @@ Public JSON: `https://michiganhappyhour.com/api/venues?format=list` (also `forma
 
 Spot detail URLs (`/spots/*.html`) are **rendered live from D1** by a Pages Function — admin saves update those pages immediately (plus homepage + map).
 
+### OSM coverage expand (safe upsert)
+
+Discover bars/pubs/breweries via Overpass and insert only new rows (dedupes against existing D1):
+
+```bash
+node scripts/import-osm-venues.mjs --only=port-huron,jackson --apply-remote
+node scripts/fix-duplicate-spots.mjs --apply-remote
+node scripts/generate-sitemap.mjs
+```
+
+Omit `--only` to scan all hubs. Re-run anytime; curated rows are not wiped.
+
 ## Business / claim page
 
 `/for-business/` — claim (free to request) & featured (**$79/mo**) packages; form saves to D1 `submissions` as `submission_type=claim_request`.
