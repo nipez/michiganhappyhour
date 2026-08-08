@@ -102,6 +102,21 @@ function coerceVenuePayload(body, { partial = false } = {}) {
     set("lng", Number.isFinite(n) ? n : null);
   }
   if (body.featured !== undefined) set("featured", body.featured ? 1 : 0);
+  if (body.claimed !== undefined) {
+    set("claimed", body.claimed ? 1 : 0);
+    if (body.claimed) {
+      set(
+        "claimed_at",
+        String(body.claimed_at || "").trim() || new Date().toISOString().slice(0, 10)
+      );
+    } else if (body.claimed_at !== undefined) {
+      set("claimed_at", String(body.claimed_at || "").trim() || null);
+    } else {
+      set("claimed_at", null);
+    }
+  } else if (body.claimed_at !== undefined) {
+    set("claimed_at", String(body.claimed_at || "").trim() || null);
+  }
   if (body.collections !== undefined) set("collections", JSON.stringify(normalizeCollections(body.collections)));
   if (body.spot_path !== undefined) set("spot_path", String(body.spot_path || "").trim() || null);
   if (body.status !== undefined) set("status", String(body.status || "published").trim());
@@ -118,6 +133,7 @@ function coerceVenuePayload(body, { partial = false } = {}) {
     if (out.deals === undefined) out.deals = "[]";
     if (out.collections === undefined) out.collections = "[]";
     if (out.featured === undefined) out.featured = 0;
+    if (out.claimed === undefined) out.claimed = 0;
     if (out.status === undefined) out.status = "published";
     if (!out.spot_path) {
       out.spot_path = `../spots/${slugify(out.name, out.town)}.html`;
@@ -243,10 +259,10 @@ async function upsert(context, { create }) {
 
       await env.DB.prepare(
         `INSERT INTO venues (
-          id, name, category, region, region_name, region_color, town, address, phone,
-          hh_start, hh_end, hh_days, deals, vibe, lat, lng, featured, collections,
+          id, name, category, region, region_name, region_color, town, address, phone, website,
+          hh_start, hh_end, hh_days, deals, vibe, lat, lng, featured, claimed, claimed_at, collections,
           spot_path, status, admin_notes, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
       )
         .bind(
           id,
@@ -258,6 +274,7 @@ async function upsert(context, { create }) {
           v.town,
           v.address,
           v.phone,
+          v.website ?? null,
           v.hh_start,
           v.hh_end,
           v.hh_days,
@@ -266,6 +283,8 @@ async function upsert(context, { create }) {
           v.lat,
           v.lng,
           v.featured,
+          v.claimed ?? 0,
+          v.claimed_at ?? null,
           v.collections,
           v.spot_path,
           v.status,

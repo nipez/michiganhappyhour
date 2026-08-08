@@ -165,7 +165,7 @@ Optional lead alert — set a Zapier/Make/Slack webhook secret:
 printf '%s' 'https://hooks.zapier.com/...' | npx wrangler pages secret put LEAD_WEBHOOK_URL --project-name=nwmichhappyhour
 ```
 
-Admin **Submissions** can filter by `claim_request`. After payment/verify, toggle **Featured** on the venue.
+Admin **Submissions** can filter by `claim_request`. After verify, toggle **Claimed / verified owner** on the venue (green Verified badge). After payment, also toggle **Featured**. Publishing a `claim_request` marks the venue claimed automatically.
 
 ## SEO notes
 
