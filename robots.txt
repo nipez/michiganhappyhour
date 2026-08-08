@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /owner-report
+Disallow: /manage-billing
 Disallow: /submit/thanks.html
 Disallow: /for-business/thanks.html
 Disallow: /index-backup.html

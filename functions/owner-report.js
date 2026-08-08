@@ -19,7 +19,8 @@ export async function onRequestGet(context) {
   if (!ok) return htmlPage("This report link is invalid or expired.", 403);
 
   const venue = await env.DB.prepare(
-    `SELECT id, name, town, region_name, featured, claimed, phone, website, spot_path
+    `SELECT id, name, town, region_name, featured, claimed, phone, website, spot_path,
+            stripe_customer_id
      FROM venues WHERE id = ?`
   )
     .bind(venueId)
@@ -109,7 +110,9 @@ h1{font-family:Fraunces,Georgia,serif;font-size:clamp(26px,4vw,34px);margin:8px 
 .metric{background:#f4f7f9;border:1px solid var(--line);border-radius:12px;padding:12px}
 .metric .n{font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800}
 .metric .l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
-a.btn{display:inline-flex;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--coral));color:#fff;font-weight:700;text-decoration:none;margin-top:8px}
+a.btn{display:inline-flex;padding:12px 16px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--coral));color:#fff;font-weight:700;text-decoration:none;margin-top:8px;margin-right:8px}
+a.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.actions{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px}
 .foot{margin-top:18px;font-size:13px;color:var(--muted);line-height:1.6}
 </style>
 </head>
@@ -122,8 +125,19 @@ a.btn{display:inline-flex;padding:12px 16px;border-radius:10px;background:linear
     <div style="margin-top:10px">${badges}</div>
     <div class="metrics">${metrics}</div>
     <p class="meta">These are taps from people already searching Michigan happy hours — call, map, directions, and listing views on michiganhappyhour.com.</p>
-    <a class="btn" href="${escapeAttr(listingPath)}">View public listing</a>
-    <div class="foot">Want priority placement? Featured is $79/mo.<br><a href="/for-business/?interest=featured&amp;name=${encodeURIComponent(venue.name)}&amp;town=${encodeURIComponent(venue.town)}#claim">Claim or feature this spot</a></div>
+    <div class="actions">
+      <a class="btn" href="${escapeAttr(listingPath)}">View public listing</a>
+      ${
+        venue.stripe_customer_id
+          ? `<a class="btn ghost" href="/manage-billing?v=${venueId}&amp;t=${encodeURIComponent(token)}">Manage billing</a>`
+          : ""
+      }
+    </div>
+    <div class="foot">${
+      venue.featured
+        ? "Featured is active. Use Manage billing to update your card or cancel."
+        : `Want priority placement? Featured is $79/mo.<br><a href="/for-business/?interest=featured&amp;name=${encodeURIComponent(venue.name)}&amp;town=${encodeURIComponent(venue.town)}#claim">Claim or feature this spot</a>`
+    }</div>
   </div>
 </div>
 </body>
