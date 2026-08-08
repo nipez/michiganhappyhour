@@ -90,6 +90,7 @@ export function toListVenue(row) {
     lng: row.lng
   };
   if (row.featured) out.feat = true;
+  if (row.claimed) out.claimed = true;
   const col = parseJsonArray(row.collections);
   if (col.length) out.col = col;
   return out;
@@ -150,6 +151,8 @@ export function toFullVenue(row) {
     lat: row.lat,
     lng: row.lng,
     featured: !!row.featured,
+    claimed: !!row.claimed,
+    claimed_at: row.claimed_at || null,
     collections: parseJsonArray(row.collections),
     spot_path: row.spot_path,
     status: row.status,

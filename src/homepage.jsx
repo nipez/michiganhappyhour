@@ -302,6 +302,7 @@ function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLiv
           <Badge color={cc} bg={cc+"18"}>{l.cat}</Badge>
           {l.col?.includes("patio") && <Badge color="#D97706" bg="#FFFBEB">Patio</Badge>}
           {l.col?.includes("late") && <Badge color="#2D6A8F" bg="#EFF6FF">Late</Badge>}
+          {l.claimed && <Badge color="#059669" bg="#ECFDF5">Verified</Badge>}
           {l.feat && <Badge color="#E8614D" bg="#FFF0ED">Featured</Badge>}
         </div>
         {open && l.vibe && <p style={{fontSize:15,color:"#4A6274",fontStyle:"italic",margin:"10px 0 0 16px",lineHeight:1.45}}>"{l.vibe}"</p>}

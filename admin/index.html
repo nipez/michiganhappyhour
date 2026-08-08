@@ -202,6 +202,10 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
                   <input id="v-phone" type="text">
                 </div>
                 <div>
+                  <label class="field-label" for="v-website">Website</label>
+                  <input id="v-website" type="text" placeholder="https://">
+                </div>
+                <div class="full">
                   <label class="field-label" for="v-category">Category</label>
                   <input id="v-category" type="text" placeholder="Brewery, Cocktail Bar…">
                 </div>
@@ -250,7 +254,10 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
                   <input id="v-collections" type="text" placeholder="patio, late">
                 </div>
                 <div class="full">
-                  <label class="check" for="v-featured"><input id="v-featured" type="checkbox"> Featured listing</label>
+                  <label class="check" for="v-claimed"><input id="v-claimed" type="checkbox"> Claimed / verified owner</label>
+                </div>
+                <div class="full">
+                  <label class="check" for="v-featured"><input id="v-featured" type="checkbox"> Featured listing ($79/mo)</label>
                 </div>
               </div>
             </div>
@@ -518,11 +525,12 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
 
   function clearVenueForm(){
     document.getElementById('venue-editor-title').textContent = 'New venue';
-    ['v-id','v-name','v-town','v-address','v-phone','v-category','v-hh-start','v-hh-end','v-hh-days','v-deals','v-vibe','v-lat','v-lng','v-collections','v-spot-path','v-notes'].forEach(function(id){
+    ['v-id','v-name','v-town','v-address','v-phone','v-website','v-category','v-hh-start','v-hh-end','v-hh-days','v-deals','v-vibe','v-lat','v-lng','v-collections','v-spot-path','v-notes'].forEach(function(id){
       document.getElementById(id).value = '';
     });
     document.getElementById('v-status').value = 'published';
     document.getElementById('v-featured').checked = false;
+    document.getElementById('v-claimed').checked = false;
     hideError(document.getElementById('venue-save-msg'));
   }
 
@@ -533,6 +541,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     document.getElementById('v-town').value = v.town || '';
     document.getElementById('v-address').value = v.address || '';
     document.getElementById('v-phone').value = v.phone || '';
+    document.getElementById('v-website').value = v.website || '';
     document.getElementById('v-category').value = v.category || '';
     if (v.region) document.getElementById('v-region').value = v.region;
     document.getElementById('v-hh-start').value = v.hh_start || '';
@@ -546,6 +555,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     document.getElementById('v-spot-path').value = v.spot_path || '';
     document.getElementById('v-status').value = v.status || 'published';
     document.getElementById('v-featured').checked = !!v.featured;
+    document.getElementById('v-claimed').checked = !!v.claimed;
     document.getElementById('v-notes').value = v.admin_notes || '';
     hideError(document.getElementById('venue-save-msg'));
     if (window.matchMedia('(max-width:980px)').matches) {
@@ -563,6 +573,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       town: document.getElementById('v-town').value.trim(),
       address: document.getElementById('v-address').value.trim(),
       phone: document.getElementById('v-phone').value.trim(),
+      website: document.getElementById('v-website').value.trim(),
       category: document.getElementById('v-category').value.trim(),
       region: document.getElementById('v-region').value,
       hh_start: document.getElementById('v-hh-start').value.trim(),
@@ -576,6 +587,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       spot_path: document.getElementById('v-spot-path').value.trim(),
       status: document.getElementById('v-status').value,
       featured: document.getElementById('v-featured').checked,
+      claimed: document.getElementById('v-claimed').checked,
       admin_notes: document.getElementById('v-notes').value.trim()
     };
   }
@@ -606,7 +618,10 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       var hours = [v.hh_start, v.hh_end].filter(Boolean).join(' – ') || '—';
       var sel = String(v.id) === String(selectedId) ? ' selected' : '';
       return '<tr class="clickable'+sel+'" data-id="'+v.id+'">'
-        + '<td><strong>'+esc(v.name)+'</strong>'+(v.featured?' <span class="status">feat</span>':'')+'</td>'
+        + '<td><strong>'+esc(v.name)+'</strong>'
+        + (v.claimed?' <span class="status pub">verified</span>':'')
+        + (v.featured?' <span class="status">feat</span>':'')
+        + '</td>'
         + '<td>'+esc(v.town)+'</td>'
         + '<td>'+esc(hours)+'</td>'
         + '<td><span class="'+statusClass(v.status).trim()+'">'+esc(v.status)+'</span></td>'

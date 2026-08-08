@@ -336,9 +336,21 @@ export function renderSpotPage(venue, related = []) {
     ? `<a href="${escapeAttr(websiteHref)}" target="_blank" rel="noopener" class="bt bo" onclick='window.trackCta&&window.trackCta("cta_website",${trackBase})'>&#x1F310; Website</a>`
     : "";
 
+  const claimedBadge = venue.claimed
+    ? `<span class="bg" style="background:#ECFDF5;color:#059669">Verified</span>`
+    : "";
   const featuredBadge = venue.featured
     ? `<span class="bg" style="background:#FFF0ED;color:#E8614D">Featured</span>`
     : "";
+  const claimCtaTitle = venue.claimed
+    ? `Update ${escapeHtml(name)}`
+    : `Claim or feature ${escapeHtml(name)}`;
+  const claimCtaBody = venue.claimed
+    ? `This listing is verified. Request a Featured slot ($79/mo) for priority placement in ${escapeHtml(regionLabel)}, or send updated specials anytime.`
+    : `Update specials anytime, get monthly call/directions stats, and optionally take priority placement in ${escapeHtml(regionLabel)}.`;
+  const claimCtaLabel = venue.claimed
+    ? "Request Featured / send update"
+    : "Claim / feature this listing";
   const openHoursBlock =
     !hoursDisplay && openingHours
       ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #D8E2EA">
@@ -423,7 +435,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <h1 class="sf" style="font-size:clamp(28px,5vw,36px);font-weight:800;margin-bottom:6px">${escapeHtml(name)} Happy Hour</h1>
 <div style="font-size:17px;color:#6B8A9E">${escapeHtml(town)}, MI${address ? " &middot; " + escapeHtml(address) : ""}</div>
 </div>
-<div class="badges"><span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${featuredBadge}</div>
+<div class="badges"><span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${claimedBadge}${featuredBadge}</div>
 </div>
 <div class="hh">
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Happy Hour</div>
@@ -454,11 +466,11 @@ ${websiteBtn}
 <p class="note">Hours &amp; specials may vary. Call ahead to confirm, or <a href="/submit/?${submitParams.toString()}">suggest an update</a> if something&rsquo;s changed.</p>
 </div>
 <div class="cd" style="margin-top:16px;background:linear-gradient(135deg,#FFF8F3,#EFF6FF);border-color:#F0D0C4">
-<div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Own this spot?</div>
-<div class="sf" style="font-size:22px;font-weight:700;color:#1B2838;margin-bottom:8px">Claim or feature ${escapeHtml(name)}</div>
-<p style="font-size:16px;color:#4A6274;line-height:1.55;margin:0 0 14px;max-width:42ch">Update specials anytime, get monthly call/directions stats, and optionally take priority placement in ${escapeHtml(regionLabel)}.</p>
+<div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">${venue.claimed ? "Owner tools" : "Own this spot?"}</div>
+<div class="sf" style="font-size:22px;font-weight:700;color:#1B2838;margin-bottom:8px">${claimCtaTitle}</div>
+<p style="font-size:16px;color:#4A6274;line-height:1.55;margin:0 0 14px;max-width:42ch">${claimCtaBody}</p>
 <div class="actions" style="margin-top:0">
-<a href="/for-business/?${claimParams.toString()}#claim" class="bt bp" onclick='window.trackCta&&window.trackCta("cta_claim",${claimTrack})'>Claim / feature this listing</a>
+<a href="/for-business/?${claimParams.toString()}#claim" class="bt bp" onclick='window.trackCta&&window.trackCta("cta_claim",${claimTrack})'>${claimCtaLabel}</a>
 <a href="/submit/?${submitParams.toString()}" class="bt bo">Suggest a free update</a>
 </div>
 </div>
