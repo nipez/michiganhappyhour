@@ -288,6 +288,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
             <button class="primary" id="venue-save-btn" type="button">Save venue</button>
             <button class="ghost" id="venue-clear-btn" type="button">Clear</button>
             <button class="ghost" id="venue-report-btn" type="button">Owner report link</button>
+            <button class="ghost" id="venue-portal-btn" type="button">Billing portal link</button>
             <div id="venue-save-msg" class="ok hidden" style="margin:0"></div>
           </div>
         </div>
@@ -1059,6 +1060,30 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     } catch (e) {
       prompt('Owner report link', result.data.report_url);
       showOk(msgEl, 'Owner report link ready.');
+    }
+  });
+  document.getElementById('venue-portal-btn').addEventListener('click', async function(){
+    var id = Number(document.getElementById('v-id').value);
+    var msgEl = document.getElementById('venue-save-msg');
+    if (!id) { showError(msgEl, 'Save or select a venue first.'); return; }
+    hideError(msgEl);
+    var result = await api('/api/admin/portal-link?id=' + encodeURIComponent(id));
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok || !result.data.portal_url) {
+      showError(msgEl, result.data.error || 'Could not create billing portal link');
+      return;
+    }
+    if (!result.data.has_stripe_customer) {
+      showError(msgEl, 'No Stripe customer on this venue yet — copy after a successful Featured checkout.');
+      try { await navigator.clipboard.writeText(result.data.portal_url); } catch (e) {}
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(result.data.portal_url);
+      showOk(msgEl, 'Billing portal link copied.');
+    } catch (e) {
+      prompt('Billing portal link', result.data.portal_url);
+      showOk(msgEl, 'Billing portal link ready.');
     }
   });
   document.getElementById('venue-region').addEventListener('change', loadVenues);

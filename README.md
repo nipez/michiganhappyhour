@@ -183,6 +183,14 @@ Events: `checkout.session.completed`, `customer.subscription.updated`, `customer
 
 Successful payment sets `featured=1` + `claimed=1` on the matching venue.
 
+### Stripe Customer Portal (manage / cancel)
+
+Enable the [Customer Portal](https://dashboard.stripe.com/settings/billing/portal) in Stripe Dashboard (allow cancel + payment method update). Then:
+
+- Admin → Venues → **Billing portal link** copies `/manage-billing?v=&t=` (same HMAC as owner reports)
+- Owner report pages show **Manage billing** when `stripe_customer_id` is set
+- Portal return URL lands back on the owner report
+
 ### Owner KPI report links
 
 Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v=&t=`). Uses `REPORT_SECRET` if set, otherwise `ADMIN_PASSWORD`.
@@ -195,6 +203,5 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 
 ## Next (planned)
 
-- Stripe Customer Portal for self-serve cancel/update card
 - Email receipts / lead alerts beyond `LEAD_WEBHOOK_URL`
 
