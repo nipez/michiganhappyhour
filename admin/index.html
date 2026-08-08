@@ -287,6 +287,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
           <div class="editor-foot">
             <button class="primary" id="venue-save-btn" type="button">Save venue</button>
             <button class="ghost" id="venue-clear-btn" type="button">Clear</button>
+            <button class="ghost" id="venue-report-btn" type="button">Owner report link</button>
             <div id="venue-save-msg" class="ok hidden" style="margin:0"></div>
           </div>
         </div>
@@ -1041,6 +1042,25 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   document.getElementById('venue-new-btn').addEventListener('click', clearVenueForm);
   document.getElementById('venue-clear-btn').addEventListener('click', clearVenueForm);
   document.getElementById('venue-save-btn').addEventListener('click', saveVenue);
+  document.getElementById('venue-report-btn').addEventListener('click', async function(){
+    var id = Number(document.getElementById('v-id').value);
+    var msgEl = document.getElementById('venue-save-msg');
+    if (!id) { showError(msgEl, 'Save or select a venue first.'); return; }
+    hideError(msgEl);
+    var result = await api('/api/admin/report-link?id=' + encodeURIComponent(id));
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok || !result.data.report_url) {
+      showError(msgEl, result.data.error || 'Could not create report link');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(result.data.report_url);
+      showOk(msgEl, 'Owner report link copied.');
+    } catch (e) {
+      prompt('Owner report link', result.data.report_url);
+      showOk(msgEl, 'Owner report link ready.');
+    }
+  });
   document.getElementById('venue-region').addEventListener('change', loadVenues);
   document.getElementById('venue-status').addEventListener('change', loadVenues);
   var venueQTimer = null;

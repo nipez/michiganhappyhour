@@ -1,5 +1,5 @@
 {
   "version": 1,
-  "include": ["/api/*", "/spots/*", "/regions/*", "/collections/*"],
+  "include": ["/api/*", "/spots/*", "/regions/*", "/collections/*", "/owner-report"],
   "exclude": []
 }
