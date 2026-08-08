@@ -9,56 +9,110 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#1B2838;--muted:#6B8A9E;--line:#D8E2EA;--bg:#F5F7FA;--card:#fff;--accent:#E8614D;--blue:#2D6A8F}
+:root{
+  --ink:#14202c; --muted:#5f7385; --line:#d5e0e8; --bg:#eef2f5; --card:#fff;
+  --accent:#E8614D; --blue:#2D6A8F; --soft:#f4f7f9; --shadow:0 8px 28px rgba(20,32,44,.06);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-.wrap{max-width:1040px;margin:0 auto;padding:24px 16px 64px}
-h1{font-family:Fraunces,Georgia,serif;font-size:clamp(28px,4vw,36px);margin-bottom:6px}
-h2{font-family:Fraunces,Georgia,serif;font-size:22px;margin:0 0 10px}
-.sub{color:var(--muted);margin-bottom:20px;line-height:1.5}
-.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
-.login label,.field-label{display:block;font-weight:600;margin-bottom:6px;font-size:14px}
-.login input,select,input[type=text],textarea{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font-size:16px;margin-bottom:12px;font-family:inherit;background:#fff}
-button,.btn{appearance:none;border:none;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 18px 72px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}
+.brand h1{font-family:Fraunces,Georgia,serif;font-size:clamp(26px,3.5vw,34px);line-height:1.1;margin-bottom:4px}
+.brand .sub{color:var(--muted);font-size:14px;line-height:1.45;max-width:46ch}
+h2{font-family:Fraunces,Georgia,serif;font-size:20px;margin:0 0 8px;font-weight:800}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card.tight{padding:12px 14px}
+.login{max-width:420px}
+.field-label{display:block;font-weight:600;margin:0 0 5px;font-size:12px;color:#4A6274;letter-spacing:.02em}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-grid .full{grid-column:1 / -1}
+.stack > * + *{margin-top:10px}
+input[type=text],input[type=password],input[type=email],input[type=tel],select,textarea{
+  width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:14px;font-family:inherit;background:#fff;color:var(--ink);margin:0
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(45,106,143,.12)}
+textarea{resize:vertical;min-height:72px;line-height:1.45}
+button,.btn{
+  appearance:none;border:none;border-radius:10px;padding:9px 13px;font-weight:700;font-size:13px;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;color:inherit
+}
 .primary{background:linear-gradient(135deg,var(--blue),var(--accent));color:#fff}
-.ghost{background:#F5F7FA;border:1.5px solid var(--line);color:#4A6274}
+.ghost{background:var(--soft);border:1.5px solid var(--line);color:#4A6274}
+.ghost:hover,.primary:hover{filter:brightness(1.03)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.counts{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
-.chip{background:#EFF6FF;color:var(--blue);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700}
+.toolbar{display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(140px,.8fr) minmax(120px,.7fr) auto;gap:10px;align-items:end}
+.toolbar .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.counts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{background:#eaf2f8;color:var(--blue);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700}
 .chip.hot{background:#FFF0ED;color:var(--accent)}
-.meta{font-size:13px;color:var(--muted);margin:4px 0 10px}
-.field{font-size:14px;line-height:1.5;margin:4px 0}
+.chip.muted{background:#eef1f4;color:var(--muted)}
+.meta{font-size:12px;color:var(--muted);margin:0;line-height:1.45}
+.field{font-size:13px;line-height:1.5;margin:3px 0;color:#314455}
 .field b{color:#4A6274}
-.err{color:var(--accent);font-weight:600;margin:8px 0}
-.ok{color:#16A34A;font-weight:600;margin:8px 0}
-.hidden{display:none}
-.status{display:inline-block;padding:3px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#FFF0ED;color:var(--accent)}
-.tabs{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}
-.tab{padding:10px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;cursor:pointer;color:#4A6274}
-.tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:12px 0}
-.metric{background:#F5F7FA;border:1.5px solid var(--line);border-radius:12px;padding:12px}
-.metric .n{font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800}
-.metric .l{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
-.summary{width:100%;min-height:180px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.45}
-.two{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
-@media(max-width:800px){.two{grid-template-columns:1fr}}
+.err{color:var(--accent);font-weight:600;margin:8px 0;font-size:13px}
+.ok{color:#16A34A;font-weight:600;margin:8px 0;font-size:13px}
+.hidden{display:none !important}
+.status{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11px;font-weight:700;background:#FFF0ED;color:var(--accent);text-transform:lowercase}
+.status.pub{background:#ECFDF5;color:#059669}
+.status.arch{background:#F3F4F6;color:#6B7280}
+.nav{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;padding:2px}
+.tab{padding:9px 14px;border-radius:10px;border:none;background:transparent;font-weight:700;font-size:13px;cursor:pointer;color:#4A6274}
+.tab:hover{background:var(--soft)}
+.tab.active{background:var(--ink);color:#fff}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:12px 0}
+.metric{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.metric .n{font-family:Fraunces,Georgia,serif;font-size:24px;font-weight:800;line-height:1}
+.metric .l{font-size:11px;color:var(--muted);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;background:#fff;z-index:1}
+.summary{width:100%;min-height:160px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.45}
+.workspace{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.95fr);gap:12px;align-items:start}
+.panel{display:flex;flex-direction:column;min-height:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.list-scroll{overflow:auto;max-height:min(72vh,820px);border:1px solid var(--line);border-radius:12px;background:#fff}
+.editor-shell{position:sticky;top:12px;max-height:min(88vh,920px);display:flex;flex-direction:column;padding:0;overflow:hidden}
+.editor-scroll{overflow:auto;padding:16px 16px 8px;flex:1}
+.editor-foot{position:sticky;bottom:0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 16px;border-top:1px solid var(--line);background:rgba(255,255,255,.96);backdrop-filter:blur(8px)}
+.section{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--soft);margin-bottom:10px}
+.section > summary,.section-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#4A6274;margin-bottom:10px;cursor:pointer;list-style:none}
+.section > summary::-webkit-details-marker{display:none}
+.section > summary::after{content:"▾";float:right;opacity:.55}
+.section[open] > summary::after{transform:rotate(180deg);display:inline-block}
+.check{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;margin:4px 0 0}
+.check input{width:auto;margin:0}
 .clickable{cursor:pointer}
-.clickable:hover{background:#f8fafc}
+.clickable:hover{background:#f7fafc}
+.clickable.selected{background:#eef6fb;box-shadow:inset 3px 0 0 var(--blue)}
+.sub-card{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:#fff;box-shadow:var(--shadow)}
+.sub-card.lead{border-color:#f0b4a8}
+.sub-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.sub-actions .ghost{padding:7px 10px;font-size:12px}
+.empty{padding:28px 16px;text-align:center;color:var(--muted);font-size:14px}
+@media(max-width:980px){
+  .workspace,.toolbar{grid-template-columns:1fr}
+  .toolbar .actions{justify-content:flex-start}
+  .editor-shell{position:static;max-height:none}
+  .field-grid{grid-template-columns:1fr}
+  .topbar{flex-direction:column}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Michigan Happy Hour admin</h1>
-  <p class="sub">Edit venues, review submissions, and pull KPI reports for outreach. Noindex.</p>
+  <div class="topbar">
+    <div class="brand">
+      <h1>Michigan Happy Hour admin</h1>
+      <p class="sub">Venues, submissions, and outreach reports. Noindex.</p>
+    </div>
+  </div>
 
   <div id="login" class="card login">
-    <label for="password">Admin password</label>
+    <label class="field-label" for="password">Admin password</label>
     <input id="password" type="password" placeholder="ADMIN_PASSWORD" autocomplete="current-password">
-    <div class="row">
+    <div class="row" style="margin-top:12px">
       <button class="primary" id="login-btn" type="button">Unlock</button>
       <button class="ghost" id="clear-btn" type="button">Clear saved password</button>
     </div>
@@ -66,27 +120,27 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
   </div>
 
   <div id="app" class="hidden">
-    <div class="row" style="justify-content:space-between;margin-bottom:8px">
+    <div class="nav">
       <div class="tabs">
         <button class="tab active" data-tab="venues" type="button">Venues</button>
-        <button class="tab" data-tab="reports" type="button">Venue reports</button>
+        <button class="tab" data-tab="reports" type="button">Reports</button>
         <button class="tab" data-tab="submissions" type="button">Submissions</button>
       </div>
       <button class="ghost" id="logout-btn" type="button">Lock</button>
     </div>
 
     <section id="tab-venues">
-      <div class="card">
-        <div class="row" style="justify-content:space-between;align-items:flex-end">
-          <div style="flex:1;min-width:200px">
+      <div class="card tight">
+        <div class="toolbar">
+          <div>
             <label class="field-label" for="venue-q">Search</label>
             <input id="venue-q" type="text" placeholder="Name, town, or address">
           </div>
-          <div style="min-width:160px">
+          <div>
             <label class="field-label" for="venue-region">Region</label>
             <select id="venue-region"><option value="">All regions</option></select>
           </div>
-          <div style="min-width:140px">
+          <div>
             <label class="field-label" for="venue-status">Status</label>
             <select id="venue-status">
               <option value="">All</option>
@@ -95,95 +149,152 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
               <option value="archived">archived</option>
             </select>
           </div>
-          <div class="row">
+          <div class="actions">
             <button class="ghost" id="venue-refresh-btn" type="button">Refresh</button>
             <button class="primary" id="venue-new-btn" type="button">New venue</button>
           </div>
         </div>
-        <div class="counts" id="venue-counts" style="margin-top:8px"></div>
-        <p class="meta">Edits save to D1 and go live on the homepage, map, and spot detail pages (rendered from the database).</p>
+        <div class="counts" id="venue-counts"></div>
+        <p class="meta" style="margin-top:8px">Edits save to D1 and go live on spot pages, homepage, and map.</p>
         <div id="venues-msg" class="err hidden"></div>
       </div>
 
-      <div class="two">
-        <div class="card" style="overflow:auto;max-height:70vh">
-          <table>
-            <thead><tr><th>Name</th><th>Town</th><th>Hours</th><th>Status</th></tr></thead>
-            <tbody id="venues-table"></tbody>
-          </table>
+      <div class="workspace">
+        <div class="panel card" style="padding:12px">
+          <div class="panel-head">
+            <h2 style="margin:0">Venues</h2>
+            <span class="meta">Click a row to edit</span>
+          </div>
+          <div class="list-scroll">
+            <table>
+              <thead><tr><th>Name</th><th>Town</th><th>Hours</th><th>Status</th></tr></thead>
+              <tbody id="venues-table"></tbody>
+            </table>
+          </div>
         </div>
-        <div class="card" id="venue-editor">
-          <h2 id="venue-editor-title">Edit venue</h2>
-          <input type="hidden" id="v-id">
-          <label class="field-label" for="v-name">Name</label>
-          <input id="v-name" type="text">
-          <label class="field-label" for="v-town">Town</label>
-          <input id="v-town" type="text">
-          <label class="field-label" for="v-address">Address</label>
-          <input id="v-address" type="text">
-          <label class="field-label" for="v-phone">Phone</label>
-          <input id="v-phone" type="text">
-          <label class="field-label" for="v-category">Category</label>
-          <input id="v-category" type="text" placeholder="Brewery, Cocktail Bar…">
-          <label class="field-label" for="v-region">Region</label>
-          <select id="v-region"></select>
-          <div class="row">
-            <div style="flex:1">
-              <label class="field-label" for="v-hh-start">HH start</label>
-              <input id="v-hh-start" type="text" placeholder="3:00 PM">
+
+        <div class="card editor-shell" id="venue-editor">
+          <div class="editor-scroll">
+            <h2 id="venue-editor-title" style="margin-bottom:12px">Edit venue</h2>
+            <input type="hidden" id="v-id">
+
+            <div class="section">
+              <div class="section-title">Basics</div>
+              <div class="field-grid">
+                <div class="full">
+                  <label class="field-label" for="v-name">Name</label>
+                  <input id="v-name" type="text">
+                </div>
+                <div>
+                  <label class="field-label" for="v-town">Town</label>
+                  <input id="v-town" type="text">
+                </div>
+                <div>
+                  <label class="field-label" for="v-region">Region</label>
+                  <select id="v-region"></select>
+                </div>
+                <div class="full">
+                  <label class="field-label" for="v-address">Address</label>
+                  <input id="v-address" type="text">
+                </div>
+                <div>
+                  <label class="field-label" for="v-phone">Phone</label>
+                  <input id="v-phone" type="text">
+                </div>
+                <div>
+                  <label class="field-label" for="v-category">Category</label>
+                  <input id="v-category" type="text" placeholder="Brewery, Cocktail Bar…">
+                </div>
+              </div>
             </div>
-            <div style="flex:1">
-              <label class="field-label" for="v-hh-end">HH end</label>
-              <input id="v-hh-end" type="text" placeholder="6:00 PM">
+
+            <div class="section">
+              <div class="section-title">Happy hour</div>
+              <div class="field-grid">
+                <div>
+                  <label class="field-label" for="v-hh-start">Start</label>
+                  <input id="v-hh-start" type="text" placeholder="3:00 PM">
+                </div>
+                <div>
+                  <label class="field-label" for="v-hh-end">End</label>
+                  <input id="v-hh-end" type="text" placeholder="6:00 PM">
+                </div>
+                <div class="full">
+                  <label class="field-label" for="v-hh-days">Days</label>
+                  <input id="v-hh-days" type="text" placeholder="Monday, Tuesday, Wednesday…">
+                </div>
+                <div class="full">
+                  <label class="field-label" for="v-deals">Deals <span class="meta">(one per line)</span></label>
+                  <textarea id="v-deals"></textarea>
+                </div>
+                <div class="full">
+                  <label class="field-label" for="v-vibe">Vibe</label>
+                  <textarea id="v-vibe" style="min-height:56px"></textarea>
+                </div>
+              </div>
             </div>
+
+            <div class="section">
+              <div class="section-title">Placement</div>
+              <div class="field-grid">
+                <div>
+                  <label class="field-label" for="v-status">Status</label>
+                  <select id="v-status">
+                    <option value="published">published</option>
+                    <option value="draft">draft</option>
+                    <option value="archived">archived</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="v-collections">Collections</label>
+                  <input id="v-collections" type="text" placeholder="patio, late">
+                </div>
+                <div class="full">
+                  <label class="check" for="v-featured"><input id="v-featured" type="checkbox"> Featured listing</label>
+                </div>
+              </div>
+            </div>
+
+            <details class="section">
+              <summary>Advanced</summary>
+              <div class="field-grid" style="margin-top:10px">
+                <div>
+                  <label class="field-label" for="v-lat">Latitude</label>
+                  <input id="v-lat" type="text" placeholder="44.7634">
+                </div>
+                <div>
+                  <label class="field-label" for="v-lng">Longitude</label>
+                  <input id="v-lng" type="text" placeholder="-85.6197">
+                </div>
+                <div class="full">
+                  <label class="field-label" for="v-spot-path">Spot path</label>
+                  <input id="v-spot-path" type="text" placeholder="../spots/name-town.html">
+                </div>
+                <div class="full">
+                  <label class="field-label" for="v-notes">Admin notes</label>
+                  <textarea id="v-notes" style="min-height:56px"></textarea>
+                </div>
+              </div>
+            </details>
           </div>
-          <label class="field-label" for="v-hh-days">Days (comma-separated)</label>
-          <input id="v-hh-days" type="text" placeholder="Monday, Tuesday, Wednesday…">
-          <label class="field-label" for="v-deals">Deals (one per line)</label>
-          <textarea id="v-deals" style="min-height:90px;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px"></textarea>
-          <label class="field-label" for="v-vibe">Vibe</label>
-          <textarea id="v-vibe" style="min-height:70px;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px"></textarea>
-          <div class="row">
-            <div style="flex:1">
-              <label class="field-label" for="v-lat">Latitude</label>
-              <input id="v-lat" type="text" placeholder="44.7634">
-            </div>
-            <div style="flex:1">
-              <label class="field-label" for="v-lng">Longitude</label>
-              <input id="v-lng" type="text" placeholder="-85.6197">
-            </div>
-          </div>
-          <label class="field-label" for="v-collections">Collections (comma-separated)</label>
-          <input id="v-collections" type="text" placeholder="patio, late">
-          <label class="field-label" for="v-spot-path">Spot path</label>
-          <input id="v-spot-path" type="text" placeholder="../spots/name-town.html">
-          <label class="field-label" for="v-status">Status</label>
-          <select id="v-status">
-            <option value="published">published</option>
-            <option value="draft">draft</option>
-            <option value="archived">archived</option>
-          </select>
-          <label class="row" style="gap:8px;margin:8px 0 14px;font-weight:600">
-            <input id="v-featured" type="checkbox" style="width:auto;margin:0"> Featured
-          </label>
-          <label class="field-label" for="v-notes">Admin notes</label>
-          <textarea id="v-notes" style="min-height:60px;width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px"></textarea>
-          <div class="row">
+          <div class="editor-foot">
             <button class="primary" id="venue-save-btn" type="button">Save venue</button>
-            <button class="ghost" id="venue-clear-btn" type="button">Clear form</button>
+            <button class="ghost" id="venue-clear-btn" type="button">Clear</button>
+            <div id="venue-save-msg" class="ok hidden" style="margin:0"></div>
           </div>
-          <div id="venue-save-msg" class="ok hidden"></div>
         </div>
       </div>
     </section>
 
     <section id="tab-reports" class="hidden">
-      <div class="card">
-        <div class="two">
+      <div class="card tight">
+        <div class="toolbar" style="grid-template-columns:minmax(180px,1.3fr) minmax(140px,.8fr) minmax(120px,.6fr) auto">
           <div>
             <label class="field-label" for="spot-select">Venue</label>
             <select id="spot-select"><option value="">Select a venue with traffic…</option></select>
-            <label class="field-label" for="town-filter">Filter top list by town (optional)</label>
+          </div>
+          <div>
+            <label class="field-label" for="town-filter">Town filter</label>
             <input id="town-filter" type="text" placeholder="e.g. Traverse City">
           </div>
           <div>
@@ -193,40 +304,46 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
               <option value="30" selected>Last 30 days</option>
               <option value="90">Last 90 days</option>
             </select>
-            <div class="row" style="margin-top:8px">
-              <button class="primary" id="load-report-btn" type="button">Load report</button>
-              <button class="ghost" id="refresh-reports-btn" type="button">Refresh lists</button>
-            </div>
+          </div>
+          <div class="actions">
+            <button class="primary" id="load-report-btn" type="button">Load report</button>
+            <button class="ghost" id="refresh-reports-btn" type="button">Refresh</button>
           </div>
         </div>
         <div id="reports-msg" class="err hidden"></div>
       </div>
 
       <div id="spot-report" class="card hidden">
-        <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:4px">
           <div>
-            <h2 id="report-title">Venue report</h2>
+            <h2 id="report-title" style="margin-bottom:4px">Venue report</h2>
             <div class="meta" id="report-meta"></div>
             <div class="meta" id="report-contact"></div>
           </div>
           <div class="row">
-            <a class="btn ghost" id="open-listing-btn" href="#" target="_blank" rel="noopener">Open listing</a>
+            <a class="btn ghost" id="open-listing-btn" href="#" target="_blank" rel="noopener">Listing</a>
             <a class="btn ghost" id="open-claim-btn" href="#" target="_blank" rel="noopener">Claim form</a>
             <a class="btn primary" id="mailto-pitch-btn" href="#">Email pitch</a>
           </div>
         </div>
         <div class="metrics" id="report-metrics"></div>
-        <label class="field-label" for="pitch-text">Featured pitch ($79/mo)</label>
-        <textarea id="pitch-text" class="summary" readonly></textarea>
-        <div class="row" style="margin:8px 0 14px">
-          <button class="primary" id="copy-pitch-btn" type="button">Copy pitch</button>
-          <button class="ghost" id="copy-summary-btn" type="button">Copy KPI summary</button>
+        <div class="workspace" style="grid-template-columns:1fr 1fr;margin-top:4px">
+          <div>
+            <label class="field-label" for="pitch-text">Featured pitch ($79/mo)</label>
+            <textarea id="pitch-text" class="summary" readonly></textarea>
+            <div class="row" style="margin-top:8px">
+              <button class="primary" id="copy-pitch-btn" type="button">Copy pitch</button>
+              <button class="ghost" id="copy-summary-btn" type="button">Copy KPIs</button>
+            </div>
+          </div>
+          <div>
+            <label class="field-label" for="summary-text">KPI summary</label>
+            <textarea id="summary-text" class="summary" readonly></textarea>
+            <div id="copy-ok" class="ok hidden">Copied.</div>
+          </div>
         </div>
-        <label class="field-label" for="summary-text">KPI summary</label>
-        <textarea id="summary-text" class="summary" readonly style="min-height:140px"></textarea>
-        <div id="copy-ok" class="ok hidden">Copied to clipboard.</div>
         <h2 style="margin-top:18px">Recent events</h2>
-        <div style="overflow:auto">
+        <div class="list-scroll" style="max-height:280px">
           <table>
             <thead><tr><th>When</th><th>Event</th><th>Source</th><th>Geo</th></tr></thead>
             <tbody id="recent-events"></tbody>
@@ -235,15 +352,17 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       </div>
 
       <div class="card">
-        <div class="row" style="justify-content:space-between">
-          <h2>Top spots for outreach</h2>
+        <div class="panel-head">
+          <div>
+            <h2 style="margin:0">Top spots for outreach</h2>
+            <p class="meta" style="margin-top:4px">Ranked by CTA taps. Click a row for report + pitch.</p>
+          </div>
           <div class="row">
             <span class="chip hot" id="top-label">by CTA taps</span>
             <button class="ghost" id="export-top-csv" type="button">Export CSV</button>
           </div>
         </div>
-        <p class="meta">Ranked by Call + Map + Directions + Details (+ website/claim). Click a row to open that venue’s report + pitch.</p>
-        <div style="overflow:auto">
+        <div class="list-scroll" style="max-height:360px">
           <table>
             <thead>
               <tr>
@@ -256,10 +375,13 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       </div>
 
       <div class="card">
-        <div class="row" style="justify-content:space-between">
-          <h2>Cold outreach targets</h2>
+        <div class="panel-head">
+          <div>
+            <h2 style="margin:0">Cold outreach targets</h2>
+            <p class="meta" style="margin-top:4px">Not featured, has phone — curated first.</p>
+          </div>
           <div class="row">
-            <select id="cold-region" class="ghost" style="padding:10px 12px;width:auto;margin:0">
+            <select id="cold-region" style="width:auto;min-width:160px">
               <option value="">Priority markets</option>
               <option value="detroit">Detroit</option>
               <option value="grand-rapids">Grand Rapids</option>
@@ -275,8 +397,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
             <button class="ghost" id="export-cold-csv" type="button">Export CSV</button>
           </div>
         </div>
-        <p class="meta">Published, not featured, has phone — curated first. Use while CTA volume is still ramping.</p>
-        <div style="overflow:auto">
+        <div class="list-scroll" style="max-height:420px">
           <table>
             <thead>
               <tr>
@@ -290,24 +411,26 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     </section>
 
     <section id="tab-submissions" class="hidden">
-      <div class="row" style="justify-content:space-between;margin-bottom:8px">
-        <div class="counts" id="counts"></div>
-        <div class="row">
-          <select id="type-filter" class="ghost" style="padding:10px 12px;width:auto;margin:0">
-            <option value="">All types</option>
-            <option value="claim_request">claim_request</option>
-            <option value="new_listing">new_listing</option>
-            <option value="update">update</option>
-          </select>
-          <select id="status-filter" class="ghost" style="padding:10px 12px;width:auto;margin:0">
-            <option value="">Active (hide archived)</option>
-            <option value="new">new</option>
-            <option value="reviewed">reviewed</option>
-            <option value="published">published</option>
-            <option value="rejected">rejected</option>
-            <option value="archived">archived</option>
-          </select>
-          <button class="ghost" id="refresh-btn" type="button">Refresh</button>
+      <div class="card tight">
+        <div class="toolbar" style="grid-template-columns:1fr auto">
+          <div class="counts" id="counts" style="margin:0"></div>
+          <div class="actions">
+            <select id="type-filter" style="width:auto;min-width:140px">
+              <option value="">All types</option>
+              <option value="claim_request">claim_request</option>
+              <option value="new_listing">new_listing</option>
+              <option value="update">update</option>
+            </select>
+            <select id="status-filter" style="width:auto;min-width:170px">
+              <option value="">Active (hide archived)</option>
+              <option value="new">new</option>
+              <option value="reviewed">reviewed</option>
+              <option value="published">published</option>
+              <option value="rejected">rejected</option>
+              <option value="archived">archived</option>
+            </select>
+            <button class="ghost" id="refresh-btn" type="button">Refresh</button>
+          </div>
         </div>
       </div>
       <div id="list"></div>
@@ -425,6 +548,9 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     document.getElementById('v-featured').checked = !!v.featured;
     document.getElementById('v-notes').value = v.admin_notes || '';
     hideError(document.getElementById('venue-save-msg'));
+    if (window.matchMedia('(max-width:980px)').matches) {
+      document.getElementById('venue-editor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   function readVenueForm(){
@@ -456,29 +582,40 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
 
   function renderVenueCounts(items){
     var el = document.getElementById('venue-counts');
-    if (!items || !items.length) { el.innerHTML = '<span class="chip">0 venues</span>'; return; }
+    if (!items || !items.length) { el.innerHTML = '<span class="chip muted">0 venues</span>'; return; }
     el.innerHTML = items.map(function(c){
-      return '<span class="chip">' + esc(c.status) + ': ' + esc(c.count) + '</span>';
-    }).join('') + '<span class="chip">' + venuesCache.length + ' shown</span>';
+      var cls = c.status === 'archived' ? ' muted' : (c.status === 'published' ? '' : ' hot');
+      return '<span class="chip'+cls+'">' + esc(c.status) + ': ' + esc(c.count) + '</span>';
+    }).join('') + '<span class="chip muted">' + venuesCache.length + ' shown</span>';
+  }
+
+  function statusClass(status){
+    if (status === 'published') return ' status pub';
+    if (status === 'archived') return ' status arch';
+    return ' status';
   }
 
   function renderVenuesTable(rows){
     var body = document.getElementById('venues-table');
+    var selectedId = document.getElementById('v-id').value;
     if (!rows.length) {
-      body.innerHTML = '<tr><td colspan="4">No venues match. Seed D1 or clear filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="4"><div class="empty">No venues match. Clear filters or seed D1.</div></td></tr>';
       return;
     }
     body.innerHTML = rows.map(function(v){
       var hours = [v.hh_start, v.hh_end].filter(Boolean).join(' – ') || '—';
-      return '<tr class="clickable" data-id="'+v.id+'">'
-        + '<td><strong>'+esc(v.name)+'</strong>'+(v.featured?' · <span class="status">feat</span>':'')+'</td>'
+      var sel = String(v.id) === String(selectedId) ? ' selected' : '';
+      return '<tr class="clickable'+sel+'" data-id="'+v.id+'">'
+        + '<td><strong>'+esc(v.name)+'</strong>'+(v.featured?' <span class="status">feat</span>':'')+'</td>'
         + '<td>'+esc(v.town)+'</td>'
         + '<td>'+esc(hours)+'</td>'
-        + '<td>'+esc(v.status)+'</td>'
+        + '<td><span class="'+statusClass(v.status).trim()+'">'+esc(v.status)+'</span></td>'
         + '</tr>';
     }).join('');
     body.querySelectorAll('tr.clickable').forEach(function(tr){
       tr.addEventListener('click', function(){
+        body.querySelectorAll('tr.clickable').forEach(function(r){ r.classList.remove('selected'); });
+        tr.classList.add('selected');
         var id = Number(tr.getAttribute('data-id'));
         var v = venuesCache.find(function(x){ return x.id === id; });
         if (v) fillVenueForm(v);
@@ -551,32 +688,32 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
 
   function renderList(rows){
     if (!rows.length) {
-      list.innerHTML = '<div class="card">No submissions yet.</div>';
+      list.innerHTML = '<div class="card empty">No submissions in this filter.</div>';
       return;
     }
     list.innerHTML = rows.map(function(s){
       var isClaim = s.submission_type === 'claim_request';
-      return '<div class="card" data-id="'+s.id+'"'+(isClaim?' style="border-color:#E8614D"':'')+'>'
-        + '<div class="row" style="justify-content:space-between">'
-        + '<div><strong>'+esc(s.name)+'</strong> · '+esc(s.town)
-        + ' <span class="status">'+esc(s.status)+'</span>'
-        + (isClaim ? ' <span class="status" style="background:#FFF0ED;color:#E8614D">LEAD</span>' : '')
+      return '<div class="sub-card'+(isClaim?' lead':'')+'" data-id="'+s.id+'">'
+        + '<div class="row" style="justify-content:space-between;align-items:flex-start">'
+        + '<div><strong style="font-size:15px">'+esc(s.name)+'</strong>'
+        + '<div class="meta" style="margin-top:2px">'+esc(s.town)
+        + ' · <span class="'+statusClass(s.status).trim()+'">'+esc(s.status)+'</span>'
+        + (isClaim ? ' <span class="status">lead</span>' : '')
+        + '</div></div>'
+        + '<div class="meta" style="text-align:right">#'+s.id+'<br>'+esc(s.created_at)+'<br>'+esc(s.source||'')+'</div>'
         + '</div>'
-        + '<div class="meta">#'+s.id+' · '+esc(s.created_at)+' · '+esc(s.source||'')+'</div>'
-        + '</div>'
-        + '<div class="field"><b>Type:</b> '+esc(s.submission_type)+' · <b>Interest:</b> '+esc(s.category||'—')+'</div>'
-        + '<div class="field"><b>Contact:</b> '+esc(s.contact_name||'—')+(s.role?' ('+esc(s.role)+')':'')+'</div>'
-        + '<div class="field"><b>Hours:</b> '+esc(s.happy_hour_schedule||'—')+'</div>'
-        + '<div class="field"><b>Deals:</b> '+esc(s.deals||'—')+'</div>'
-        + '<div class="field"><b>Email:</b> <a href="mailto:'+esc(s.email||'')+'">'+esc(s.email||'—')+'</a> · <b>Phone:</b> '+esc(s.phone||'—')+'</div>'
-        + '<div class="field"><b>Notes:</b> '+esc(s.notes||'—')+'</div>'
-        + (isClaim ? '<div class="field" style="color:#B45309"><b>Next:</b> Reply to confirm, then toggle Featured on the venue after payment / claim verify.</div>' : '')
-        + '<div class="row" style="margin-top:12px">'
-        + (s.status === 'archived' ? '' : '<button class="ghost publish-venue-btn" data-id="'+s.id+'" style="border-color:#059669;color:#059669">Publish to venues</button>')
+        + '<div class="field" style="margin-top:10px"><b>Type</b> '+esc(s.submission_type)+' · <b>Interest</b> '+esc(s.category||'—')+'</div>'
+        + '<div class="field"><b>Contact</b> '+esc(s.contact_name||'—')+(s.role?' ('+esc(s.role)+')':'')+'</div>'
+        + '<div class="field"><b>Hours</b> '+esc(s.happy_hour_schedule||'—')+'</div>'
+        + '<div class="field"><b>Deals</b> '+esc(s.deals||'—')+'</div>'
+        + '<div class="field"><b>Email</b> <a href="mailto:'+esc(s.email||'')+'">'+esc(s.email||'—')+'</a> · <b>Phone</b> '+esc(s.phone||'—')+'</div>'
+        + (s.notes ? '<div class="field"><b>Notes</b> '+esc(s.notes)+'</div>' : '')
+        + (isClaim ? '<div class="field" style="color:#B45309;margin-top:6px"><b>Next</b> Reply, then toggle Featured after payment/verify.</div>' : '')
+        + '<div class="sub-actions">'
+        + (s.status === 'archived' ? '' : '<button class="ghost publish-venue-btn" data-id="'+s.id+'" style="border-color:#059669;color:#059669">Publish</button>')
         + ['new','reviewed','published','rejected','archived'].map(function(st){
-            var label = st === 'archived' ? 'Archive' : ('Mark '+st);
-            var style = st === 'archived' ? ' style="border-color:#9CA3AF;color:#4B5563"' : '';
-            return '<button class="ghost status-btn" data-id="'+s.id+'" data-status="'+st+'"'+style+'>'+label+'</button>';
+            var label = st === 'archived' ? 'Archive' : st;
+            return '<button class="ghost status-btn" data-id="'+s.id+'" data-status="'+st+'">'+label+'</button>';
           }).join('')
         + '</div></div>';
     }).join('');
