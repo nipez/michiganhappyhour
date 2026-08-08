@@ -324,6 +324,9 @@ function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLiv
         <div className="card-meta-links" style={{paddingLeft:16}}>
           {l.ph && <button type="button" onClick={()=>{trackSpotCta("cta_call",l,"card");window.location.href="tel:"+l.ph;}}>Call {l.ph}</button>}
           <button type="button" onClick={()=>{trackSpotCta("cta_map",l,"card");onMapClick(l);}}>Show on map</button>
+          {typeof onClaim==="function" && (
+            <button type="button" onClick={()=>{trackSpotCta("cta_claim",l,"card");onClaim(l);}}>Own this spot?</button>
+          )}
         </div>
       </div>
     </div>
@@ -405,6 +408,113 @@ function HappyHourMap({listings,onPinClick,highlightId}){
   },[highlightId]);
 
   return <div ref={mapRef} style={{width:"100%",height:"100%",borderRadius:16}}/>;
+}
+
+function ClaimModal({spot,onClose}){
+  const [contactName,setContactName]=useState("");
+  const [role,setRole]=useState("");
+  const [email,setEmail]=useState("");
+  const [phone,setPhone]=useState("");
+  const [notes,setNotes]=useState("");
+  const [interest,setInterest]=useState("Claim existing listing");
+  const [busy,setBusy]=useState(false);
+  const [err,setErr]=useState("");
+  const [ok,setOk]=useState(false);
+  const hours=((spot.hh?.s&&spot.hh?.e)?`${spot.hh.s} – ${spot.hh.e}`:"see current listing");
+  const deals=(spot.deals||[]).slice(0,3).join("; ")||"see current listing";
+  const deepLink="/for-business/?"+new URLSearchParams({
+    name:spot.name||"",
+    town:spot.town||"",
+    interest:interest.toLowerCase().includes("feature")?"featured":"claim",
+    hours,
+    deals
+  }).toString()+"#claim";
+
+  const submit=async()=>{
+    setErr("");
+    if(!contactName.trim()||!email.trim()){setErr("Name and email are required.");return;}
+    setBusy(true);
+    try{
+      const payload={
+        submission_type:"claim_request",
+        source:"homepage_claim_modal",
+        name:spot.name,
+        town:spot.town,
+        category:interest,
+        happy_hour_schedule:hours,
+        deals,
+        contact_name:contactName.trim(),
+        role:role.trim(),
+        email:email.trim(),
+        phone:phone.trim(),
+        notes:notes.trim()||"Homepage claim request",
+        path:location.pathname,
+        address:spot.addr||""
+      };
+      const r=await fetch("/api/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok||!d.ok) throw new Error(d.error||"failed");
+      trackSpotCta("submit_success",spot,"claim_modal");
+      setOk(true);
+    }catch{
+      setErr("Could not save. Continue on the business page, or try again.");
+    }finally{
+      setBusy(false);
+    }
+  };
+
+  return(
+    <div onClick={onClose} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(4px)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,padding:"32px 20px",maxWidth:520,width:"100%",maxHeight:"85vh",overflow:"auto",boxShadow:"0 24px 80px rgba(0,0,0,0.3)"}}>
+        <h3 className="serif" style={{fontSize:26,fontWeight:700,color:"#1B2838",marginBottom:4,textAlign:"center"}}>Claim {spot.name}</h3>
+        <p style={{fontSize:16,color:"#8AA3B5",marginBottom:20,lineHeight:1.5,textAlign:"center"}}>Verify you manage this spot — claim is free. Featured placement is $79/mo after we confirm fit.</p>
+        {ok ? (
+          <div style={{textAlign:"center"}}>
+            <div style={{fontSize:16,fontWeight:700,color:"#16A34A",marginBottom:16}}>Request saved. We’ll follow up shortly.</div>
+            <button onClick={onClose} style={{padding:"14px 24px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer"}}>Done</button>
+          </div>
+        ) : (
+          <>
+            <div style={{background:"#EFF6FF",border:"1.5px solid #D8E2EA",borderRadius:12,padding:"16px 18px",marginBottom:20}}>
+              <div style={{fontSize:15,fontWeight:700,color:"#2D6A8F",marginBottom:8}}>What you get</div>
+              <div style={{fontSize:15,color:"#4A6274",lineHeight:1.8}}>
+                {["Update deals & hours with priority review","Monthly Call / Directions analytics","Verified owner path + optional $79/mo featured slot"].map((line,i)=><div key={i}>→ {line}</div>)}
+              </div>
+            </div>
+            <div style={{marginBottom:14}}>
+              <label style={{fontSize:15,fontWeight:600,color:"#4A6274",display:"block",marginBottom:4}}>Interest</label>
+              <select value={interest} onChange={e=>setInterest(e.target.value)} style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"2px solid #D8E2EA",fontSize:16,background:"#F5F7FA",boxSizing:"border-box"}}>
+                <option>Claim existing listing</option>
+                <option>Featured placement</option>
+                <option>Both claim + featured</option>
+              </select>
+            </div>
+            {[
+              ["Your name *",contactName,setContactName,"text"],
+              ["Your role",role,setRole,"text"],
+              ["Email *",email,setEmail,"email"],
+              ["Phone",phone,setPhone,"tel"]
+            ].map(([label,val,set,type],i)=>(
+              <div key={i} style={{marginBottom:14}}>
+                <label style={{fontSize:15,fontWeight:600,color:"#4A6274",display:"block",marginBottom:4}}>{label}</label>
+                <input type={type} value={val} onChange={e=>set(e.target.value)} placeholder={label.replace(" *","")} style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"2px solid #D8E2EA",fontSize:16,outline:"none",background:"#F5F7FA",boxSizing:"border-box"}}/>
+              </div>
+            ))}
+            <div style={{marginBottom:14}}>
+              <label style={{fontSize:15,fontWeight:600,color:"#4A6274",display:"block",marginBottom:4}}>How can we verify you manage this spot?</label>
+              <textarea rows={2} value={notes} onChange={e=>setNotes(e.target.value)} placeholder="e.g. I'm the owner — call the restaurant and ask for me" style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"2px solid #D8E2EA",fontSize:16,resize:"vertical",outline:"none",background:"#F5F7FA",boxSizing:"border-box"}}/>
+            </div>
+            {err && <div style={{color:"#E8614D",fontWeight:600,fontSize:14,marginBottom:10}}>{err}</div>}
+            <div style={{display:"flex",gap:12,marginTop:12,flexWrap:"wrap"}}>
+              <button onClick={onClose} style={{flex:1,minWidth:120,padding:"14px",borderRadius:12,border:"2px solid #D8E2EA",background:"transparent",color:"#4A6274",fontWeight:600,fontSize:16,cursor:"pointer"}}>Cancel</button>
+              <button disabled={busy} onClick={submit} style={{flex:1.2,minWidth:140,padding:"14px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:700,fontSize:16,cursor:busy?"wait":"pointer",opacity:busy?0.7:1}}>{busy?"Sending…":"Submit request"}</button>
+            </div>
+            <a href={deepLink} style={{display:"block",textAlign:"center",marginTop:14,fontSize:14,fontWeight:600,color:"#2D6A8F",textDecoration:"none"}}>Or continue on the full business form →</a>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // ===== MAIN APP =====
@@ -670,8 +780,8 @@ function App(){
           <div style={{background:"#fff",borderRadius:16,overflow:"hidden",border:"1.5px solid #D8E2EA",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",textAlign:"center",minHeight:160}}>
             <div style={{fontSize:36,marginBottom:8}}>📣</div>
             <div style={{fontSize:18,fontWeight:700,color:"#1B2838",marginBottom:4}}>Feature Your Spot Here</div>
-            <p style={{fontSize:15,color:"#6B8A9E",lineHeight:1.5,marginBottom:14,maxWidth:280}}>Claim your listing, get monthly click stats, and take the top slot in your region.</p>
-            <a href="/for-business/" style={{padding:"10px 24px",borderRadius:10,border:"1.5px solid #E8614D",background:"transparent",color:"#E8614D",fontWeight:700,fontSize:15,textDecoration:"none",display:"inline-block"}}>For business →</a>
+            <p style={{fontSize:15,color:"#6B8A9E",lineHeight:1.5,marginBottom:14,maxWidth:280}}>Claim free, or feature from $79/mo with monthly click stats and top placement in your region.</p>
+            <a href="/for-business/?interest=featured#claim" style={{padding:"10px 24px",borderRadius:10,border:"1.5px solid #E8614D",background:"transparent",color:"#E8614D",fontWeight:700,fontSize:15,textDecoration:"none",display:"inline-block"}}>Feature from $79/mo →</a>
           </div>
         </div>
 
@@ -905,33 +1015,10 @@ function App(){
       )}
       {/* Claim Modal */}
       {claimModal && (
-        <div onClick={()=>setClaimModal(null)} style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.6)",backdropFilter:"blur(4px)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:"#fff",borderRadius:20,padding:"32px 20px",maxWidth:520,width:"100%",maxHeight:"85vh",overflow:"auto",boxShadow:"0 24px 80px rgba(0,0,0,0.3)"}}>
-            <div style={{fontSize:36,textAlign:"center",marginBottom:8}}>🏪</div>
-            <h3 className="serif" style={{fontSize:26,fontWeight:700,color:"#1B2838",marginBottom:4,textAlign:"center"}}>Claim {claimModal.name}</h3>
-            <p style={{fontSize:16,color:"#8AA3B5",marginBottom:20,lineHeight:1.5,textAlign:"center"}}>Verify you own or manage this spot to update your deals, hours, and details anytime.</p>
-            <div style={{background:"#EFF6FF",border:"1.5px solid #D8E2EA",borderRadius:12,padding:"16px 18px",marginBottom:20}}>
-              <div style={{fontSize:15,fontWeight:700,color:"#2D6A8F",marginBottom:8}}>What you get with a claimed listing:</div>
-              <div style={{fontSize:15,color:"#4A6274",lineHeight:1.8}}>
-                {["✅ Update your deals & specials anytime","✅ Monthly analytics (views, clicks, directions)","✅ Verified badge on your listing","✅ Priority placement in your region","✅ QR code to display at your bar"].map((line,i)=><div key={i}>{line}</div>)}
-              </div>
-            </div>
-            {["Your Name","Your Role (Owner, Manager, etc.)","Email Address","Phone Number"].map((label,i)=>(
-              <div key={i} style={{marginBottom:14}}>
-                <label style={{fontSize:16,fontWeight:600,color:"#4A6274",display:"block",marginBottom:4}}>{label}</label>
-                <input type={label.includes("Email")?"email":"text"} placeholder={label} style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"2px solid #D8E2EA",fontSize:16,outline:"none",background:"#F5F7FA",boxSizing:"border-box"}}/>
-              </div>
-            ))}
-            <div style={{marginBottom:14}}>
-              <label style={{fontSize:16,fontWeight:600,color:"#4A6274",display:"block",marginBottom:4}}>How can we verify you manage this spot?</label>
-              <textarea rows={2} placeholder="e.g. I'm the owner, call me at the restaurant number" style={{width:"100%",padding:"12px 14px",borderRadius:10,border:"2px solid #D8E2EA",fontSize:16,resize:"vertical",outline:"none",background:"#F5F7FA",boxSizing:"border-box"}}/>
-            </div>
-            <div style={{display:"flex",gap:12,marginTop:20}}>
-              <button onClick={()=>setClaimModal(null)} style={{flex:1,padding:"14px",borderRadius:12,border:"2px solid #D8E2EA",background:"transparent",color:"#4A6274",fontWeight:600,fontSize:16,cursor:"pointer"}}>Cancel</button>
-              <a href={"/for-business/#claim"} style={{flex:1,padding:"14px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#2D6A8F,#E8614D)",color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",textAlign:"center",textDecoration:"none",display:"flex",alignItems:"center",justifyContent:"center"}}>Continue to claim →</a>
-            </div>
-          </div>
-        </div>
+        <ClaimModal
+          spot={claimModal}
+          onClose={()=>setClaimModal(null)}
+        />
       )}
     </div>
   );

@@ -210,7 +210,28 @@ export async function onRequestPost(context) {
       // Non-fatal if events insert fails
     }
 
-    return json({ ok: true, id: result.meta?.last_row_id ?? null });
+    const id = result.meta?.last_row_id ?? null;
+
+    // Optional lead alert (Zapier / Make / Slack incoming webhook).
+    // Set Pages secret LEAD_WEBHOOK_URL — only fired for claim/feature requests.
+    if (env.LEAD_WEBHOOK_URL && row.submission_type === "claim_request") {
+      try {
+        await fetch(env.LEAD_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            text:
+              `New claim/feature lead: ${row.name} (${row.town}) — ${row.category || "claim"} — ${row.email}`,
+            id,
+            ...row
+          })
+        });
+      } catch {
+        // Non-fatal
+      }
+    }
+
+    return json({ ok: true, id });
   } catch (err) {
     return json({ ok: false, error: "Insert failed", detail: String(err && err.message ? err.message : err) }, 500);
   }

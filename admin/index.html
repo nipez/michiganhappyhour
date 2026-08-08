@@ -246,6 +246,12 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       <div class="row" style="justify-content:space-between;margin-bottom:8px">
         <div class="counts" id="counts"></div>
         <div class="row">
+          <select id="type-filter" class="ghost" style="padding:10px 12px;width:auto;margin:0">
+            <option value="">All types</option>
+            <option value="claim_request">claim_request</option>
+            <option value="new_listing">new_listing</option>
+            <option value="update">update</option>
+          </select>
           <select id="status-filter" class="ghost" style="padding:10px 12px;width:auto;margin:0">
             <option value="">All statuses</option>
             <option value="new">new</option>
@@ -479,11 +485,20 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     loadVenues();
   }
 
-  function renderCounts(items){
-    if (!items || !items.length) { counts.innerHTML = '<span class="chip">0 total</span>'; return; }
-    counts.innerHTML = items.map(function(c){
-      return '<span class="chip">' + esc(c.status) + ': ' + esc(c.count) + '</span>';
-    }).join('');
+  function renderCounts(items, typeItems){
+    var chips = [];
+    if (items && items.length) {
+      chips = chips.concat(items.map(function(c){
+        return '<span class="chip">' + esc(c.status) + ': ' + esc(c.count) + '</span>';
+      }));
+    }
+    if (typeItems && typeItems.length) {
+      chips = chips.concat(typeItems.map(function(c){
+        var hot = c.submission_type === 'claim_request';
+        return '<span class="chip"'+(hot?' style="border-color:#E8614D;color:#E8614D"':'')+'>' + esc(c.submission_type) + ': ' + esc(c.count) + '</span>';
+      }));
+    }
+    counts.innerHTML = chips.length ? chips.join('') : '<span class="chip">0 total</span>';
   }
 
   function renderList(rows){
@@ -492,18 +507,22 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
       return;
     }
     list.innerHTML = rows.map(function(s){
-      return '<div class="card" data-id="'+s.id+'">'
+      var isClaim = s.submission_type === 'claim_request';
+      return '<div class="card" data-id="'+s.id+'"'+(isClaim?' style="border-color:#E8614D"':'')+'>'
         + '<div class="row" style="justify-content:space-between">'
         + '<div><strong>'+esc(s.name)+'</strong> · '+esc(s.town)
-        + ' <span class="status">'+esc(s.status)+'</span></div>'
+        + ' <span class="status">'+esc(s.status)+'</span>'
+        + (isClaim ? ' <span class="status" style="background:#FFF0ED;color:#E8614D">LEAD</span>' : '')
+        + '</div>'
         + '<div class="meta">#'+s.id+' · '+esc(s.created_at)+' · '+esc(s.source||'')+'</div>'
         + '</div>'
-        + '<div class="field"><b>Type:</b> '+esc(s.submission_type)+'</div>'
-        + '<div class="field"><b>Category:</b> '+esc(s.category||'—')+'</div>'
+        + '<div class="field"><b>Type:</b> '+esc(s.submission_type)+' · <b>Interest:</b> '+esc(s.category||'—')+'</div>'
+        + '<div class="field"><b>Contact:</b> '+esc(s.contact_name||'—')+(s.role?' ('+esc(s.role)+')':'')+'</div>'
         + '<div class="field"><b>Hours:</b> '+esc(s.happy_hour_schedule||'—')+'</div>'
         + '<div class="field"><b>Deals:</b> '+esc(s.deals||'—')+'</div>'
-        + '<div class="field"><b>Email:</b> '+esc(s.email||'—')+' · <b>Phone:</b> '+esc(s.phone||'—')+'</div>'
+        + '<div class="field"><b>Email:</b> <a href="mailto:'+esc(s.email||'')+'">'+esc(s.email||'—')+'</a> · <b>Phone:</b> '+esc(s.phone||'—')+'</div>'
         + '<div class="field"><b>Notes:</b> '+esc(s.notes||'—')+'</div>'
+        + (isClaim ? '<div class="field" style="color:#B45309"><b>Next:</b> Reply to confirm, then toggle Featured on the venue after payment / claim verify.</div>' : '')
         + '<div class="row" style="margin-top:12px">'
         + '<button class="ghost publish-venue-btn" data-id="'+s.id+'" style="border-color:#059669;color:#059669">Publish to venues</button>'
         + ['new','reviewed','published','rejected'].map(function(st){
@@ -554,7 +573,11 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
   async function loadSubmissions(){
     hideError(msg);
     var status = document.getElementById('status-filter').value;
-    var q = status ? ('?status=' + encodeURIComponent(status)) : '';
+    var type = document.getElementById('type-filter').value;
+    var params = new URLSearchParams();
+    if (status) params.set('status', status);
+    if (type) params.set('type', type);
+    var q = params.toString() ? ('?' + params.toString()) : '';
     var result = await api('/api/admin/submissions' + q);
     if (handleAuthFailure(result, msg)) return;
     if (!result.res.ok || !result.data.ok) {
@@ -563,7 +586,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
     }
     login.classList.add('hidden');
     app.classList.remove('hidden');
-    renderCounts(result.data.counts);
+    renderCounts(result.data.counts, result.data.type_counts);
     renderList(result.data.submissions || []);
   }
 
@@ -721,6 +744,7 @@ th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04
   });
   document.getElementById('refresh-btn').addEventListener('click', loadSubmissions);
   document.getElementById('status-filter').addEventListener('change', loadSubmissions);
+  document.getElementById('type-filter').addEventListener('change', loadSubmissions);
   document.getElementById('refresh-reports-btn').addEventListener('click', loadReports);
   document.getElementById('load-report-btn').addEventListener('click', loadSpotReport);
   document.getElementById('days-select').addEventListener('change', loadReports);

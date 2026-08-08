@@ -188,29 +188,38 @@ export async function onRequestGet(context) {
 
   const url = new URL(request.url);
   const status = (url.searchParams.get("status") || "").trim();
+  const type = (url.searchParams.get("type") || "").trim();
   const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 50) || 50, 1), 200);
 
   try {
-    let rows;
+    const clauses = [];
+    const binds = [];
     if (status) {
-      rows = await env.DB.prepare(
-        `SELECT * FROM submissions WHERE status = ? ORDER BY id DESC LIMIT ?`
-      )
-        .bind(status, limit)
-        .all();
-    } else {
-      rows = await env.DB.prepare(`SELECT * FROM submissions ORDER BY id DESC LIMIT ?`)
-        .bind(limit)
-        .all();
+      clauses.push("status = ?");
+      binds.push(status);
     }
+    if (type) {
+      clauses.push("submission_type = ?");
+      binds.push(type);
+    }
+    const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
+    const rows = await env.DB.prepare(
+      `SELECT * FROM submissions ${where} ORDER BY id DESC LIMIT ?`
+    )
+      .bind(...binds, limit)
+      .all();
 
     const counts = await env.DB.prepare(
       `SELECT status, COUNT(*) AS count FROM submissions GROUP BY status`
+    ).all();
+    const typeCounts = await env.DB.prepare(
+      `SELECT submission_type, COUNT(*) AS count FROM submissions GROUP BY submission_type`
     ).all();
 
     return json({
       ok: true,
       counts: counts.results || [],
+      type_counts: typeCounts.results || [],
       submissions: rows.results || []
     });
   } catch (err) {

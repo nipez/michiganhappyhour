@@ -128,10 +128,11 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
 
 <section class="section">
   <h2 class="sf">Packages</h2>
-  <p class="lead">Start free. Upgrade when you want priority placement and reporting.</p>
+  <p class="lead">Start free. Claim to keep specials accurate. Feature when you want the top slot in your market.</p>
   <div class="plans">
     <div class="plan">
       <h3 class="sf">Free listing</h3>
+      <div style="font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800;color:var(--ink)">$0</div>
       <ul>
         <li>Appear in search &amp; region pages</li>
         <li>Hours, deals, phone, directions</li>
@@ -139,32 +140,36 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       </ul>
       <a class="btn btn-secondary" style="color:var(--ink);border-color:var(--line);background:#f5f7fa" href="/submit/">Submit free listing</a>
     </div>
-    <div class="plan featured">
+    <div class="plan">
       <h3 class="sf">Claimed</h3>
+      <div style="font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800;color:var(--ink)">Free to request</div>
+      <p style="color:var(--muted);font-size:14px;margin-top:-4px">We verify ownership, then unlock reporting.</p>
       <ul>
-        <li>Verified badge</li>
-        <li>Edit deals anytime</li>
-        <li>Monthly CTA analytics</li>
+        <li>Verified owner badge</li>
+        <li>Priority updates to deals &amp; hours</li>
+        <li>Monthly Call / Map / Directions stats</li>
         <li>QR code for in-bar use</li>
       </ul>
-      <a class="btn btn-primary" href="#claim">Request claim</a>
+      <a class="btn btn-primary" href="#claim" data-interest="claim">Request claim</a>
     </div>
-    <div class="plan">
+    <div class="plan featured">
       <h3 class="sf">Featured</h3>
+      <div style="font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800;color:var(--coral)">$79<span style="font-size:16px;font-weight:700;color:var(--muted)">/mo</span></div>
+      <p style="color:var(--muted);font-size:14px;margin-top:-4px">Billed monthly after we confirm fit. Cancel anytime.</p>
       <ul>
         <li>Priority placement in your region</li>
-        <li>Homepage / map callouts</li>
+        <li>Homepage &amp; map callouts</li>
         <li>Guide &amp; collection mentions where relevant</li>
         <li>Everything in Claimed</li>
       </ul>
-      <a class="btn btn-primary" href="#claim">Ask about featured</a>
+      <a class="btn btn-primary" href="#claim" data-interest="featured">Request featured</a>
     </div>
   </div>
 </section>
 
 <section class="section" id="claim">
   <h2 class="sf">Request a claim or featured spot</h2>
-  <p class="lead">Tell us who you are and which listing to verify. We’ll follow up — submissions are saved even if email isn’t set up yet.</p>
+  <p class="lead">Tell us who you are and which listing to verify. We’ll reply with next steps — Featured spots invoice at $79/mo after confirmation.</p>
   <div class="form-card">
     <form id="biz-form">
       <input type="hidden" name="submission_type" value="claim_request">
@@ -182,12 +187,12 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       <div class="two">
         <div>
           <label>Interest *</label>
-          <select name="category" required>
+          <select name="category" id="interest" required>
             <option value="">Select…</option>
-            <option>Claim existing listing</option>
-            <option>Featured placement</option>
-            <option>Both claim + featured</option>
-            <option>New listing + claim</option>
+            <option value="Claim existing listing">Claim existing listing (free)</option>
+            <option value="Featured placement">Featured placement ($79/mo)</option>
+            <option value="Both claim + featured">Both claim + featured ($79/mo)</option>
+            <option value="New listing + claim">New listing + claim</option>
           </select>
         </div>
         <div>
@@ -241,6 +246,40 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
   var form = document.getElementById('biz-form');
   var btn = document.getElementById('biz-btn');
   var msg = document.getElementById('form-msg');
+  var interest = document.getElementById('interest');
+
+  function mapInterest(raw){
+    var v = String(raw || '').toLowerCase();
+    if (v === 'featured' || v.indexOf('feature') >= 0) return 'Featured placement';
+    if (v === 'both' || v.indexOf('both') >= 0) return 'Both claim + featured';
+    if (v.indexOf('new') >= 0) return 'New listing + claim';
+    if (v === 'claim' || v.indexOf('claim') >= 0) return 'Claim existing listing';
+    return '';
+  }
+
+  // Prefill from spot PDP / homepage deep links: /for-business/?name=&town=&interest=#claim
+  try {
+    var p = new URLSearchParams(location.search);
+    if (p.get('name')) form.elements.namedItem('name').value = p.get('name');
+    if (p.get('town')) form.elements.namedItem('town').value = p.get('town');
+    if (p.get('hours')) form.elements.namedItem('happy_hour_schedule').value = p.get('hours');
+    if (p.get('deals')) form.elements.namedItem('deals').value = p.get('deals');
+    if (p.get('website')) form.elements.namedItem('website').value = p.get('website');
+    if (p.get('phone')) form.elements.namedItem('phone').value = p.get('phone');
+    if (p.get('email')) form.elements.namedItem('email').value = p.get('email');
+    if (p.get('contact_name')) form.elements.namedItem('contact_name').value = p.get('contact_name');
+    if (p.get('role')) form.elements.namedItem('role').value = p.get('role');
+    var mapped = mapInterest(p.get('interest') || p.get('category'));
+    if (mapped) interest.value = mapped;
+  } catch (e) {}
+
+  document.querySelectorAll('[data-interest]').forEach(function(a){
+    a.addEventListener('click', function(){
+      var mapped = mapInterest(a.getAttribute('data-interest'));
+      if (mapped) interest.value = mapped;
+    });
+  });
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
     msg.textContent = '';
@@ -249,7 +288,8 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     var fd = new FormData(form);
     var payload = {};
     fd.forEach(function(v,k){ payload[k] = v; });
-    payload.path = location.pathname;
+    payload.path = location.pathname + location.search;
+    payload.source = 'for_business';
     fetch('/api/submit', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -257,15 +297,15 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     }).then(function(r){ return r.json().then(function(d){ return {r:r,d:d}; }); })
     .then(function(x){
       if (!x.r.ok || !x.d.ok) throw new Error(x.d.error || 'failed');
-      if (window.trackCta) window.trackCta('submit_success', { name: payload.name, town: payload.town, page_type:'for_business', source:'for_business' });
+      if (window.trackCta) window.trackCta('submit_success', { name: payload.name, town: payload.town, page_type:'for_business', source:'for_business', category: payload.category });
       msg.style.color = '#16A34A';
-      msg.textContent = 'Got it — your request is saved. We’ll review shortly.';
+      msg.textContent = 'Got it — your request is saved. We’ll review and follow up shortly.';
       form.reset();
       btn.disabled = false;
       btn.textContent = 'Submit request';
     }).catch(function(){
       msg.style.color = '#E8614D';
-      msg.textContent = 'Could not save. Try again or use /submit/.';
+      msg.textContent = 'Could not save. Try again or email hello@michiganhappyhour.com.';
       btn.disabled = false;
       btn.textContent = 'Submit request';
     });

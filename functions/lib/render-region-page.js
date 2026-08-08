@@ -306,6 +306,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <div class="cta-row">
 <a class="bt bp" href="${escapeAttr(interactive)}">Filter &amp; map ${escapeHtml(name)}</a>
 <a class="bt bo" href="/?region=${encodeURIComponent(regionId)}" onclick="try{localStorage.setItem('hh-region','${escapeAttr(regionId)}')}catch(e){}">Set as my default region</a>
+<a class="bt bo" href="/for-business/?interest=featured&amp;town=${encodeURIComponent(name)}#claim">Own a ${escapeHtml(name)} listing?</a>
 </div>
 </div>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:12px;margin-bottom:32px">
