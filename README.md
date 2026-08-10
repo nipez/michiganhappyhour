@@ -211,8 +211,10 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 ## SEO notes
 
 - Sitemap: `sitemap.xml` — rebuild with `node scripts/generate-sitemap.mjs` after venue imports, then resubmit in GSC
+- After big coverage expands: refresh homepage `index.html` noscript region list + “1,200+” copy, map filter chips / noscript, and blog region directory
 - Spot pages + homepage listings should stay linked via real `/spots/{slug}` URLs
 - `/admin/`, `/api/`, thanks page, and `index-backup.html` are disallowed / noindex
+- GSC: resubmit sitemap; request indexing for new `/regions/*` hubs (Port Huron, Livingston, UP east/west, etc.)
 
 ## Next (planned)
 
