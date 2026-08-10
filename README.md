@@ -159,11 +159,12 @@ Discover bars/pubs/breweries via Overpass and insert only new rows (dedupes agai
 
 ```bash
 node scripts/import-osm-venues.mjs --only=port-huron,jackson --apply-remote
+node scripts/import-osm-venues.mjs --pass=2 --apply-remote   # hubs tagged pass:2 only
 node scripts/fix-duplicate-spots.mjs --apply-remote
 node scripts/generate-sitemap.mjs
 ```
 
-Omit `--only` to scan all hubs. Re-run anytime; curated rows are not wiped.
+Omit `--only` / `--pass` to scan all hubs. Re-run anytime; curated rows are not wiped.
 
 ## Business / claim page
 
