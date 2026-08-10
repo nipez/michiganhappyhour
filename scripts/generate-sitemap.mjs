@@ -45,7 +45,10 @@ const REGIONS = [
   "west-shore",
   "northeast-mi",
   "up-west",
-  "up-east"
+  "up-east",
+  "livingston",
+  "south-central",
+  "west-central"
 ];
 
 const STATIC = [
