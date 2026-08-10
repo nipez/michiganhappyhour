@@ -29,7 +29,10 @@ const REGION_LABELS = {
   "west-shore": "Ludington & Manistee",
   "northeast-mi": "Northeast Michigan",
   "up-west": "Western UP",
-  "up-east": "Eastern UP"
+  "up-east": "Eastern UP",
+  livingston: "Brighton & Howell",
+  "south-central": "South Central Michigan",
+  "west-central": "West Central Michigan"
 };
 
 export function venueSlug(row) {

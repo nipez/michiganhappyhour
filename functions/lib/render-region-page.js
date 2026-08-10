@@ -185,6 +185,24 @@ export const REGION_META = {
     emoji: "🚢",
     blurb:
       "Sault Ste. Marie and Escanaba — locks-town and bayfront happy hours across the eastern UP."
+  },
+  livingston: {
+    name: "Brighton & Howell",
+    emoji: "🛣️",
+    blurb:
+      "Livingston County corridor — Brighton and Howell downtowns with brewery pours and weeknight specials between Detroit and Lansing."
+  },
+  "south-central": {
+    name: "South Central Michigan",
+    emoji: "🌾",
+    blurb:
+      "Coldwater, Hillsdale, Sturgis, Three Rivers, and Marshall — south-border taverns and brewery stops with real after-work hours."
+  },
+  "west-central": {
+    name: "West Central Michigan",
+    emoji: "🌲",
+    blurb:
+      "Big Rapids, Clare, Fremont, and Newaygo — US-131 corridor pubs and campus-town pours across west-central Michigan."
   }
 };
 

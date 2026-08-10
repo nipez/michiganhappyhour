@@ -36,7 +36,10 @@ const REGION_META = {
   "west-shore": { name: "Ludington & Manistee", color: "#0369A1" },
   "northeast-mi": { name: "Northeast Michigan", color: "#6D28D9" },
   "up-west": { name: "Western UP", color: "#92400E" },
-  "up-east": { name: "Eastern UP", color: "#1E3A5F" }
+  "up-east": { name: "Eastern UP", color: "#1E3A5F" },
+  livingston: { name: "Brighton & Howell", color: "#C2410C" },
+  "south-central": { name: "South Central Michigan", color: "#9F1239" },
+  "west-central": { name: "West Central Michigan", color: "#115E59" }
 };
 
 const TOWN_REGION = {
@@ -100,7 +103,46 @@ const TOWN_REGION = {
   "iron mountain": "up-west",
   "sault ste marie": "up-east",
   "sault ste. marie": "up-east",
-  escanaba: "up-east"
+  escanaba: "up-east",
+  brighton: "livingston",
+  howell: "livingston",
+  coldwater: "south-central",
+  hillsdale: "south-central",
+  sturgis: "south-central",
+  "three rivers": "south-central",
+  marshall: "south-central",
+  albion: "south-central",
+  "big rapids": "west-central",
+  clare: "west-central",
+  fremont: "west-central",
+  newaygo: "west-central",
+  "grand haven": "muskegon",
+  "spring lake": "muskegon",
+  whitehall: "muskegon",
+  saugatuck: "holland",
+  douglas: "holland",
+  "south haven": "holland",
+  "new buffalo": "southwest-mi",
+  cheboygan: "mackinaw",
+  oscoda: "northeast-mi",
+  "tawas city": "northeast-mi",
+  tawas: "northeast-mi",
+  "rogers city": "northeast-mi",
+  munising: "up-east",
+  manistique: "up-east",
+  newberry: "up-east",
+  ishpeming: "marquette",
+  ironwood: "up-west",
+  "iron river": "up-west",
+  owosso: "lansing",
+  alma: "mount-pleasant",
+  lapeer: "flint",
+  ionia: "grand-rapids",
+  hastings: "grand-rapids",
+  charlotte: "lansing",
+  novi: "detroit",
+  plymouth: "detroit",
+  canton: "detroit"
 };
 
 function json(data, status = 200) {

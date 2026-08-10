@@ -30,7 +30,10 @@ const REGION_META = {
   "west-shore": { name: "Ludington & Manistee", color: "#0369A1" },
   "northeast-mi": { name: "Northeast Michigan", color: "#6D28D9" },
   "up-west": { name: "Western UP", color: "#92400E" },
-  "up-east": { name: "Eastern UP", color: "#1E3A5F" }
+  "up-east": { name: "Eastern UP", color: "#1E3A5F" },
+  livingston: { name: "Brighton & Howell", color: "#C2410C" },
+  "south-central": { name: "South Central Michigan", color: "#9F1239" },
+  "west-central": { name: "West Central Michigan", color: "#115E59" }
 };
 
 function normalizeDays(input) {

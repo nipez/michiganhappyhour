@@ -9,6 +9,7 @@
  *   node scripts/import-osm-venues.mjs --apply-local
  *   node scripts/import-osm-venues.mjs --dry-run     # fetch only, no SQL write
  *   node scripts/import-osm-venues.mjs --only=port-huron,jackson  # limit hubs by region id
+ *   node scripts/import-osm-venues.mjs --pass=2                   # only hubs tagged pass:2
  *
  * Respects OSM usage policy: identifiable UA, paced requests.
  */
@@ -52,7 +53,10 @@ const REGION_META = {
   "west-shore": { name: "Ludington & Manistee", color: "#0369A1" },
   "northeast-mi": { name: "Northeast Michigan", color: "#6D28D9" },
   "up-west": { name: "Western UP", color: "#92400E" },
-  "up-east": { name: "Eastern UP", color: "#1E3A5F" }
+  "up-east": { name: "Eastern UP", color: "#1E3A5F" },
+  livingston: { name: "Brighton & Howell", color: "#C2410C" },
+  "south-central": { name: "South Central Michigan", color: "#9F1239" },
+  "west-central": { name: "West Central Michigan", color: "#115E59" }
 };
 
 /** Search hubs: region id + lat/lng + radius meters. Overlaps OK; we dedupe by OSM id. */
@@ -101,7 +105,50 @@ const HUBS = [
   { region: "up-west", lat: 47.1211, lng: -88.5694, r: 20000 }, // Houghton / Hancock
   { region: "up-west", lat: 45.8202, lng: -88.0659, r: 16000 }, // Iron Mountain
   { region: "up-east", lat: 46.4953, lng: -84.3453, r: 16000 }, // Sault Ste. Marie
-  { region: "up-east", lat: 45.7453, lng: -87.0646, r: 16000 } // Escanaba
+  { region: "up-east", lat: 45.7453, lng: -87.0646, r: 16000 }, // Escanaba
+  // Pass 2 — remaining empty corridors
+  { pass: 2, region: "livingston", lat: 42.5295, lng: -83.7802, r: 14000 }, // Brighton
+  { pass: 2, region: "livingston", lat: 42.6073, lng: -83.9294, r: 14000 }, // Howell
+  { pass: 2, region: "south-central", lat: 41.9403, lng: -85.0005, r: 14000 }, // Coldwater
+  { pass: 2, region: "south-central", lat: 41.92, lng: -84.6305, r: 14000 }, // Hillsdale
+  { pass: 2, region: "south-central", lat: 41.7992, lng: -85.4191, r: 14000 }, // Sturgis
+  { pass: 2, region: "south-central", lat: 41.9439, lng: -85.6322, r: 14000 }, // Three Rivers
+  { pass: 2, region: "south-central", lat: 42.2723, lng: -84.9633, r: 12000 }, // Marshall
+  { pass: 2, region: "south-central", lat: 42.2709, lng: -84.753, r: 12000 }, // Albion
+  { pass: 2, region: "west-central", lat: 43.6981, lng: -85.4837, r: 16000 }, // Big Rapids
+  { pass: 2, region: "west-central", lat: 43.8195, lng: -84.7686, r: 14000 }, // Clare
+  { pass: 2, region: "west-central", lat: 43.4675, lng: -85.942, r: 14000 }, // Fremont
+  { pass: 2, region: "west-central", lat: 43.4197, lng: -85.8, r: 12000 }, // Newaygo
+  { pass: 2, region: "muskegon", lat: 43.0631, lng: -86.2284, r: 14000 }, // Grand Haven
+  { pass: 2, region: "muskegon", lat: 43.41, lng: -86.3487, r: 12000 }, // Whitehall
+  { pass: 2, region: "holland", lat: 42.655, lng: -86.2019, r: 14000 }, // Saugatuck / Douglas
+  { pass: 2, region: "holland", lat: 42.4031, lng: -86.2736, r: 14000 }, // South Haven
+  { pass: 2, region: "southwest-mi", lat: 41.7939, lng: -86.7439, r: 14000 }, // New Buffalo
+  { pass: 2, region: "detroit", lat: 42.4806, lng: -83.4755, r: 12000 }, // Novi
+  { pass: 2, region: "detroit", lat: 42.3714, lng: -83.4702, r: 11000 }, // Plymouth
+  { pass: 2, region: "detroit", lat: 42.6584, lng: -83.1499, r: 12000 }, // Rochester Hills
+  { pass: 2, region: "detroit", lat: 42.6056, lng: -83.1499, r: 11000 }, // Troy
+  { pass: 2, region: "ann-arbor", lat: 42.3181, lng: -84.0205, r: 12000 }, // Chelsea
+  { pass: 2, region: "ann-arbor", lat: 42.1667, lng: -83.7816, r: 11000 }, // Saline
+  { pass: 2, region: "lansing", lat: 42.9978, lng: -84.1766, r: 14000 }, // Owosso
+  { pass: 2, region: "lansing", lat: 42.5636, lng: -84.8358, r: 12000 }, // Charlotte
+  { pass: 2, region: "grand-rapids", lat: 42.9873, lng: -85.0711, r: 14000 }, // Ionia
+  { pass: 2, region: "grand-rapids", lat: 42.6459, lng: -85.2908, r: 14000 }, // Hastings
+  { pass: 2, region: "flint", lat: 43.0514, lng: -83.3188, r: 14000 }, // Lapeer
+  { pass: 2, region: "mount-pleasant", lat: 43.3789, lng: -84.6597, r: 14000 }, // Alma
+  { pass: 2, region: "cadillac", lat: 44.0192, lng: -84.7995, r: 14000 }, // Harrison
+  { pass: 2, region: "mackinaw", lat: 45.647, lng: -84.4745, r: 16000 }, // Cheboygan
+  { pass: 2, region: "northeast-mi", lat: 44.4203, lng: -83.3308, r: 14000 }, // Oscoda
+  { pass: 2, region: "northeast-mi", lat: 44.2695, lng: -83.5147, r: 14000 }, // Tawas
+  { pass: 2, region: "northeast-mi", lat: 45.4214, lng: -83.8183, r: 14000 }, // Rogers City
+  { pass: 2, region: "marquette", lat: 46.4885, lng: -87.6676, r: 14000 }, // Ishpeming
+  { pass: 2, region: "up-east", lat: 46.4111, lng: -86.6479, r: 16000 }, // Munising
+  { pass: 2, region: "up-east", lat: 45.9577, lng: -86.2462, r: 14000 }, // Manistique
+  { pass: 2, region: "up-east", lat: 46.355, lng: -85.5096, r: 14000 }, // Newberry
+  { pass: 2, region: "up-west", lat: 46.4547, lng: -90.1712, r: 16000 }, // Ironwood
+  { pass: 2, region: "up-west", lat: 46.0927, lng: -88.6423, r: 14000 }, // Iron River
+  { pass: 2, region: "monroe-adrian", lat: 42.0062, lng: -83.945, r: 12000 }, // Tecumseh
+  { pass: 2, region: "kalamazoo", lat: 42.2012, lng: -85.58, r: 12000 } // Portage
 ];
 
 const ALL_DAYS = [
@@ -410,11 +457,19 @@ function parseOnlyRegions() {
   return set.size ? set : null;
 }
 
+function parsePass() {
+  const arg = process.argv.find((a) => a.startsWith("--pass="));
+  if (!arg) return null;
+  const n = Number(arg.slice("--pass=".length));
+  return Number.isFinite(n) ? n : null;
+}
+
 async function main() {
   const applyRemote = process.argv.includes("--apply-remote");
   const applyLocal = process.argv.includes("--apply-local");
   const dryRun = process.argv.includes("--dry-run");
   const only = parseOnlyRegions();
+  const pass = parsePass();
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -422,11 +477,14 @@ async function main() {
   const existing = fetchExistingFromD1(true);
   console.log(`  ${existing.length} existing rows`);
 
-  const hubs = only ? HUBS.filter((h) => only.has(h.region)) : HUBS;
+  let hubs = HUBS;
+  if (pass != null) hubs = hubs.filter((h) => h.pass === pass);
+  if (only) hubs = hubs.filter((h) => only.has(h.region));
   if (!hubs.length) {
-    console.error("No hubs matched --only filter.");
+    console.error("No hubs matched filters.");
     process.exit(1);
   }
+  if (pass != null) console.log(`Filtering to pass=${pass} (${hubs.length} hubs)`);
   if (only) console.log(`Filtering hubs to: ${[...only].join(", ")} (${hubs.length} hubs)`);
 
   const byOsm = new Map();

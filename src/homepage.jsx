@@ -36,6 +36,9 @@ const REGIONS=[
   {id:"northeast-mi",name:"Northeast Michigan",emoji:"🌲",img:"img/chalkboard.jpg"},
   {id:"up-west",name:"Western UP",emoji:"❄️",img:"img/wine-cheese.jpg"},
   {id:"up-east",name:"Eastern UP",emoji:"🚢",img:"img/hero.jpg"},
+  {id:"livingston",name:"Brighton & Howell",emoji:"🛣️",img:"img/nightlife.jpg"},
+  {id:"south-central",name:"South Central Michigan",emoji:"🌾",img:"img/friends-wine.jpg"},
+  {id:"west-central",name:"West Central Michigan",emoji:"🌲",img:"img/chalkboard.jpg"},
 ];
 
 const CATS=["All","Wine Bar","Brewery","Restaurant","Cocktail Bar","Taproom","Distillery","Cidery"];
@@ -70,7 +73,10 @@ const REGION_CENTERS={
   "west-shore":{lat:44.1,lng:-86.4},
   "northeast-mi":{lat:45.0,lng:-84.2},
   "up-west":{lat:46.5,lng:-88.3},
-  "up-east":{lat:46.2,lng:-85.5}
+  "up-east":{lat:46.2,lng:-85.5},
+  livingston:{lat:42.57,lng:-83.85},
+  "south-central":{lat:41.95,lng:-85.2},
+  "west-central":{lat:43.7,lng:-85.5}
 };
 const REGION_IDS=new Set(REGIONS.map(r=>r.id));
 function haversineMi(lat1,lng1,lat2,lng2){const R=3959;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
