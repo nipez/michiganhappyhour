@@ -4,5 +4,7 @@ Disallow: /admin/
 Disallow: /submit/thanks.html
 Disallow: /index-backup.html
 Disallow: /api/
+# Public, curated venue feed (also linked from /llms.txt)
+Allow: /api/venues
 
 Sitemap: https://michiganhappyhour.com/sitemap.xml
