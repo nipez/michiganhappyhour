@@ -1,0 +1,23 @@
+# Michigan Happy Hour
+
+> A directory of happy hour deals across Michigan — venue hours, drink & food specials, phone numbers, and directions for 180+ bars, breweries, wineries, and restaurants statewide, organized by city/region and day of week.
+
+Listings are community-sourced and updated regularly. Hours and deals may change; call ahead to confirm. Spot detail pages are rendered live from a database and also support a token-efficient Markdown representation via content negotiation — send `Accept: text/markdown` to any `/spots/{slug}` URL.
+
+## Structured data (best for agents)
+
+- [All venues (full JSON)](https://michiganhappyhour.com/api/venues?format=full): Complete structured list — name, category, town, region, address, phone, happy hour days/times, deals, coordinates, and canonical spot path.
+- [Venues (map JSON)](https://michiganhappyhour.com/api/venues?format=map): Lightweight list for map pins.
+- Filters: add `&region={region}` (e.g. `traverse-city`, `grand-rapids`, `detroit`, `ann-arbor`) or `&q={search}`.
+
+## Key pages
+
+- [Homepage](https://michiganhappyhour.com/): Browse tonight's deals by region and day of week.
+- [Map](https://michiganhappyhour.com/map/): Interactive map of every spot.
+- [Submit a spot / correction](https://michiganhappyhour.com/submit/): Suggest a venue or update.
+- [Sitemap](https://michiganhappyhour.com/sitemap.xml): All indexable pages.
+
+## Notes
+
+- Spot pages live at `/spots/{slug}` (extensionless). Request them with `Accept: text/markdown` for clean Markdown, or normally for HTML with schema.org structured data (Restaurant/BarOrPub/Brewery + Offers).
+- Region and day availability change daily; the JSON feed is the source of truth.

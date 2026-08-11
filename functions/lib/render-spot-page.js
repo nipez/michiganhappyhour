@@ -90,6 +90,33 @@ function escapeAttr(s) {
   return escapeHtml(s).replace(/'/g, "&#39;");
 }
 
+/** Pull a numeric USD price out of a deal string ("$5 draft beer" -> "5"). */
+function dealPrice(deal) {
+  const m = String(deal == null ? "" : deal).match(/\$\s*(\d+(?:\.\d{1,2})?)/);
+  return m ? m[1] : null;
+}
+
+/** schema.org Offers built from free-text happy-hour deals. */
+function buildOffers(deals) {
+  return deals
+    .map((d) => String(d).trim())
+    .filter(Boolean)
+    .map((d) => {
+      const offer = {
+        "@type": "Offer",
+        name: d,
+        category: "Happy Hour",
+        availability: "https://schema.org/InStock"
+      };
+      const price = dealPrice(d);
+      if (price) {
+        offer.price = price;
+        offer.priceCurrency = "USD";
+      }
+      return offer;
+    });
+}
+
 export function renderSpotPage(venue, related = []) {
   const name = venue.name || "Happy Hour";
   const town = venue.town || "";
@@ -158,6 +185,23 @@ export function renderSpotPage(venue, related = []) {
   };
   if (!ld.geo) delete ld.geo;
   if (!ld.telephone) delete ld.telephone;
+
+  // Deals as Offers (the site's core content) — honest, parseable structured data.
+  const offers = buildOffers(deals);
+  if (offers.length) ld.makesOffer = offers;
+
+  // Expose the happy-hour schedule as key/values. Deliberately NOT
+  // openingHoursSpecification: we only know the happy-hour window, and using it
+  // there would misrepresent the venue's actual business hours to search engines.
+  const scheduleProps = [];
+  if (daysText) {
+    scheduleProps.push({ "@type": "PropertyValue", name: "Happy Hour Days", value: daysText });
+  }
+  const hoursRange = [hhStart, hhEnd].filter(Boolean).join(" – ");
+  if (hoursRange) {
+    scheduleProps.push({ "@type": "PropertyValue", name: "Happy Hour Time", value: hoursRange });
+  }
+  if (scheduleProps.length) ld.additionalProperty = scheduleProps;
 
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -324,4 +368,72 @@ ${
 <script src="/js/cta-track.js" defer></script>
 </body>
 </html>`;
+}
+
+/**
+ * Token-efficient Markdown representation of a spot, served via content
+ * negotiation (Accept: text/markdown) for AI agents / crawlers. Built from the
+ * same D1 row as the HTML so the two never drift.
+ */
+export function renderSpotMarkdown(venue, related = []) {
+  const name = venue.name || "Happy Hour";
+  const town = venue.town || "";
+  const address = venue.address || "";
+  const category = venue.category || "Restaurant";
+  const phone = venue.phone || "";
+  const vibe = venue.vibe || "";
+  const hhStart = venue.hh_start || "";
+  const hhEnd = venue.hh_end || "";
+  const days = parseJsonArray(venue.hh_days);
+  const deals = parseJsonArray(venue.deals);
+  const region = venue.region || "";
+  const regionLabel = venue.region_name || REGION_LABELS[region] || town;
+  const slug = venueSlug(venue);
+  const canonical = `https://michiganhappyhour.com/spots/${slug}`;
+  const hours = [hhStart, hhEnd].filter(Boolean).join(" – ");
+  const daysText = days.join(", ");
+  const mapsQuery = encodeURIComponent([name, address, town, "MI"].filter(Boolean).join(" "));
+  const mapsSearch = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+
+  const lines = [];
+  lines.push(`# ${name} — Happy Hour`);
+  lines.push("");
+  const loc = [town ? `${town}, MI` : "", address].filter(Boolean).join(" · ");
+  if (loc) {
+    lines.push(loc);
+    lines.push("");
+  }
+  lines.push(`- **Category:** ${category}`);
+  if (hours) lines.push(`- **Happy hour:** ${hours}${daysText ? ` (${daysText})` : ""}`);
+  if (phone) lines.push(`- **Phone:** ${phone}`);
+  if (address) lines.push(`- **Address:** ${address}, ${town}, MI`);
+  lines.push(`- **Directions:** ${mapsSearch}`);
+  lines.push(`- **URL:** ${canonical}`);
+  lines.push("");
+  if (vibe) {
+    lines.push(`> ${vibe}`);
+    lines.push("");
+  }
+  lines.push(`## Deals & specials`);
+  if (deals.length) {
+    for (const d of deals) lines.push(`- ${String(d).trim()}`);
+  } else {
+    lines.push(`- Call for current specials`);
+  }
+  lines.push("");
+  if (related.length) {
+    lines.push(`## More happy hours in ${regionLabel}`);
+    for (const r of related) {
+      const href = `https://michiganhappyhour.com${canonicalSpotPath(r)}`;
+      const rHours = [r.hh_start, r.hh_end].filter(Boolean).join(" – ");
+      lines.push(
+        `- [${r.name}](${href})${r.town ? ` — ${r.town}` : ""}${rHours ? ` (${rHours})` : ""}`
+      );
+    }
+    lines.push("");
+  }
+  lines.push("---");
+  lines.push("Hours & specials are community-sourced and may change; call ahead to confirm.");
+  lines.push("");
+  return lines.join("\n");
 }

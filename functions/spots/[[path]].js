@@ -2,6 +2,7 @@ import { slugify } from "../api/_venues.js";
 import {
   canonicalSpotPath,
   normalizeSpotSlug,
+  renderSpotMarkdown,
   renderSpotPage,
   venueSlug
 } from "../lib/render-spot-page.js";
@@ -15,6 +16,25 @@ function html(body, status = 200, extraHeaders = {}) {
       ...extraHeaders
     }
   });
+}
+
+function markdown(body) {
+  return new Response(body, {
+    status: 200,
+    headers: {
+      "Content-Type": "text/markdown; charset=utf-8",
+      // no-store so a shared/edge cache can never hand a Markdown variant to a
+      // browser (Cloudflare's cache does not reliably honor `Vary: Accept`).
+      "Cache-Control": "no-store",
+      Vary: "Accept"
+    }
+  });
+}
+
+/** True when the client explicitly opts into Markdown via content negotiation. */
+function prefersMarkdown(request) {
+  const accept = (request.headers.get("Accept") || "").toLowerCase();
+  return accept.includes("text/markdown");
 }
 
 function notFound() {
@@ -113,9 +133,15 @@ export async function onRequestGet(context) {
     )
       .bind(found.venue.region, found.venue.id)
       .all();
+    const related = relatedRows.results || [];
 
-    const page = renderSpotPage(found.venue, relatedRows.results || []);
-    return html(page);
+    if (prefersMarkdown(request)) {
+      return markdown(renderSpotMarkdown(found.venue, related));
+    }
+
+    // Vary signals intent to caches/CDNs that this URL negotiates on Accept.
+    const page = renderSpotPage(found.venue, related);
+    return html(page, 200, { Vary: "Accept" });
   } catch (err) {
     const msg = String(err && err.message ? err.message : err);
     if (msg.includes("no such table")) {
