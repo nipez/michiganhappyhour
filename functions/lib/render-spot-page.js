@@ -356,6 +356,9 @@ export function renderSpotPage(venue, related = []) {
   const featuredBadge = venue.featured
     ? `<span class="bg" style="background:#FFF0ED;color:#E8614D">Featured</span>`
     : "";
+  const dogBadge = venue.dog_friendly
+    ? `<span class="bg" style="background:#FFF7ED;color:#C2410C">Dog friendly</span>`
+    : "";
   const claimCtaTitle = venue.claimed
     ? `Update ${escapeHtml(name)}`
     : `Claim or feature ${escapeHtml(name)}`;
@@ -449,7 +452,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <h1 class="sf" style="font-size:clamp(28px,5vw,36px);font-weight:800;margin-bottom:6px">${escapeHtml(name)} Happy Hour</h1>
 <div style="font-size:17px;color:#6B8A9E">${escapeHtml(town)}, MI${address ? " &middot; " + escapeHtml(address) : ""}</div>
 </div>
-<div class="badges"><span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${claimedBadge}${featuredBadge}</div>
+<div class="badges"><span class="bg" style="background:#EFF6FF;color:#2D6A8F">${escapeHtml(category)}</span>${claimedBadge}${featuredBadge}${dogBadge}</div>
 </div>
 <div class="hh">
 <div style="font-size:14px;font-weight:700;color:#8AA3B5;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Happy Hour</div>

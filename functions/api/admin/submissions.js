@@ -401,12 +401,17 @@ async function publishSubmissionToVenue(env, id, body) {
     let venueId;
     let created = false;
 
-    const isClaim = String(sub.submission_type || "") === "claim_request";
-    const claimNote = isClaim
-      ? `\nClaimed from submission #${id}`
-      : `\nPublished from submission #${id}`;
+  const isClaim = String(sub.submission_type || "") === "claim_request";
+  const claimNote = isClaim
+    ? `\nClaimed from submission #${id}`
+    : `\nPublished from submission #${id}`;
+  const dogFriendly =
+    /^(yes|true|1|on)$/i.test(String(sub.has_dog || "").trim()) ||
+    /\bdog friendly\b/i.test(String(sub.notes || ""))
+      ? 1
+      : 0;
 
-    if (existing?.id) {
+  if (existing?.id) {
       venueId = existing.id;
       await env.DB.prepare(
         `UPDATE venues SET
@@ -426,6 +431,7 @@ async function publishSubmissionToVenue(env, id, body) {
           status = 'published',
           claimed = CASE WHEN ? = 1 THEN 1 ELSE claimed END,
           claimed_at = CASE WHEN ? = 1 THEN COALESCE(claimed_at, date('now')) ELSE claimed_at END,
+          dog_friendly = CASE WHEN ? = 1 THEN 1 ELSE dog_friendly END,
           source = CASE WHEN source IS NULL OR source = '' THEN 'curated' ELSE source END,
           last_verified_at = date('now'),
           admin_notes = TRIM(COALESCE(admin_notes,'') || ?),
@@ -448,6 +454,7 @@ async function publishSubmissionToVenue(env, id, body) {
           spot_path,
           isClaim ? 1 : 0,
           isClaim ? 1 : 0,
+          dogFriendly,
           claimNote,
           venueId
         )
@@ -459,9 +466,9 @@ async function publishSubmissionToVenue(env, id, body) {
       await env.DB.prepare(
         `INSERT INTO venues (
           id, name, category, region, region_name, region_color, town, address, phone, website,
-          hh_start, hh_end, hh_days, deals, vibe, featured, claimed, claimed_at, collections, spot_path, status,
+          hh_start, hh_end, hh_days, deals, vibe, featured, claimed, claimed_at, dog_friendly, collections, spot_path, status,
           source, last_verified_at, admin_notes, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, '[]', ?, 'published', 'curated', date('now'), ?, datetime('now'))`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?, '[]', ?, 'published', 'curated', date('now'), ?, datetime('now'))`
       )
         .bind(
           venueId,
@@ -481,6 +488,7 @@ async function publishSubmissionToVenue(env, id, body) {
           vibe,
           isClaim ? 1 : 0,
           isClaim ? new Date().toISOString().slice(0, 10) : null,
+          dogFriendly,
           spot_path,
           claimNote
         )

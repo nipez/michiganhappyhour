@@ -257,6 +257,9 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
                   <label class="check" for="v-claimed"><input id="v-claimed" type="checkbox"> Claimed / verified owner</label>
                 </div>
                 <div class="full">
+                  <label class="check" for="v-dog"><input id="v-dog" type="checkbox"> Dog friendly</label>
+                </div>
+                <div class="full">
                   <label class="check" for="v-featured"><input id="v-featured" type="checkbox"> Featured listing ($79/mo)</label>
                 </div>
               </div>
@@ -533,6 +536,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     document.getElementById('v-status').value = 'published';
     document.getElementById('v-featured').checked = false;
     document.getElementById('v-claimed').checked = false;
+    document.getElementById('v-dog').checked = false;
     hideError(document.getElementById('venue-save-msg'));
   }
 
@@ -558,6 +562,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     document.getElementById('v-status').value = v.status || 'published';
     document.getElementById('v-featured').checked = !!v.featured;
     document.getElementById('v-claimed').checked = !!v.claimed;
+    document.getElementById('v-dog').checked = !!v.dog_friendly;
     document.getElementById('v-notes').value = v.admin_notes || '';
     hideError(document.getElementById('venue-save-msg'));
     if (window.matchMedia('(max-width:980px)').matches) {
@@ -590,6 +595,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       status: document.getElementById('v-status').value,
       featured: document.getElementById('v-featured').checked,
       claimed: document.getElementById('v-claimed').checked,
+      dog_friendly: document.getElementById('v-dog').checked,
       admin_notes: document.getElementById('v-notes').value.trim()
     };
   }
@@ -622,6 +628,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       return '<tr class="clickable'+sel+'" data-id="'+v.id+'">'
         + '<td><strong>'+esc(v.name)+'</strong>'
         + (v.claimed?' <span class="status pub">verified</span>':'')
+        + (v.dog_friendly?' <span class="status">dog</span>':'')
         + (v.featured?' <span class="status">feat</span>':'')
         + '</td>'
         + '<td>'+esc(v.town)+'</td>'
@@ -724,6 +731,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
         + '<div class="field"><b>Hours</b> '+esc(s.happy_hour_schedule||'—')+'</div>'
         + '<div class="field"><b>Deals</b> '+esc(s.deals||'—')+'</div>'
         + '<div class="field"><b>Email</b> <a href="mailto:'+esc(s.email||'')+'">'+esc(s.email||'—')+'</a> · <b>Phone</b> '+esc(s.phone||'—')+'</div>'
+        + ((s.has_patio||s.has_dog) ? '<div class="field"><b>Amenities</b> '+(s.has_patio?'Patio ':'')+(s.has_dog?'Dog friendly':'')+'</div>' : '')
         + (s.notes ? '<div class="field"><b>Notes</b> '+esc(s.notes)+'</div>' : '')
         + (isClaim ? '<div class="field" style="color:#B45309;margin-top:6px"><b>Next</b> Reply, then toggle Featured after payment/verify.</div>' : '')
         + '<div class="sub-actions">'

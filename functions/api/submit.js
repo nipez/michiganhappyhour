@@ -130,6 +130,7 @@ export async function onRequestPost(context) {
     phone: asText(raw.phone, 60),
     website: asText(raw.website, 300),
     has_patio: asText(raw.has_patio || raw.patio, 20),
+    has_dog: asText(raw.has_dog || raw.dog_friendly || raw.dog, 20),
     notes: asText(raw.notes, 4000),
     source: asText(raw.source, 60) || "submit_page",
     path: asText(raw.path, 500) || new URL(request.url).pathname,
@@ -148,9 +149,9 @@ export async function onRequestPost(context) {
       `INSERT INTO submissions (
         status, submission_type, name, town, state, address, category,
         happy_hour_schedule, deals, vibe, contact_name, role, email, phone,
-        website, has_patio, notes, source, path, referrer, visitor_id,
+        website, has_patio, has_dog, notes, source, path, referrer, visitor_id,
         user_agent, country, city, region, colo, payload
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         row.status,
@@ -169,6 +170,7 @@ export async function onRequestPost(context) {
         row.phone,
         row.website,
         row.has_patio,
+        row.has_dog,
         row.notes,
         row.source,
         row.path,

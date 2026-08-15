@@ -138,7 +138,7 @@ Open `https://michiganhappyhour.com/admin/` and unlock with that password.
 
 | Tab | Purpose |
 | --- | --- |
-| **Venues** | Search/edit/create listings in D1 (`venues`). Homepage + map load from `/api/venues`. |
+| **Venues** | Search/edit/create listings in D1 (`venues`). Homepage + map load from `/api/venues`. Toggle **Dog friendly**, Claimed, Featured. |
 | **Venue reports** | 7/30/90-day CTAs + Featured pitch copy ($79/mo), mailto, CSV export, cold targets (not featured + phone) |
 | **Submissions** | Inbox of tip/claim forms |
 
