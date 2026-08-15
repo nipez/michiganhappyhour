@@ -116,6 +116,7 @@ function coerceVenuePayload(body, { partial = false } = {}) {
     set("lng", Number.isFinite(n) ? n : null);
   }
   if (body.featured !== undefined) set("featured", body.featured ? 1 : 0);
+  if (body.dog_friendly !== undefined) set("dog_friendly", body.dog_friendly ? 1 : 0);
   if (body.claimed !== undefined) {
     set("claimed", body.claimed ? 1 : 0);
     if (body.claimed) {
@@ -148,6 +149,7 @@ function coerceVenuePayload(body, { partial = false } = {}) {
     if (out.collections === undefined) out.collections = "[]";
     if (out.featured === undefined) out.featured = 0;
     if (out.claimed === undefined) out.claimed = 0;
+    if (out.dog_friendly === undefined) out.dog_friendly = 0;
     if (out.status === undefined) out.status = "published";
     if (!out.spot_path) {
       out.spot_path = `../spots/${slugify(out.name, out.town)}.html`;
@@ -274,9 +276,9 @@ async function upsert(context, { create }) {
       await env.DB.prepare(
         `INSERT INTO venues (
           id, name, category, region, region_name, region_color, town, address, phone, website,
-          hh_start, hh_end, hh_days, deals, vibe, lat, lng, featured, claimed, claimed_at, collections,
+          hh_start, hh_end, hh_days, deals, vibe, lat, lng, featured, claimed, claimed_at, dog_friendly, collections,
           spot_path, status, admin_notes, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
       )
         .bind(
           id,
@@ -299,6 +301,7 @@ async function upsert(context, { create }) {
           v.featured,
           v.claimed ?? 0,
           v.claimed_at ?? null,
+          v.dog_friendly ?? 0,
           v.collections,
           v.spot_path,
           v.status,

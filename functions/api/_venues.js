@@ -17,6 +17,9 @@ const COL_BADGES = {
   oysters: '<span style="background:#FFF7ED;color:#C2410C;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">Oysters</span>'
 };
 
+const DOG_BADGE =
+  '<span style="background:#FFF7ED;color:#C2410C;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">Dog friendly</span>';
+
 export function parseJsonArray(raw) {
   if (Array.isArray(raw)) return raw;
   if (raw == null || raw === "") return [];
@@ -52,11 +55,12 @@ export function dealsHtml(deals) {
     .join("");
 }
 
-export function collectionBadges(collections) {
-  return parseJsonArray(collections)
+export function collectionBadges(collections, { dogFriendly = false } = {}) {
+  const parts = parseJsonArray(collections)
     .map((c) => COL_BADGES[c] || "")
-    .filter(Boolean)
-    .join("");
+    .filter(Boolean);
+  if (dogFriendly) parts.push(DOG_BADGE);
+  return parts.join("");
 }
 
 function escapeHtml(s) {
@@ -91,6 +95,7 @@ export function toListVenue(row) {
   };
   if (row.featured) out.feat = true;
   if (row.claimed) out.claimed = true;
+  if (row.dog_friendly) out.dog = true;
   const col = parseJsonArray(row.collections);
   if (col.length) out.col = col;
   return out;
@@ -122,10 +127,11 @@ export function toMapVenue(row) {
     he: row.hh_end || "",
     dy: abbreviateDays(row.hh_days),
     dl: dealsHtml(row.deals),
-    cb: collectionBadges(row.collections),
+    cb: collectionBadges(row.collections, { dogFriendly: !!row.dog_friendly }),
     v: row.vibe || "",
     s: publicSpotHref(row.spot_path),
-    f: row.featured ? 1 : 0
+    f: row.featured ? 1 : 0,
+    dog: row.dog_friendly ? 1 : 0
   };
 }
 
@@ -153,6 +159,7 @@ export function toFullVenue(row) {
     featured: !!row.featured,
     claimed: !!row.claimed,
     claimed_at: row.claimed_at || null,
+    dog_friendly: !!row.dog_friendly,
     collections: parseJsonArray(row.collections),
     spot_path: row.spot_path,
     status: row.status,

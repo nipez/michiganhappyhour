@@ -357,6 +357,13 @@ function elementToVenue(el, regionHint) {
   const website = tags.website || tags["contact:website"] || tags.url || null;
   const opening_hours = tags.opening_hours || tags["opening_hours:kitchen"] || null;
   const hasHhTag = Boolean(tags.happy_hour || tags.happy_hours);
+  const dogFriendly =
+    tags.dog === "yes" ||
+    tags.dogs === "yes" ||
+    tags["dog:friendly"] === "yes" ||
+    tags["dogs:welcome"] === "yes"
+      ? 1
+      : 0;
 
   return {
     name,
@@ -379,6 +386,7 @@ function elementToVenue(el, regionHint) {
     lat: coords.lat,
     lng: coords.lng,
     featured: 0,
+    dog_friendly: dogFriendly,
     collections: [],
     spot_path: `../spots/${slugify(name, town)}.html`,
     status: "published",
@@ -392,7 +400,7 @@ function venueInsertSql(v) {
   // Upsert on external_id. Never touch curated rows (they have NULL external_id /
   // source curated). Re-imports refresh OSM fields only.
   return (
-    "INSERT INTO venues (name,category,region,region_name,region_color,town,address,phone,website,opening_hours,hh_start,hh_end,hh_days,deals,vibe,lat,lng,featured,collections,spot_path,status,source,external_id,admin_notes) VALUES (" +
+    "INSERT INTO venues (name,category,region,region_name,region_color,town,address,phone,website,opening_hours,hh_start,hh_end,hh_days,deals,vibe,lat,lng,featured,dog_friendly,collections,spot_path,status,source,external_id,admin_notes) VALUES (" +
     [
       sqlStr(v.name),
       sqlStr(v.category),
@@ -412,6 +420,7 @@ function venueInsertSql(v) {
       v.lat == null ? "NULL" : Number(v.lat),
       v.lng == null ? "NULL" : Number(v.lng),
       0,
+      v.dog_friendly ? 1 : 0,
       sqlStr("[]"),
       sqlStr(v.spot_path),
       sqlStr("published"),
@@ -434,6 +443,7 @@ function venueInsertSql(v) {
       "lat=excluded.lat",
       "lng=excluded.lng",
       "spot_path=excluded.spot_path",
+      "dog_friendly=CASE WHEN excluded.dog_friendly=1 THEN 1 ELSE venues.dog_friendly END",
       "updated_at=datetime('now')",
       // Preserve any admin-curated deals/hours if already enriched
       "deals=CASE WHEN venues.source='osm' AND (venues.deals LIKE '%Ask about today%' OR venues.deals LIKE '%not verified%') THEN excluded.deals ELSE venues.deals END",

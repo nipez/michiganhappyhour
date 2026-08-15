@@ -330,6 +330,7 @@ function Card({l,isT,onMapClick,highlighted,isFav,onToggleFav,dist,onClaim,isLiv
           <Badge color={cc} bg={cc+"18"}>{l.cat}</Badge>
           {l.col?.includes("patio") && <Badge color="#D97706" bg="#FFFBEB">Patio</Badge>}
           {l.col?.includes("late") && <Badge color="#2D6A8F" bg="#EFF6FF">Late</Badge>}
+          {l.dog && <Badge color="#C2410C" bg="#FFF7ED">Dog friendly</Badge>}
           {l.claimed && <Badge color="#059669" bg="#ECFDF5">Verified</Badge>}
           {l.feat && <Badge color="#E8614D" bg="#FFF0ED">Featured</Badge>}
         </div>
@@ -563,6 +564,7 @@ function App(){
   const [showFavs,setShowFavs]=useState(false);
   const [showNow,setShowNow]=useState(false);
   const [colFilter,setColFilter]=useState(null);
+  const [dogOnly,setDogOnly]=useState(false);
   const [userLoc,setUserLoc]=useState(null);
   const [locLoading,setLocLoading]=useState(false);
   const [claimModal,setClaimModal]=useState(null);
@@ -623,14 +625,14 @@ function App(){
   };
 
   const filtered=useMemo(()=>{
-    let r=listings.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):(!(l.hh.d||[]).length||l.hh.d.includes(day)))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||(l.deals||[]).some(d=>d.toLowerCase().includes(q.toLowerCase()))));
+    let r=listings.filter(l=>(showFavs?favs.includes(l.id):true)&&(showNow?isHappeningNow(l):(!(l.hh.d||[]).length||l.hh.d.includes(day)))&&(reg==="all"||l.reg===reg)&&(cat==="All"||l.cat===cat)&&(!colFilter||l.col&&l.col.includes(colFilter))&&(!dogOnly||l.dog)&&(!q||l.name.toLowerCase().includes(q.toLowerCase())||l.town.toLowerCase().includes(q.toLowerCase())||(l.deals||[]).some(d=>d.toLowerCase().includes(q.toLowerCase()))));
     if(sort==="near"&&userLoc)r.sort((a,b)=>haversine(userLoc.lat,userLoc.lng,a.lat,a.lng)-haversine(userLoc.lat,userLoc.lng,b.lat,b.lng));
     else if(sort==="name")r.sort((a,b)=>a.name.localeCompare(b.name));
     else if(sort==="rating")r.sort((a,b)=>b.r-a.r);
     else if(sort==="time")r.sort((a,b)=>{const as=a.hh&&a.hh.s||"ZZZ";const bs=b.hh&&b.hh.s||"ZZZ";return as.localeCompare(bs);});
     else r.sort((a,b)=>{const ri=REGIONS.findIndex(x=>x.id===a.reg)-REGIONS.findIndex(x=>x.id===b.reg);return ri!==0?ri:a.name.localeCompare(b.name);});
     return r;
-  },[listings,day,reg,cat,q,sort,showFavs,favs,showNow,colFilter,userLoc]);
+  },[listings,day,reg,cat,q,sort,showFavs,favs,showNow,colFilter,dogOnly,userLoc]);
 
   // Total listings per region (not day-filtered) — keeps hero / region cards consistent
   const rc=useMemo(()=>{
@@ -760,6 +762,7 @@ function App(){
             <button onClick={()=>setShowFavs(!showFavs)} style={{padding:"8px 10px",borderRadius:10,border:showFavs?"1.5px solid #E8614D":"1.5px solid #D8E2EA",background:showFavs?"#FFF0ED":"#F5F7FA",color:showFavs?"#E8614D":"#4A6274",cursor:"pointer",fontWeight:showFavs?700:500,fontSize:14,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}>{showFavs?"❤️":"🤍"}{favs.length>0?" "+favs.length:""}</button>
             <button onClick={()=>setColFilter(colFilter==="patio"?null:"patio")} style={{padding:"8px 10px",borderRadius:10,border:colFilter==="patio"?"1.5px solid #F59E0B":"1.5px solid #D8E2EA",background:colFilter==="patio"?"#FFFBEB":"#F5F7FA",color:colFilter==="patio"?"#D97706":"#4A6274",cursor:"pointer",fontWeight:colFilter==="patio"?700:500,fontSize:14,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}>{"☀️"} Patios</button>
             <button onClick={()=>setColFilter(colFilter==="late"?null:"late")} style={{padding:"8px 10px",borderRadius:10,border:colFilter==="late"?"1.5px solid #2D6A8F":"1.5px solid #D8E2EA",background:colFilter==="late"?"#EFF6FF":"#F5F7FA",color:colFilter==="late"?"#2D6A8F":"#4A6274",cursor:"pointer",fontWeight:colFilter==="late"?700:500,fontSize:14,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}>{"🌙"} Late</button>
+            <button onClick={()=>setDogOnly(!dogOnly)} style={{padding:"8px 10px",borderRadius:10,border:dogOnly?"1.5px solid #C2410C":"1.5px solid #D8E2EA",background:dogOnly?"#FFF7ED":"#F5F7FA",color:dogOnly?"#C2410C":"#4A6274",cursor:"pointer",fontWeight:dogOnly?700:500,fontSize:14,whiteSpace:"nowrap",display:"flex",alignItems:"center",gap:4}}>{"🐕"} Dogs</button>
             <select value={cat} onChange={e=>setCat(e.target.value)} style={{padding:"8px 10px",borderRadius:10,border:"1.5px solid #D8E2EA",fontSize:14,color:"#4A6274",background:"#F5F7FA",cursor:"pointer",fontWeight:500,minWidth:0}}>
               {CATS.map(c=><option key={c} value={c}>{c==="All"?"All Types":c}</option>)}
             </select>
@@ -817,7 +820,7 @@ function App(){
         {/* Count */}
         <div style={{padding:"6px 4px 12px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
-            <span style={{fontSize:16,color:"#6B8A9E",fontWeight:600}}>{showNow?"🟢 ":showFavs?"❤️ ":colFilter==="patio"?"☀️ ":colFilter==="late"?"🌙 ":""}{filtered.length} {showFavs?"favorite":colFilter==="patio"?"patio spot":colFilter==="late"?"late-night spot":"spot"}{filtered.length!==1?"s":""}{showNow?" live right now":" on "+day}{reg!=="all"?` in ${REGIONS.find(r=>r.id===reg)?.name}`:""}</span>
+            <span style={{fontSize:16,color:"#6B8A9E",fontWeight:600}}>{showNow?"🟢 ":showFavs?"❤️ ":colFilter==="patio"?"☀️ ":colFilter==="late"?"🌙 ":dogOnly?"🐕 ":""}{filtered.length} {showFavs?"favorite":colFilter==="patio"?"patio spot":colFilter==="late"?"late-night spot":dogOnly?"dog-friendly spot":"spot"}{filtered.length!==1?"s":""}{showNow?" live right now":" on "+day}{reg!=="all"?` in ${REGIONS.find(r=>r.id===reg)?.name}`:""}</span>
             <span style={{fontSize:12,color:"#A8BFCC",fontWeight:500}}>Updated weekly</span>
           </div>
         </div>
