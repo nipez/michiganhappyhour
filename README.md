@@ -166,6 +166,20 @@ node scripts/generate-sitemap.mjs
 
 Omit `--only` / `--pass` to scan all hubs. Re-run anytime; curated rows are not wiped.
 
+### Dog-friendly enrichment (OSM + websites)
+
+Cross-reference published venues for dog signals, then apply strong hits in Admin or via SQL:
+
+```bash
+# Dump venues from Admin /api or D1 into scripts/generated/venues-dog-input.json
+# (id, name, town, lat, lng, website, external_id, vibe, deals, admin_notes, dog_friendly)
+node scripts/enrich-dog-friendly.mjs --from=scripts/generated/venues-dog-input.json
+# Review scripts/generated/dog-friendly-report.json + dog-friendly-strong.sql
+# Apply strong UPDATEs via Cloudflare D1 (does not clear existing dog_friendly=1)
+```
+
+Sources: statewide OSM `dog=yes`/`dogs=yes`, OSM tag re-check for `osm:*` rows, website phrase scan, listing text (`vibe`/`deals`/`admin_notes`). Weak “maybe” hits stay for manual review. Broader coverage needs Google Places `allowsDogs` or Yelp (API keys).
+
 ## Business / claim page
 
 `/for-business/` — claim (free to request) & featured (**$79/mo**) packages; form saves to D1 `submissions` as `submission_type=claim_request`.
