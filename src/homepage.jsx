@@ -592,7 +592,9 @@ function App(){
     }catch{}
   },[q,reg]);
   // First visit: detect nearest region when no URL/saved preference yet
+  // Disabled via ENABLE_AUTO_GEO_REGION — flip that flag to restore the browser location prompt on landing.
   React.useEffect(()=>{
+    if(!ENABLE_AUTO_GEO_REGION) return;
     try{
       const sp=new URLSearchParams(window.location.search);
       if(sp.get("region")) return;
