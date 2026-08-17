@@ -73,6 +73,7 @@ const STATIC = [
   { loc: "/blog/marquette-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/late-night-happy-hour-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/detroit-patio-happy-hours", priority: "0.75", changefreq: "weekly" },
+  { loc: "/blog/dog-friendly-happy-hours-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/traverse-city-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/best-brewery-happy-hours-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/michigan-happy-hour-laws", priority: "0.75", changefreq: "weekly" },

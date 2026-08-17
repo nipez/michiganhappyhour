@@ -670,7 +670,7 @@ function App(){
           <a href="/" className="serif" style={{color:"#fff",fontWeight:800,fontSize:20,textDecoration:"none",letterSpacing:-0.3}}>Michigan Happy Hour</a>
           <div className="nav-links">
             <button onClick={scrollToListings} style={{background:"none",border:"none",color:"#D5E0EA",fontWeight:600,fontSize:14,cursor:"pointer"}}>Today's deals</button>
-            <a href="/blog/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Guides</a>
+            <a href="/blog/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Blog</a>
             <a href="/map/" style={{color:"#D5E0EA",fontWeight:600,fontSize:14,textDecoration:"none"}}>Map</a>
             <a className="nav-for-biz" href="/for-business/" style={{color:"#FFB3A6",fontWeight:700,fontSize:14,textDecoration:"none"}}>For business</a>
           </div>
@@ -867,10 +867,14 @@ function App(){
         {/* Guides + collections — after primary browse job */}
         <div style={{margin:"0 0 28px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:12,marginBottom:12}}>
-            <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>City guides</div>
-            <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All guides →</a>
+            <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>Blog & city guides</div>
+            <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All posts →</a>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,220px),1fr))",gap:10}}>
+            <a href="/blog/dog-friendly-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · ROUNDUP</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Dog-friendly happy hours</div>
+            </a>
             <a href="/blog/detroit-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
               <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit happy hours</div>
@@ -949,7 +953,7 @@ function App(){
         <footer style={{borderTop:"2px solid #D8E2EA",padding:"32px 0 48px",textAlign:"center"}}>
           <div className="serif" style={{fontSize:22,fontWeight:700,color:"#2D6A8F",marginBottom:8}}>MichiganHappyHour.com</div>
           <div style={{display:"flex",justifyContent:"center",gap:20,flexWrap:"wrap",marginBottom:16}}>
-            <a href="/blog/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Guides</a>
+            <a href="/blog/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Blog</a>
             <a href="/map/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Map</a>
             <a href="/submit/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>Submit a spot</a>
             <a href="/for-business/" style={{color:"#4A6274",fontWeight:600,fontSize:16,textDecoration:"none"}}>For business</a>
