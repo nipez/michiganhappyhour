@@ -82,6 +82,8 @@ const REGION_IDS=new Set(REGIONS.map(r=>r.id));
 function haversineMi(lat1,lng1,lat2,lng2){const R=3959;const dLat=(lat2-lat1)*Math.PI/180;const dLng=(lng2-lng1)*Math.PI/180;const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function nearestRegionId(lat,lng){let best="all",bestD=Infinity;for(const[id,c] of Object.entries(REGION_CENTERS)){const d=haversineMi(lat,lng,c.lat,c.lng);if(d<bestD){bestD=d;best=id;}}return bestD<=45?best:"all";}
 function readInitialRegion(){try{const sp=new URLSearchParams(window.location.search);const fromUrl=sp.get("region");if(fromUrl&&REGION_IDS.has(fromUrl))return fromUrl;const saved=localStorage.getItem("hh-region");if(saved&&REGION_IDS.has(saved))return saved;}catch{}return"all";}
+/** Auto-prompt geolocation on first homepage visit to pick a region. Off for now — set true to restore. Opt-in Near Me / Use my location still works. */
+const ENABLE_AUTO_GEO_REGION=false;
 
 const L=[
   {id:1,name:"The Parlor",cat:"Cocktail Bar",reg:"traverse-city",town:"Traverse City",addr:"267 E Front St",hh:{s:"3:00 PM",e:"7:00 PM",d:["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]},deals:["50% off all drinks","25% off full kitchen menu","All-night happy hour Mondays"],vibe:"Speakeasy-inspired cocktails with lively downtown energy",feat:true,ph:"(231) 944-0100",lat:44.7634,lng:-85.6197,col:["late"]},
