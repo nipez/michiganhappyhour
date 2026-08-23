@@ -228,9 +228,12 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 - After big coverage expands: refresh homepage `index.html` noscript region list + “1,200+” copy, map filter chips / noscript, and blog region directory
 - Spot pages + homepage listings should stay linked via real `/spots/{slug}` URLs
 - `/admin/`, `/api/`, thanks page, and `index-backup.html` are disallowed / noindex
-- GSC: resubmit sitemap; request indexing for new `/regions/*` hubs (Port Huron, Livingston, UP east/west, etc.)
+- GSC ops after content ships: **Sitemaps → resubmit** `https://michiganhappyhour.com/sitemap.xml`; **URL Inspection → Request indexing** for new blog posts and any updated region hubs
+- GSC weekly: Performance → Queries/Pages, sort by impressions, fix titles/meta on CTR &lt;2% or position 8–20
+- New posts: `node scripts/generate-seo-posts.mjs` (or edit `blog/*.html` directly)
 
 ## Next (planned)
 
 - Email receipts / lead alerts beyond `LEAD_WEBHOOK_URL`
+- Enrich Port Huron / UP OSM venues with verified hours (owner tips + Places)
 

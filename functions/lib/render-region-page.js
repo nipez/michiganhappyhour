@@ -37,7 +37,8 @@ export const REGION_META = {
     name: "Charlevoix & Petoskey",
     emoji: "🪨",
     blurb:
-      "Mushroom houses, Hemingway history, and the Gaslight District — plus brewery and bistro happy hours worth planning around."
+      "Mushroom houses, Hemingway history, and the Gaslight District — plus brewery and bistro happy hours worth planning around.",
+    blog: "/blog/charlevoix-petoskey-happy-hour-guide"
   },
   "bellaire-mancelona": {
     name: "Bellaire & Antrim County",
@@ -111,7 +112,8 @@ export const REGION_META = {
     name: "Saginaw / Bay City / Midland",
     emoji: "🏙️",
     blurb:
-      "Happy hour across Michigan’s Tri-Cities: Midland taprooms, Saginaw taverns, and Bay City wine bars with real hours."
+      "Happy hour across Michigan’s Tri-Cities: Midland taprooms, Saginaw taverns, and Bay City wine bars with real hours.",
+    blog: "/blog/tri-cities-happy-hour-guide"
   },
   flint: {
     name: "Flint",
@@ -124,7 +126,8 @@ export const REGION_META = {
     name: "Port Huron & Thumb",
     emoji: "⚓",
     blurb:
-      "Blue Water Bridge energy — downtown Port Huron pubs, marina decks, and Thumb-side taverns with real after-work hours."
+      "Blue Water Bridge energy — downtown Port Huron pubs, marina decks, and Thumb-side taverns with real after-work hours.",
+    blog: "/blog/port-huron-happy-hour-guide"
   },
   jackson: {
     name: "Jackson",
@@ -178,13 +181,15 @@ export const REGION_META = {
     name: "Western UP",
     emoji: "❄️",
     blurb:
-      "Houghton–Hancock and Iron Mountain — Keweenaw and western UP pubs with Superior-side energy."
+      "Houghton–Hancock and Iron Mountain — Keweenaw and western UP pubs with Superior-side energy.",
+    blog: "/blog/upper-peninsula-happy-hour-road-trip"
   },
   "up-east": {
     name: "Eastern UP",
     emoji: "🚢",
     blurb:
-      "Sault Ste. Marie and Escanaba — locks-town and bayfront happy hours across the eastern UP."
+      "Sault Ste. Marie and Escanaba — locks-town and bayfront happy hours across the eastern UP.",
+    blog: "/blog/upper-peninsula-happy-hour-road-trip"
   },
   livingston: {
     name: "Brighton & Howell",
