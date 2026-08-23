@@ -35,6 +35,28 @@ const REGION_LABELS = {
   "west-central": "West Central Michigan"
 };
 
+/** City / theme guides for internal linking from spot PDPs */
+const REGION_GUIDES = {
+  "traverse-city": { href: "/blog/traverse-city-happy-hour-guide", label: "Traverse City happy hour guide" },
+  "grand-rapids": { href: "/blog/grand-rapids-happy-hour-guide", label: "Grand Rapids happy hour guide" },
+  "ann-arbor": { href: "/blog/ann-arbor-happy-hour-guide", label: "Ann Arbor happy hour guide" },
+  detroit: { href: "/blog/detroit-happy-hour-guide", label: "Detroit happy hour guide" },
+  kalamazoo: { href: "/blog/kalamazoo-happy-hour-guide", label: "Kalamazoo happy hour guide" },
+  lansing: { href: "/blog/lansing-happy-hour-guide", label: "Lansing happy hour guide" },
+  holland: { href: "/blog/holland-happy-hour-guide", label: "Holland happy hour guide" },
+  muskegon: { href: "/blog/muskegon-happy-hour-guide", label: "Muskegon happy hour guide" },
+  marquette: { href: "/blog/marquette-happy-hour-guide", label: "Marquette happy hour guide" },
+  flint: { href: "/blog/flint-happy-hour-guide", label: "Flint happy hour guide" },
+  "tri-cities": { href: "/blog/tri-cities-happy-hour-guide", label: "Tri-Cities happy hour guide" },
+  "port-huron": { href: "/blog/port-huron-happy-hour-guide", label: "Port Huron happy hour guide" },
+  "charlevoix-petoskey": {
+    href: "/blog/charlevoix-petoskey-happy-hour-guide",
+    label: "Petoskey & Charlevoix happy hour guide"
+  },
+  "up-west": { href: "/blog/upper-peninsula-happy-hour-road-trip", label: "UP happy hour road trip" },
+  "up-east": { href: "/blog/upper-peninsula-happy-hour-road-trip", label: "UP happy hour road trip" }
+};
+
 export function venueSlug(row) {
   if (row.spot_path) {
     const base = String(row.spot_path).split("/").pop() || "";
@@ -471,7 +493,7 @@ ${
 ${dealsHtml}
 ${
   showPlaceholderDeals
-    ? `<p style="font-size:14px;color:#8AA3B5;margin-top:8px;line-height:1.5">Know the current specials? <a href="/submit/?${submitParams.toString()}">Send an update</a> and help fellow Michigan drinkers.</p>`
+    ? `<p style="font-size:14px;color:#8AA3B5;margin-top:8px;line-height:1.5">Know the current specials? <a href="/submit/?${submitParams.toString()}">Send an update</a>${REGION_GUIDES[region] ? ` or browse the <a href="${escapeAttr(REGION_GUIDES[region].href)}">${escapeHtml(REGION_GUIDES[region].label)}</a>` : ""} — help fellow Michigan drinkers.</p>`
     : ""
 }
 </div>
@@ -498,6 +520,20 @@ ${
     ? `<h2 class="sf" style="font-size:22px;margin:32px 0 16px">More Happy Hours in ${escapeHtml(regionLabel)}</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px">${relatedHtml}</div>`
     : ""
 }
+${(() => {
+  const guide = REGION_GUIDES[region];
+  const links = [
+    guide
+      ? `<a href="${escapeAttr(guide.href)}" style="display:block;padding:14px 16px;border-radius:12px;border:1.5px solid #D8E2EA;background:#fff;text-decoration:none;font-weight:700;color:#1B2838;font-size:15px">${escapeHtml(guide.label)} →</a>`
+      : "",
+    `<a href="/blog/cheap-happy-hour-deals-michigan" style="display:block;padding:14px 16px;border-radius:12px;border:1.5px solid #D8E2EA;background:#fff;text-decoration:none;font-weight:700;color:#1B2838;font-size:15px">Best cheap ($5 &amp; under) deals →</a>`,
+    `<a href="/blog/waterfront-patio-happy-hours-michigan" style="display:block;padding:14px 16px;border-radius:12px;border:1.5px solid #D8E2EA;background:#fff;text-decoration:none;font-weight:700;color:#1B2838;font-size:15px">Waterfront &amp; patio happy hours →</a>`,
+    `<a href="/blog/" style="display:block;padding:14px 16px;border-radius:12px;border:1.5px solid #D8E2EA;background:#fff;text-decoration:none;font-weight:700;color:#1B2838;font-size:15px">All guides &amp; tips →</a>`
+  ]
+    .filter(Boolean)
+    .join("");
+  return `<h2 class="sf" style="font-size:22px;margin:32px 0 16px">Guides &amp; tips</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:10px">${links}</div>`;
+})()}
 <div class="actions" style="justify-content:center;margin:32px 0">
 <a href="/regions/${escapeAttr(region)}" class="bt bo" style="flex:0 1 260px">Explore ${escapeHtml(regionLabel)}</a>
 <a href="/" class="bt bp" style="flex:0 1 260px">&larr; All Happy Hours</a>
