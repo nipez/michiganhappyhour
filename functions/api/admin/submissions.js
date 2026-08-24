@@ -1,4 +1,5 @@
 import { slugify } from "../_venues.js";
+import { invalidatePublishedVenuesCache } from "../../lib/published-venues-cache.js";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -342,7 +343,7 @@ export async function onRequestPost(context) {
 
   const action = String(body.action || "").trim();
   if (action === "publish_venue") {
-    return publishSubmissionToVenue(env, id, body);
+    return publishSubmissionToVenue(context, id, body);
   }
 
   const status = String(body.status || "").trim();
@@ -359,7 +360,8 @@ export async function onRequestPost(context) {
   }
 }
 
-async function publishSubmissionToVenue(env, id, body) {
+async function publishSubmissionToVenue(context, id, body) {
+  const { env } = context;
   const sub = await env.DB.prepare(`SELECT * FROM submissions WHERE id = ?`).bind(id).first();
   if (!sub) return json({ ok: false, error: "Submission not found" }, 404);
 
@@ -498,6 +500,7 @@ async function publishSubmissionToVenue(env, id, body) {
     await env.DB.prepare(`UPDATE submissions SET status = 'published' WHERE id = ?`).bind(id).run();
 
     const venue = await env.DB.prepare(`SELECT * FROM venues WHERE id = ?`).bind(venueId).first();
+    invalidatePublishedVenuesCache(context);
     return json({
       ok: true,
       id,

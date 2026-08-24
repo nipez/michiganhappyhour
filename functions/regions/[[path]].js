@@ -1,4 +1,8 @@
 import {
+  getPublishedVenues,
+  regionCountsFromVenues
+} from "../lib/published-venues-cache.js";
+import {
   normalizeRegionSlug,
   REGION_META,
   renderRegionPage
@@ -53,23 +57,9 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const result = await env.DB.prepare(
-      `SELECT * FROM venues
-       WHERE status = 'published' AND region = ?
-       ORDER BY featured DESC, name COLLATE NOCASE ASC`
-    )
-      .bind(slug)
-      .all();
-
-    const venues = result.results || [];
-
-    const countsRes = await env.DB.prepare(
-      `SELECT region, COUNT(*) as c FROM venues WHERE status = 'published' GROUP BY region`
-    ).all();
-    const counts = {};
-    for (const row of countsRes.results || []) {
-      counts[row.region] = row.c;
-    }
+    const all = await getPublishedVenues(env, context);
+    const venues = all.filter((v) => v.region === slug);
+    const counts = regionCountsFromVenues(all);
 
     const page = renderRegionPage(slug, venues, counts);
     if (!page) return notFound();

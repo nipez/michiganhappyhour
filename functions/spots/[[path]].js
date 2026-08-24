@@ -1,4 +1,5 @@
 import { slugify } from "../api/_venues.js";
+import { getPublishedVenues } from "../lib/published-venues-cache.js";
 import {
   canonicalSpotPath,
   normalizeSpotSlug,
@@ -28,23 +29,15 @@ function notFound() {
   );
 }
 
-async function findVenueBySlug(db, slug) {
-  // Fast path: spot_path basename match
-  const byPath = await db
-    .prepare(
-      `SELECT * FROM venues
-       WHERE status = 'published'
-         AND (spot_path = ? OR spot_path LIKE ?)
-       LIMIT 1`
-    )
-    .bind(`../spots/${slug}.html`, `%/${slug}.html`)
-    .first();
-  if (byPath) return { venue: byPath, redirectTo: null };
+function findVenueBySlug(venues, slug) {
+  const list = venues || [];
 
-  const rows = await db
-    .prepare(`SELECT * FROM venues WHERE status = 'published'`)
-    .all();
-  const list = rows.results || [];
+  // Fast path: spot_path basename match
+  const byPath = list.find((v) => {
+    const path = String(v.spot_path || "");
+    return path === `../spots/${slug}.html` || path.endsWith(`/${slug}.html`);
+  });
+  if (byPath) return { venue: byPath, redirectTo: null };
 
   // Accept current slugify(name,town) even if spot_path is stale
   let match = list.find((v) => slugify(v.name, v.town) === slug);
@@ -89,7 +82,8 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const found = await findVenueBySlug(env.DB, slug);
+    const venues = await getPublishedVenues(env, context);
+    const found = findVenueBySlug(venues, slug);
     if (!found) return notFound();
 
     if (found.redirectTo) {
@@ -104,17 +98,21 @@ export async function onRequestGet(context) {
       return Response.redirect(url, 301);
     }
 
-    const relatedRows = await env.DB.prepare(
-      `SELECT id, name, town, address, hh_start, hh_end, spot_path, region
-       FROM venues
-       WHERE status = 'published' AND region = ? AND id != ?
-       ORDER BY featured DESC, name COLLATE NOCASE ASC
-       LIMIT 6`
-    )
-      .bind(found.venue.region, found.venue.id)
-      .all();
+    const related = venues
+      .filter((v) => v.region === found.venue.region && v.id !== found.venue.id)
+      .slice(0, 6)
+      .map((v) => ({
+        id: v.id,
+        name: v.name,
+        town: v.town,
+        address: v.address,
+        hh_start: v.hh_start,
+        hh_end: v.hh_end,
+        spot_path: v.spot_path,
+        region: v.region
+      }));
 
-    const page = renderSpotPage(found.venue, relatedRows.results || []);
+    const page = renderSpotPage(found.venue, related);
     return html(page);
   } catch (err) {
     const msg = String(err && err.message ? err.message : err);

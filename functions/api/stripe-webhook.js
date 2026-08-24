@@ -1,4 +1,5 @@
 import { verifyStripeWebhook } from "../lib/stripe.js";
+import { invalidatePublishedVenuesCache } from "../lib/published-venues-cache.js";
 
 /**
  * POST /api/stripe-webhook
@@ -22,14 +23,18 @@ export async function onRequestPost(context) {
   try {
     if (event.type === "checkout.session.completed") {
       await fulfillCheckout(env, event.data.object);
+      invalidatePublishedVenuesCache(context);
     } else if (event.type === "customer.subscription.deleted") {
       await clearFeatured(env, event.data.object);
+      invalidatePublishedVenuesCache(context);
     } else if (event.type === "customer.subscription.updated") {
       const sub = event.data.object;
       if (sub.status === "active" || sub.status === "trialing") {
         await markFeaturedFromSubscription(env, sub);
+        invalidatePublishedVenuesCache(context);
       } else if (["canceled", "unpaid", "incomplete_expired"].includes(sub.status)) {
         await clearFeatured(env, sub);
+        invalidatePublishedVenuesCache(context);
       }
     }
   } catch (err) {
