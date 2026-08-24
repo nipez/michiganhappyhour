@@ -1,3 +1,4 @@
+import { getPublishedVenues } from "../lib/published-venues-cache.js";
 import {
   COLLECTION_META,
   matchesCollection,
@@ -46,10 +47,8 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const result = await env.DB.prepare(
-      `SELECT * FROM venues WHERE status = 'published' ORDER BY featured DESC, name COLLATE NOCASE ASC`
-    ).all();
-    const venues = (result.results || []).filter((v) => matchesCollection(v, slug));
+    const all = await getPublishedVenues(env, context);
+    const venues = all.filter((v) => matchesCollection(v, slug));
     // Prefer listing spots with verified hours first inside each region grouping (render sorts by region name)
     venues.sort((a, b) => {
       const ah = a.hh_start ? 0 : 1;

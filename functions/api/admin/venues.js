@@ -1,5 +1,6 @@
 import { json, options, requireAdmin } from "./_auth.js";
 import { toFullVenue, slugify } from "../_venues.js";
+import { invalidatePublishedVenuesCache } from "../../lib/published-venues-cache.js";
 
 const REGION_META = {
   "traverse-city": { name: "Traverse City", color: "#E8614D" },
@@ -310,6 +311,7 @@ async function upsert(context, { create }) {
         .run();
 
       const row = await env.DB.prepare(`SELECT * FROM venues WHERE id = ?`).bind(id).first();
+      invalidatePublishedVenuesCache(context);
       return json({ ok: true, venue: toFullVenue(row) }, 201);
     }
 
@@ -332,6 +334,7 @@ async function upsert(context, { create }) {
 
     const row = await env.DB.prepare(`SELECT * FROM venues WHERE id = ?`).bind(id).first();
     if (!row) return json({ ok: false, error: "Not found" }, 404);
+    invalidatePublishedVenuesCache(context);
     return json({ ok: true, venue: toFullVenue(row) });
   } catch (err) {
     return json(

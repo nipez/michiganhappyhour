@@ -1,11 +1,13 @@
 import { toListVenue, toMapVenue, toFullVenue } from "./_venues.js";
+import { getPublishedVenues } from "../lib/published-venues-cache.js";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Max-Age": "86400",
-  "Cache-Control": "public, max-age=30"
+  // Browser hint only — D1 is protected by the shared Cache API list cache.
+  "Cache-Control": "public, max-age=120, s-maxage=300"
 };
 
 function json(data, status = 200) {
@@ -34,19 +36,10 @@ export async function onRequestGet(context) {
   const q = (url.searchParams.get("q") || "").trim().toLowerCase();
 
   try {
-    let sql = `SELECT * FROM venues WHERE status = 'published'`;
-    const binds = [];
+    let rows = await getPublishedVenues(env, context);
     if (region) {
-      sql += ` AND region = ?`;
-      binds.push(region);
+      rows = rows.filter((r) => r.region === region);
     }
-    sql += ` ORDER BY featured DESC, name COLLATE NOCASE ASC`;
-
-    const result = binds.length
-      ? await env.DB.prepare(sql).bind(...binds).all()
-      : await env.DB.prepare(sql).all();
-
-    let rows = result.results || [];
     if (q) {
       rows = rows.filter((r) => {
         const hay = `${r.name} ${r.town} ${r.address || ""} ${r.category || ""}`.toLowerCase();
