@@ -5,11 +5,16 @@
  * Usage:
  *   node scripts/generate-sitemap.mjs              # remote D1 (default)
  *   node scripts/generate-sitemap.mjs --local
+ *   node scripts/generate-sitemap.mjs --from-api    # live /api/venues (no token)
  */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawnSync } from "child_process";
+import {
+  getQualifyingTowns,
+  MIN_TOWN_HOURS
+} from "../functions/lib/towns.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
@@ -113,7 +118,7 @@ function dayStamp(iso) {
   return /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : new Date().toISOString().slice(0, 10);
 }
 
-function fetchVenues(local) {
+function fetchVenuesFromD1(local) {
   const flag = local ? "--local" : "--remote";
   const res = spawnSync(
     "npx",
@@ -125,7 +130,7 @@ function fetchVenues(local) {
       flag,
       "--json",
       "--command",
-      "SELECT name, town, spot_path, updated_at, created_at FROM venues WHERE status = 'published' ORDER BY name COLLATE NOCASE ASC"
+      "SELECT name, town, spot_path, hh_start, hh_end, updated_at, created_at FROM venues WHERE status = 'published' ORDER BY name COLLATE NOCASE ASC"
     ],
     { cwd: root, encoding: "utf8", shell: process.platform === "win32" }
   );
@@ -136,14 +141,24 @@ function fetchVenues(local) {
   return parsed[0]?.results || [];
 }
 
+async function fetchVenuesFromApi() {
+  const res = await fetch(`${BASE}/api/venues?format=full`);
+  if (!res.ok) throw new Error(`API ${res.status}`);
+  const data = await res.json();
+  return data.venues || [];
+}
+
 function urlEntry(loc, { priority = "0.7", changefreq = "weekly", lastmod } = {}) {
   const lm = lastmod || new Date().toISOString().slice(0, 10);
   return `  <url><loc>${BASE}${loc}</loc><priority>${priority}</priority><lastmod>${lm}</lastmod><changefreq>${changefreq}</changefreq></url>`;
 }
 
-function main() {
+async function main() {
   const local = process.argv.includes("--local");
-  const venues = fetchVenues(local);
+  const fromApi = process.argv.includes("--from-api");
+  const venues = fromApi
+    ? await fetchVenuesFromApi()
+    : fetchVenuesFromD1(local);
   const today = new Date().toISOString().slice(0, 10);
 
   const seen = new Set();
@@ -161,7 +176,15 @@ function main() {
     );
   }
 
-  // Static pages after home+regions are already in STATIC; insert spots after regions
+  const towns = getQualifyingTowns(venues, MIN_TOWN_HOURS);
+  const townEntries = towns.map((t) =>
+    urlEntry(`/towns/${t.slug}`, {
+      priority: "0.78",
+      changefreq: "weekly",
+      lastmod: today
+    })
+  );
+
   const homeAndRegions = STATIC.filter(
     (s) => s.loc === "/" || s.loc.startsWith("/regions/")
   );
@@ -175,6 +198,7 @@ function main() {
     ...homeAndRegions.map((s) =>
       urlEntry(s.loc, { ...s, lastmod: today })
     ),
+    ...townEntries,
     ...spotEntries,
     ...restStatic.map((s) => urlEntry(s.loc, { ...s, lastmod: today })),
     `</urlset>`,
@@ -183,7 +207,7 @@ function main() {
 
   fs.writeFileSync(OUT, lines.join("\n"));
   console.log(
-    `Wrote ${OUT}: ${spotEntries.length} spots + ${STATIC.length} static pages (${venues.length} published venues queried)`
+    `Wrote ${OUT}: ${townEntries.length} towns (gate ≥${MIN_TOWN_HOURS} with hours) + ${spotEntries.length} spots + ${STATIC.length} static pages (${venues.length} published venues queried)`
   );
   if (spotEntries.length < venues.length) {
     console.warn(
@@ -192,4 +216,7 @@ function main() {
   }
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

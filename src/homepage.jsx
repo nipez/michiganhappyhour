@@ -44,6 +44,22 @@ const REGIONS=[
 const CATS=["All","Wine Bar","Brewery","Restaurant","Cocktail Bar","Taproom","Distillery","Cidery"];
 const catColors={"Wine Bar":"#8B2252","Brewery":"#D4A017","Restaurant":"#2E8B7A","Cocktail Bar":"#2D6A8F","Taproom":"#B87A1A","Distillery":"#5B4A8A","Cidery":"#C25B28"};
 function toSlug(name,town){return(name+"-"+town).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+function townPathSlug(town){return String(town||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+/** Towns with 2+ listings that have happy-hour start+end (matches /towns/* gate). */
+function qualifyingTownPages(listings,minHours=2){
+  const map=new Map();
+  for(const l of listings||[]){
+    const name=String(l.town||"").trim();
+    if(!name) continue;
+    const slug=townPathSlug(name);
+    if(!slug) continue;
+    let e=map.get(slug);
+    if(!e){e={slug,name,withHours:0};map.set(slug,e);}
+    const has=String(l.hh?.s||"").trim()&&String(l.hh?.e||"").trim();
+    if(has){e.withHours+=1;e.name=name;}
+  }
+  return [...map.values()].filter(t=>t.withHours>=minHours).sort((a,b)=>b.withHours-a.withHours||a.name.localeCompare(b.name));
+}
 const REGION_CENTERS={
   "traverse-city":{lat:44.7631,lng:-85.6206},
   leelanau:{lat:45.02,lng:-85.75},
@@ -644,6 +660,8 @@ function App(){
     c.all=listings.length;return c;
   },[listings]);
 
+  const townPages=useMemo(()=>qualifyingTownPages(listings),[listings]);
+
   const grouped=useMemo(()=>{
     if(reg!=="all"||sort!=="region")return null;
     const g={};filtered.forEach(l=>{if(!g[l.reg])g[l.reg]=[];g[l.reg].push(l);});return g;
@@ -867,6 +885,23 @@ function App(){
             {Object.entries(catColors).map(([name,color])=><div key={name} style={{display:"flex",alignItems:"center",gap:5,fontSize:13,color:"#4A6274"}}><div style={{width:10,height:10,borderRadius:"50%",background:color}}/>{name}</div>)}
           </div>}
         </div>
+
+        {/* Town landing pages — gated to towns with verified hours */}
+        {townPages.length>0&&(
+        <div style={{margin:"0 0 28px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:12,marginBottom:12}}>
+            <div className="serif" style={{fontSize:22,fontWeight:700,color:"#1B2838"}}>Happy hour by town</div>
+            <div style={{fontSize:13,color:"#8AA3B5",fontWeight:600}}>{townPages.length} towns with verified hours</div>
+          </div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+            {townPages.map(t=>(
+              <a key={t.slug} href={`/towns/${t.slug}`} style={{padding:"10px 16px",borderRadius:24,border:"1.5px solid #D8E2EA",background:"#fff",color:"#4A6274",fontSize:14,fontWeight:600,textDecoration:"none"}}>
+                {t.name} ({t.withHours})
+              </a>
+            ))}
+          </div>
+        </div>
+        )}
 
         {/* Guides + collections — after primary browse job */}
         <div style={{margin:"0 0 28px"}}>
