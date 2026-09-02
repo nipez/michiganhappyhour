@@ -1,4 +1,5 @@
 import { parseJsonArray, slugify } from "../api/_venues.js";
+import { canonicalTownPath, townSlug } from "./towns.js";
 
 const REGION_LABELS = {
   "traverse-city": "Traverse City",
@@ -157,7 +158,7 @@ function escapeAttr(s) {
   return escapeHtml(s).replace(/'/g, "&#39;");
 }
 
-export function renderSpotPage(venue, related = []) {
+export function renderSpotPage(venue, related = [], opts = {}) {
   const name = venue.name || "Happy Hour";
   const town = venue.town || "";
   const address = venue.address || "";
@@ -174,6 +175,8 @@ export function renderSpotPage(venue, related = []) {
   const lng = venue.lng;
   const region = venue.region || "";
   const regionLabel = venue.region_name || REGION_LABELS[region] || town;
+  const townPageSlug = opts.townPageSlug || (opts.townQualifies ? townSlug(town) : "");
+  const townHref = townPageSlug ? canonicalTownPath(townPageSlug) : "";
   const slug = venueSlug(venue);
   const canonical = `https://michiganhappyhour.com/spots/${slug}`;
   const seo = buildSpotSeo(name, town, hhStart, hhEnd, deals, category);
@@ -284,7 +287,17 @@ export function renderSpotPage(venue, related = []) {
         name: regionLabel,
         item: `https://michiganhappyhour.com/regions/${region}`
       },
-      { "@type": "ListItem", position: 3, name, item: canonical }
+      ...(townHref
+        ? [
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: town,
+              item: `https://michiganhappyhour.com${townHref}`
+            },
+            { "@type": "ListItem", position: 4, name, item: canonical }
+          ]
+        : [{ "@type": "ListItem", position: 3, name, item: canonical }])
     ]
   };
 
@@ -467,7 +480,11 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <body>
 <div class="hb"><div class="w"><a href="/" class="sn">🥂 Michigan Happy Hour</a><a href="/">&larr; All Spots</a></div></div>
 <div class="w">
-<div class="bc"><a href="/">Home</a> &rarr; <a href="/regions/${escapeAttr(region)}">${escapeHtml(regionLabel)}</a> &rarr; ${escapeHtml(name)}</div>
+<div class="bc"><a href="/">Home</a> &rarr; <a href="/regions/${escapeAttr(region)}">${escapeHtml(regionLabel)}</a>${
+  townHref
+    ? ` &rarr; <a href="${escapeAttr(townHref)}">${escapeHtml(town)}</a>`
+    : ""
+} &rarr; ${escapeHtml(name)}</div>
 <div class="cd">
 <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
 <div>
@@ -535,6 +552,11 @@ ${(() => {
   return `<h2 class="sf" style="font-size:22px;margin:32px 0 16px">Guides &amp; tips</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:10px">${links}</div>`;
 })()}
 <div class="actions" style="justify-content:center;margin:32px 0">
+${
+  townHref
+    ? `<a href="${escapeAttr(townHref)}" class="bt bo" style="flex:0 1 260px">Happy hour in ${escapeHtml(town)}</a>`
+    : ""
+}
 <a href="/regions/${escapeAttr(region)}" class="bt bo" style="flex:0 1 260px">Explore ${escapeHtml(regionLabel)}</a>
 <a href="/" class="bt bp" style="flex:0 1 260px">&larr; All Happy Hours</a>
 </div>

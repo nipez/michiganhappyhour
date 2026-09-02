@@ -1,7 +1,7 @@
 /**
  * Shared cache for published venue rows.
  *
- * Public pages (homepage API, map, spots, regions, collections) previously
+ * Public pages (homepage API, map, spots, regions, towns, collections) previously
  * each re-ran full-table D1 SELECTs. With ~1.3k venues, every request burned
  * that many row reads. This module keeps one edge-cached JSON list and lets
  * callers filter in memory.
@@ -18,7 +18,7 @@ export const PUBLISHED_VENUES_CACHE_URL =
 export const PUBLISHED_VENUES_TTL_SECONDS = 300;
 
 /**
- * Columns used by public list/map/spot/region/collection renderers.
+ * Columns used by public list/map/spot/region/town/collection renderers.
  * Omits admin_notes and Stripe ids so the cached payload stays lean.
  */
 const PUBLISHED_VENUES_SQL = `SELECT

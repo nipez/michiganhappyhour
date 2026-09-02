@@ -15,7 +15,9 @@
     "db:stats:local": "wrangler d1 execute michiganhappyhour --local --command \"SELECT event_name, COUNT(*) AS c FROM events GROUP BY event_name ORDER BY c DESC\"",
     "db:recent:local": "wrangler d1 execute michiganhappyhour --local --command \"SELECT id, created_at, event_name, spot_name, town, path FROM events ORDER BY id DESC LIMIT 20\"",
     "build:home": "esbuild src/homepage.jsx --bundle --outfile=js/homepage.js --format=iife --jsx=transform --jsx-factory=React.createElement --jsx-fragment=React.Fragment --minify --target=es2018",
-    "build": "npm run build:home"
+    "build": "npm run build:home",
+    "test:cache": "node scripts/test-published-venues-cache.mjs",
+    "test:towns": "node scripts/test-towns.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

@@ -1,38 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://michiganhappyhour.com/</loc><priority>1.0</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/traverse-city</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/grand-rapids</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/ann-arbor</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/detroit</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/kalamazoo</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/lansing</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/holland</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/muskegon</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/marquette</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/tri-cities</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/flint</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/leelanau</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/charlevoix-petoskey</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/old-mission</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/elk-rapids</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/frankfort-benzie</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/mackinaw</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/bellaire-mancelona</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/port-huron</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/jackson</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/battle-creek</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/southwest-mi</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/monroe-adrian</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/mount-pleasant</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/cadillac</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/west-shore</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/northeast-mi</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/up-west</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/up-east</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/livingston</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/south-central</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/regions/west-central</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/</loc><priority>1.0</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/traverse-city</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/grand-rapids</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/ann-arbor</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/detroit</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/kalamazoo</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/lansing</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/holland</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/muskegon</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/marquette</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/tri-cities</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/flint</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/leelanau</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/charlevoix-petoskey</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/old-mission</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/elk-rapids</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/frankfort-benzie</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/mackinaw</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/bellaire-mancelona</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/port-huron</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/jackson</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/battle-creek</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/southwest-mi</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/monroe-adrian</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/mount-pleasant</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/cadillac</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/west-shore</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/northeast-mi</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/up-west</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/up-east</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/livingston</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/south-central</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/regions/west-central</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/ann-arbor</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/traverse-city</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/detroit</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/grand-rapids</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/holland</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/marquette</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/flint</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/kalamazoo</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/muskegon</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/lansing</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/saginaw</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/east-lansing</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/old-mission</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/petoskey</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/suttons-bay</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/bay-city</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/bellaire</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/elk-rapids</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/charlevoix</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/frankfort</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/leland</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/mackinac-island</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/mackinaw-city</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/towns/midland</loc><priority>0.78</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/bell-s-eccentric-cafe-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/chateau-chantal-old-mission</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/ethanology-elk-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/founders-brewing-co-grand-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/grey-ghost-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/hop-lot-brewing-suttons-bay</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/hopcat-east-lansing-east-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/horn-s-gaslight-bar-mackinac-island</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/low-bar-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/mama-lu-s-taco-shop-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/new-holland-brewing-holland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/ore-dock-brewing-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/pigeon-hill-brewing-muskegon</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/short-s-brewing-company-bellaire</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/stormcloud-brewing-frankfort</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/tenacity-brewing-flint</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/the-cove-leland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/the-little-fleet-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/the-parlor-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/whichcraft-taproom-midland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/zingerman-s-roadhouse-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/129-lounge-monroe</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/18th-amendment-spirits-co-muskegon</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/18th-ammendment-muskegon</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -122,7 +167,6 @@
   <url><loc>https://michiganhappyhour.com/spots/beer-church-sw-michigan</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/beer-grotto-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/beggar-s-banquet-east-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/bell-s-eccentric-cafe-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/bell-s-taphouse-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/bellaire-bar-elk-rapids-torch-lake</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/belle-s-lounge-ferndale</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
@@ -235,7 +279,6 @@
   <url><loc>https://michiganhappyhour.com/spots/charlie-s-bar-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/charlie-s-tavern-south-central-michigan</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/charlotte-brewing-co-lansing</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/chateau-chantal-old-mission</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/cheboygan-brewing-company-cheboygan</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/cheers-sw-michigan</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/cheniers-reef-eastern-up</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
@@ -330,7 +373,7 @@
   <url><loc>https://michiganhappyhour.com/spots/drafting-table-brewing-company-wixom</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/dragonfly-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/draught-horse-brewery-lyon-township</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/drifa-brewing-co-op-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/drifa-brewing-co-op-marquette</loc><priority>0.7</priority><lastmod>2026-08-15</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/drifa-brewing-company-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/drift-bay-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/driftwood-bar-grill-novi</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -369,7 +412,6 @@
   <url><loc>https://michiganhappyhour.com/spots/esquire-bar-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/esquire-club-eastern-up</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/eternity-brewing-howell</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/ethanology-elk-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/evening-bar-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/exchange-bar-and-grill-northville</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/exodus-rooftop-lounge-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -380,7 +422,7 @@
   <url><loc>https://michiganhappyhour.com/spots/farmington-brewing-company-farmington</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/fat-boyz-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/fat-boyz-bar-grill-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/fetch-brewing-co-whitehall</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/fetch-brewing-co-whitehall</loc><priority>0.7</priority><lastmod>2026-08-15</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/fieldhouse-east-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/fifth-avenue-royal-oak</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/fillmore-13-brewery-pontiac</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -396,7 +438,6 @@
   <url><loc>https://michiganhappyhour.com/spots/fog-s-pub-brighton-howell</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/foran-s-grand-trunk-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/ford-river-bar-and-grill-escanaba</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/founders-brewing-co-grand-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/foutch-s-pub-flint</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/frank-s-press-box-lansing</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/fraser-s-pub-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
@@ -438,7 +479,6 @@
   <url><loc>https://michiganhappyhour.com/spots/green-spot-pub-mount-pleasant</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/green-lantern-bar-alba</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/greka-s-tavern-rogers-city</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/grey-ghost-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/greyline-brewing-grand-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/griffin-claw-brewing-company-birmingham</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/grizzly-peak-brewing-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -463,7 +503,7 @@
   <url><loc>https://michiganhappyhour.com/spots/hat-trick-pub-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hayloft-saloon-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/haymaker-public-house-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/hearsay-brewery-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/hearsay-brewery-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-15</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/heartwood-ciders-maple-city</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/heck-s-bar-saginaw</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/heights-brewing-farmington</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -484,16 +524,13 @@
   <url><loc>https://michiganhappyhour.com/spots/homes-can-shop-smooj-lab-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/honest-john-s-detroit</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hoops-sports-spirits-detroit</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/hop-lot-brewing-suttons-bay</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hopcat-grand-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hopcat-ann-arbor-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hopcat-detroit-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/hopcat-east-lansing-east-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hopcat-holland-holland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hopcat-kalamazoo-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hops-at-84-east-holland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/hopside-brewery-alpena</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/horn-s-gaslight-bar-mackinac-island</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/house-of-pong-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/house-of-shamrocks-hazel-park</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/howlers-and-growlers-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -609,7 +646,6 @@
   <url><loc>https://michiganhappyhour.com/spots/los-compadres-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/louie-s-cocktail-lounge-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/louie-s-trophy-house-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/low-bar-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/lowertown-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/lucky-s-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/lucy-and-the-wolf-detroit</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -627,7 +663,6 @@
   <url><loc>https://michiganhappyhour.com/spots/malarkey-s-irish-pub-detroit</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/maloney-s-bar-eastern-up</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/malted-vinyl-petoskey</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/mama-lu-s-taco-shop-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/mammoth-distilling-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/mammoth-distilling-elk-rapids-torch-lake</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/mammoth-distilling-bellaire-mancelona</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -710,7 +745,6 @@
   <url><loc>https://michiganhappyhour.com/spots/neon-moon-port-huron-thumb</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/new-dodge-lounge-hamtramck</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/new-holland-battle-creek</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/new-holland-brewing-holland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/new-holland-brewing-co-spirits-tasting-room-holland</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/new-holland-spirits-holland</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/new-hudson-inn-brighton-howell</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -766,7 +800,6 @@
   <url><loc>https://michiganhappyhour.com/spots/one-well-brewing-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/orchid-ferndale</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/ore-dock-brewery-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/ore-dock-brewing-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/oscar-s-bar-grill-midland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/osorio-tacos-y-salsas-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/our-brewing-company-holland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -811,7 +844,6 @@
   <url><loc>https://michiganhappyhour.com/spots/phog-heads-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/piazzano-s-lansing</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/piccadilly-bar-grill-port-huron-thumb</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/pigeon-hill-brewing-muskegon</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/pinewood-tavern-rogers-city</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/pints-quarts-norton-shores</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/pit-stop-western-up</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
@@ -827,10 +859,10 @@
   <url><loc>https://michiganhappyhour.com/spots/polo-s-anti-social-club-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/pomorski-s-tavern-ludington-manistee</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/poppycocks-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/portside-inn-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/portside-inn-marquette</loc><priority>0.7</priority><lastmod>2026-08-15</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/powell-s-pub-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/prep-s-gaming-room-and-nightclub-royal-oak</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/presque-isle-farm-cider-pifcider-alpena</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/presque-isle-farm-cider-pifcider-alpena</loc><priority>0.7</priority><lastmod>2026-08-15</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/preston-s-bar-grand-ledge</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/principle-food-drink-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/pronto-royal-oak</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -936,7 +968,6 @@
   <url><loc>https://michiganhappyhour.com/spots/sharky-s-sports-bar-flint</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/sherry-s-on-vernor-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/shooter-s-pub-alpena</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/short-s-brewing-company-bellaire</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/short-s-pull-barn-bellaire</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/short-s-torch-lake-alden</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/shorts-brewing-company-old-mission-peninsula</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
@@ -997,7 +1028,6 @@
   <url><loc>https://michiganhappyhour.com/spots/stone-hound-brewing-co-williamsburg</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/stony-lake-brewing-co-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/stormcloud-brewery-parkview-taproom-frankfort-benzie</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/stormcloud-brewing-frankfort</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/stormy-kromer-a-cap-ale-house-cheboygan</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/stropich-s-bar-eastern-up</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/strykers-bar-grill-westland</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -1022,7 +1052,6 @@
   <url><loc>https://michiganhappyhour.com/spots/tc-whiskey-co-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/te-roma-grill-and-beergarden-center-line</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/temple-bar-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/tenacity-brewing-flint</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/tequila-blue-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/territorial-brewing-company-springfield</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-906-sports-bar-grill-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -1064,7 +1093,6 @@
   <url><loc>https://michiganhappyhour.com/spots/the-continental-fire-co-western-up</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-cooks-house-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-04</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-corkscrew-western-up</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/the-cove-leland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-cove-bar-holland</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-crazy-cowboy-2-jackson</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-curragh-holland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -1093,7 +1121,7 @@
   <url><loc>https://michiganhappyhour.com/spots/the-hangar-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-hideout-clawson</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-highline-room-detroit</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/the-hive-north-cheboygan</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/spots/the-hive-north-cheboygan</loc><priority>0.7</priority><lastmod>2026-08-15</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-holiday-grand-rapids</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-honorable-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-hotel-frankfort-frankfort</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -1102,7 +1130,6 @@
   <url><loc>https://michiganhappyhour.com/spots/the-legendary-axe-detroit</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-library-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-library-kitchen-taphouse-kalamazoo</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/the-little-fleet-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-loft-flint</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-lone-goat-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-loving-touch-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
@@ -1124,7 +1151,6 @@
   <url><loc>https://michiganhappyhour.com/spots/the-old-shillelagh-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-palms-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-park-bar-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/the-parlor-traverse-city</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-peanut-barrel-lansing</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-peterboro-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/the-pig-n-whistle-cheboygan</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -1267,7 +1293,6 @@
   <url><loc>https://michiganhappyhour.com/spots/wheat-rye-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/wheat-rye-airport-detroit</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/wheaty-s-pub-eastern-up</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/whichcraft-taproom-midland</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/whiskey-hill-bar-grill-flint</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/whiskey-in-the-jar-hamtramck</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/whiskey-rae-s-detroit</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
@@ -1300,37 +1325,36 @@
   <url><loc>https://michiganhappyhour.com/spots/zephyr-wine-bar-marquette</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/ziggy-s-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/zim-s-bar-grill-sault-ste-marie</loc><priority>0.7</priority><lastmod>2026-08-08</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/spots/zingerman-s-roadhouse-ann-arbor</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/zoobie-s-old-town-tavern-lansing</loc><priority>0.7</priority><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq></url>
   <url><loc>https://michiganhappyhour.com/spots/zukey-lake-tavern-brighton-howell</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/collections/best-breweries</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/collections/best-patios</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/collections/best-late-night</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/</loc><priority>0.8</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/detroit-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/grand-rapids-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/ann-arbor-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/lansing-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/kalamazoo-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/flint-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/holland-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/muskegon-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/marquette-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/late-night-happy-hour-michigan</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/detroit-patio-happy-hours</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/dog-friendly-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-17</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/tri-cities-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/port-huron-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/charlevoix-petoskey-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/waterfront-patio-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/cheap-happy-hour-deals-michigan</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/sunday-happy-hour-michigan</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/college-town-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/upper-peninsula-happy-hour-road-trip</loc><priority>0.75</priority><lastmod>2026-08-23</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/traverse-city-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/best-brewery-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/blog/michigan-happy-hour-laws</loc><priority>0.75</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/map/</loc><priority>0.7</priority><lastmod>2026-08-10</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/submit/</loc><priority>0.5</priority><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq></url>
-  <url><loc>https://michiganhappyhour.com/for-business/</loc><priority>0.6</priority><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/collections/best-breweries</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/collections/best-patios</loc><priority>0.7</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/collections/best-late-night</loc><priority>0.7</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/</loc><priority>0.8</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/detroit-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/grand-rapids-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/ann-arbor-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/lansing-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/kalamazoo-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/flint-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/holland-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/muskegon-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/marquette-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/late-night-happy-hour-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/detroit-patio-happy-hours</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/dog-friendly-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/tri-cities-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/port-huron-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/charlevoix-petoskey-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/waterfront-patio-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/cheap-happy-hour-deals-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/sunday-happy-hour-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/college-town-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/upper-peninsula-happy-hour-road-trip</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/traverse-city-happy-hour-guide</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/best-brewery-happy-hours-michigan</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/blog/michigan-happy-hour-laws</loc><priority>0.75</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/map/</loc><priority>0.7</priority><lastmod>2026-08-24</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/submit/</loc><priority>0.5</priority><lastmod>2026-08-24</lastmod><changefreq>monthly</changefreq></url>
+  <url><loc>https://michiganhappyhour.com/for-business/</loc><priority>0.6</priority><lastmod>2026-08-24</lastmod><changefreq>monthly</changefreq></url>
 </urlset>

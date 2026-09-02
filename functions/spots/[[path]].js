@@ -6,6 +6,7 @@ import {
   renderSpotPage,
   venueSlug
 } from "../lib/render-spot-page.js";
+import { findQualifyingTown } from "../lib/towns.js";
 
 function html(body, status = 200, extraHeaders = {}) {
   return new Response(body, {
@@ -112,7 +113,11 @@ export async function onRequestGet(context) {
         region: v.region
       }));
 
-    const page = renderSpotPage(found.venue, related);
+    const town = findQualifyingTown(venues, found.venue.town);
+    const page = renderSpotPage(found.venue, related, {
+      townQualifies: Boolean(town),
+      townPageSlug: town?.slug || ""
+    });
     return html(page);
   } catch (err) {
     const msg = String(err && err.message ? err.message : err);

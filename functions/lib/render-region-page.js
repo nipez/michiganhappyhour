@@ -1,5 +1,6 @@
 import { parseJsonArray } from "../api/_venues.js";
 import { canonicalSpotPath } from "./render-spot-page.js";
+import { canonicalTownPath, getQualifyingTowns } from "./towns.js";
 
 export const REGION_META = {
   "traverse-city": {
@@ -331,6 +332,18 @@ export function renderRegionPage(regionId, venues, allRegionCounts = {}) {
 </div>`
     : "";
 
+  const townLinks = getQualifyingTowns(venues)
+    .map(
+      (t) =>
+        `<a href="${escapeAttr(canonicalTownPath(t.slug))}" style="padding:10px 18px;border-radius:24px;border:1.5px solid #D8E2EA;background:#fff;color:#4A6274;font-size:15px;font-weight:500;text-decoration:none;display:inline-block">${escapeHtml(t.name)} (${t.withHours.length})</a>`
+    )
+    .join("\n");
+  const townsBlock = townLinks
+    ? `<h2 class="sf" style="font-size:22px;margin:32px 0 16px">Towns in ${escapeHtml(name)}</h2>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px">${townLinks}</div>
+<p style="font-size:14px;color:#8AA3B5;margin-bottom:24px">Town pages list spots with verified happy hour hours only.</p>`
+    : "";
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -402,6 +415,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 ${cards || `<p style="color:#6B8A9E">No published spots in this region yet.</p>`}
 </div>
 ${blogBlock}
+${townsBlock}
 <h2 class="sf" style="font-size:22px;margin:32px 0 16px">Explore Other Regions</h2>
 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px">${otherRegions}</div>
 <div style="text-align:center;margin:32px 0"><a href="/" class="bt bp" style="font-size:18px;padding:16px 32px">&larr; Browse All Happy Hours</a></div>
