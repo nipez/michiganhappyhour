@@ -910,8 +910,12 @@ function App(){
             <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All posts →</a>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,220px),1fr))",gap:10}}>
+            <a href="/blog/royal-oak-ferndale-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Royal Oak & Ferndale HH</div>
+            </a>
             <a href="/blog/cheap-happy-hour-deals-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · ROUNDUP</div>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>ROUNDUP</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>$5 & under deals</div>
             </a>
             <a href="/blog/waterfront-patio-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
