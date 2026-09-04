@@ -79,6 +79,7 @@ const STATIC = [
   { loc: "/blog/late-night-happy-hour-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/detroit-patio-happy-hours", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/dog-friendly-happy-hours-michigan", priority: "0.75", changefreq: "weekly" },
+  { loc: "/blog/royal-oak-ferndale-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/tri-cities-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/port-huron-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/charlevoix-petoskey-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
