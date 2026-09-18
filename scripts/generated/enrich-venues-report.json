@@ -1,0 +1,131 @@
+{
+  "generated_at": "2026-09-18T14:10:00.000Z",
+  "scope": {
+    "priority_regions": [
+      "port-huron",
+      "up-west",
+      "up-east",
+      "detroit"
+    ],
+    "priority_towns": [
+      "Port Huron & Thumb",
+      "Western UP",
+      "Eastern UP",
+      "Royal Oak",
+      "Ferndale"
+    ],
+    "venues_scanned": 127
+  },
+  "cli_improvements": [
+    "--region=a,b (multi-region)",
+    "--town=Name,Name",
+    "--missing-hh",
+    "--from-json=path.json",
+    "shared-meridiem time parse (4-6 pm)",
+    "HH path crawl (/happy-hour, /menus, \u2026)",
+    "larger HTML fetch for Wix/Squarespace"
+  ],
+  "updated": 6,
+  "with_hh": 3,
+  "with_website_only": 3,
+  "with_opening_hours": 0,
+  "town_gate_impact": {
+    "Royal Oak": {
+      "before_with_hh": 0,
+      "after_with_hh": 2,
+      "gate_min": 2,
+      "crosses_gate": true
+    },
+    "Ferndale": {
+      "before_with_hh": 0,
+      "after_with_hh": 1,
+      "gate_min": 2,
+      "crosses_gate": false
+    },
+    "Port Huron & Thumb": {
+      "before_with_hh": 0,
+      "after_with_hh": 0,
+      "note": "OSM shells mostly lack websites; no confident HH on scraped pages"
+    },
+    "Western UP": {
+      "before_with_hh": 0,
+      "after_with_hh": 0,
+      "note": "same"
+    },
+    "Eastern UP": {
+      "before_with_hh": 0,
+      "after_with_hh": 0,
+      "note": "same"
+    }
+  },
+  "samples": [
+    {
+      "id": 1454,
+      "name": "Brown Iron Brewhouse",
+      "town": "Royal Oak",
+      "region": "detroit",
+      "hh_start": "4:00 PM",
+      "hh_end": "6:00 PM",
+      "website": "https://browniron.com/royal-oak-menu/",
+      "source_url": "https://browniron.com/royal-oak-menu/",
+      "hh_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ]
+    },
+    {
+      "id": 1430,
+      "name": "Goodnight Gracie",
+      "town": "Royal Oak",
+      "region": "detroit",
+      "hh_start": "4:00 PM",
+      "hh_end": "6:00 PM",
+      "website": "https://www.damatos.com/",
+      "source_url": "https://www.damatos.com/happy-hour",
+      "hh_days": [
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ]
+    },
+    {
+      "id": 1470,
+      "name": "One Eyed Betty's",
+      "town": "Ferndale",
+      "region": "detroit",
+      "hh_start": "4:00 PM",
+      "hh_end": "6:00 PM",
+      "website": "https://oneeyedbettys.com/",
+      "source_url": "https://oneeyedbettys.com/menus/",
+      "hh_days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ]
+    }
+  ],
+  "apply": {
+    "remote": "npx wrangler d1 execute michiganhappyhour --remote --file=scripts/generated/enrich-venues.sql",
+    "note": "Already applied to remote D1 on 2026-09-18. Re-run with wrangler --file if needed on another env."
+  },
+  "remote_apply": {
+    "status": "applied",
+    "via": "Cloudflare D1 API (bindings MCP)",
+    "verified": {
+      "Royal Oak": {
+        "with_hh": 2,
+        "crosses_gate": true
+      },
+      "Ferndale": {
+        "with_hh": 1,
+        "crosses_gate": false
+      }
+    }
+  }
+}
