@@ -11,6 +11,10 @@
  *   node scripts/enrich-venues.mjs --web-only
  *   node scripts/enrich-venues.mjs --limit=50
  *   node scripts/enrich-venues.mjs --region=detroit
+ *   node scripts/enrich-venues.mjs --region=port-huron,up-west,up-east
+ *   node scripts/enrich-venues.mjs --town=Royal Oak,Ferndale
+ *   node scripts/enrich-venues.mjs --missing-hh
+ *   node scripts/enrich-venues.mjs --from-json=path.json
  */
 import fs from "fs";
 import path from "path";
@@ -148,6 +152,24 @@ function parseDayList(chunk) {
   return [...days].sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
 }
 
+function parseClockPair(a, b, sharedMeridiem) {
+  let startTok = String(a || "").trim();
+  let endTok = String(b || "").trim();
+  if (/^close$/i.test(endTok)) return null;
+
+  // "4-6 pm" / "4 - 6PM" — meridiem only on the end (or shared group)
+  const endHasMeridiem = /(am|pm)\s*$/i.test(endTok);
+  const startHasMeridiem = /(am|pm)\s*$/i.test(startTok);
+  const mer = sharedMeridiem || (endTok.match(/(am|pm)\s*$/i) || [])[1];
+  if (mer && !startHasMeridiem) startTok = `${startTok}${mer}`;
+  if (mer && !endHasMeridiem) endTok = `${endTok}${mer}`;
+
+  const start = parseClock(startTok);
+  const end = parseClock(endTok);
+  if (!start || !end) return null;
+  return { start, end };
+}
+
 function extractHappyHourFromText(rawText) {
   const text = String(rawText || "")
     .replace(/\u00a0/g, " ")
@@ -157,7 +179,7 @@ function extractHappyHourFromText(rawText) {
 
   // Prefer windows that sit near "happy hour"
   const windows = [];
-  const hhRe = /happy\s*hour[\s\S]{0,180}/gi;
+  const hhRe = /happy\s*hour[\s\S]{0,220}/gi;
   let hm;
   while ((hm = hhRe.exec(text))) {
     windows.push(hm[0]);
@@ -167,20 +189,20 @@ function extractHappyHourFromText(rawText) {
   if (specialIdx >= 0) {
     windows.push(text.slice(Math.max(0, specialIdx - 40), specialIdx + 220));
   }
+  // "Monday-Friday 4-6 pm" immediately after a HAPPY HOUR heading
+  const headingIdx = text.search(/happy\s*hour\b/i);
+  if (headingIdx >= 0) {
+    windows.push(text.slice(headingIdx, headingIdx + 280));
+  }
 
   for (const win of windows) {
     const timeRe =
-      /(\d{1,2}(?::\d{2})?\s*(?:am|pm)|\d{1,2}:\d{2})\s*[-–—to]+\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)|\d{1,2}:\d{2}|close)/gi;
+      /(\d{1,2}(?::\d{2})?\s*(?:am|pm)?|\d{1,2}:\d{2})\s*[-–—to]+\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?|\d{1,2}:\d{2}|close)(?:\s*(am|pm))?/gi;
     let tm;
     while ((tm = timeRe.exec(win))) {
-      const start = parseClock(tm[1]);
-      let end = null;
-      if (/^close$/i.test(tm[2])) {
-        // Skip open-ended "til close" — too ambiguous for HH field
-        continue;
-      }
-      end = parseClock(tm[2]);
-      if (!start || !end) continue;
+      const pair = parseClockPair(tm[1], tm[2], tm[3]);
+      if (!pair) continue;
+      const { start, end } = pair;
       const dur = end.minutes - start.minutes;
       // Typical happy hour: starts 14:00–18:00, 1–5 hours, ends by 21:00
       if (start.minutes < 14 * 60 || start.minutes > 18 * 60) continue;
@@ -212,8 +234,9 @@ function extractHappyHourFromText(rawText) {
 
       // Require a real weekday spread — single-day scrapes are usually noise.
       if (days.length < 2) continue;
-      // Prefer windows that also mention a concrete discount/deal.
-      if (!dealBits.length) continue;
+      // Deals preferred; allow clear multi-day windows without them when
+      // the happy-hour label is adjacent (still require 4+ days).
+      if (!dealBits.length && days.length < 4) continue;
 
       return {
         hh_start: start.display,
@@ -229,7 +252,7 @@ function extractHappyHourFromText(rawText) {
 
 async function fetchText(url) {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 15000);
+  const timer = setTimeout(() => ctrl.abort(), 20000);
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
@@ -241,7 +264,8 @@ async function fetchText(url) {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const buf = await res.arrayBuffer();
-    const bytes = new Uint8Array(buf).slice(0, 250000);
+    // Wix/Squarespace often bury HH copy past the first 250KB of shell/CSS.
+    const bytes = new Uint8Array(buf).slice(0, 900000);
     return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
   } finally {
     clearTimeout(timer);
@@ -296,10 +320,61 @@ function wranglerJson(args) {
   return JSON.parse(out.slice(start));
 }
 
-function loadOsmVenues({ region, limit }) {
+function parseListArg(value) {
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function sqlInList(values) {
+  return values.map((v) => `'${String(v).replace(/'/g, "''")}'`).join(",");
+}
+
+function loadOsmVenuesFromJson(filePath) {
+  const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const rows = Array.isArray(raw) ? raw : raw.results || raw.venues || [];
+  if (!Array.isArray(rows)) throw new Error(`Invalid JSON venue dump: ${filePath}`);
+  return rows;
+}
+
+function loadOsmVenues({ regions, towns, missingHh, limit, fromJson }) {
+  if (fromJson) {
+    let rows = loadOsmVenuesFromJson(fromJson);
+    if (regions.length) {
+      const set = new Set(regions);
+      rows = rows.filter((r) => set.has(r.region));
+    }
+    if (towns.length) {
+      const set = new Set(towns.map((t) => t.toLowerCase()));
+      rows = rows.filter((r) => set.has(String(r.town || "").toLowerCase()));
+    }
+    if (missingHh) {
+      rows = rows.filter((r) => !String(r.hh_start || "").trim());
+    }
+    rows.sort((a, b) =>
+      `${a.region}|${a.name}`.localeCompare(`${b.region}|${b.name}`)
+    );
+    if (limit) rows = rows.slice(0, limit);
+    return rows;
+  }
+
   let sql =
     "SELECT id, name, town, region, website, phone, opening_hours, hh_start, hh_end, deals, external_id, source FROM venues WHERE status='published' AND source='osm' AND external_id IS NOT NULL";
-  if (region) sql += ` AND region='${region.replace(/'/g, "''")}'`;
+  if (regions.length === 1) {
+    sql += ` AND region='${regions[0].replace(/'/g, "''")}'`;
+  } else if (regions.length > 1) {
+    sql += ` AND region IN (${sqlInList(regions)})`;
+  }
+  if (towns.length === 1) {
+    sql += ` AND town='${towns[0].replace(/'/g, "''")}'`;
+  } else if (towns.length > 1) {
+    sql += ` AND town IN (${sqlInList(towns)})`;
+  }
+  if (missingHh) {
+    sql += " AND (hh_start IS NULL OR TRIM(hh_start)='')";
+  }
   sql += " ORDER BY region, name";
   if (limit) sql += ` LIMIT ${Number(limit)}`;
   const data = wranglerJson([
@@ -379,30 +454,76 @@ async function enrichFromOsm(rows) {
   return updates;
 }
 
-async function enrichFromWeb(rows) {
-  const updates = [];
-  const candidates = rows.filter((r) => r.website && !r.hh_start);
-  console.log(`Web scrape candidates: ${candidates.length}`);
-  for (let i = 0; i < candidates.length; i++) {
-    const r = candidates[i];
-    let url = String(r.website).trim();
-    if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+const HH_PATH_SUFFIXES = ["/happy-hour", "/happyhour", "/specials", "/menu", "/menus", ""];
+
+function websiteCandidates(website) {
+  let url = String(website || "").trim();
+  if (!url) return [];
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  let origin;
+  let basePath = "";
+  try {
+    const u = new URL(url);
+    origin = u.origin;
+    basePath = u.pathname.replace(/\/$/, "");
+  } catch {
+    return [url];
+  }
+  const urls = [];
+  const push = (u) => {
+    if (!urls.includes(u)) urls.push(u);
+  };
+  // Prefer dedicated HH/menu paths before the homepage shell.
+  for (const suffix of HH_PATH_SUFFIXES) {
+    if (!suffix) {
+      push(url);
+      continue;
+    }
+    push(origin + suffix);
+    if (basePath && basePath !== "/") push(origin + basePath + suffix);
+  }
+  push(url);
+  return urls;
+}
+
+async function scrapeHappyHour(website) {
+  const urls = websiteCandidates(website);
+  for (const url of urls) {
     try {
       const html = await fetchText(url);
       const text = htmlToText(html);
       const hh = extractHappyHourFromText(text);
-      if (hh) {
+      if (hh) return { hh, url };
+    } catch {
+      // try next path
+    }
+    await sleep(150);
+  }
+  return null;
+}
+
+async function enrichFromWeb(rows) {
+  const updates = [];
+  const candidates = rows.filter((r) => r.website && !String(r.hh_start || "").trim());
+  console.log(`Web scrape candidates: ${candidates.length}`);
+  for (let i = 0; i < candidates.length; i++) {
+    const r = candidates[i];
+    try {
+      const hit = await scrapeHappyHour(r.website);
+      if (hit) {
+        const { hh } = hit;
+        const patch = {
+          hh_start: hh.hh_start,
+          hh_end: hh.hh_end,
+          hh_days: JSON.stringify(hh.hh_days),
+          last_verified_at: new Date().toISOString().slice(0, 10),
+          vibe: "Happy hour details pulled from their website — confirm when you visit"
+        };
+        if (hh.deals?.length) patch.deals = JSON.stringify(hh.deals);
         updates.push({
           id: r.id,
           name: r.name,
-          patch: {
-            hh_start: hh.hh_start,
-            hh_end: hh.hh_end,
-            hh_days: JSON.stringify(hh.hh_days),
-            deals: JSON.stringify(hh.deals),
-            last_verified_at: new Date().toISOString().slice(0, 10),
-            vibe: "Happy hour details pulled from their website — confirm when you visit"
-          },
+          patch,
           source: "web",
           sample: `${hh.hh_start}-${hh.hh_end} (${hh.hh_days.length} days)`
         });
@@ -452,12 +573,22 @@ async function main() {
   const applyLocal = process.argv.includes("--apply-local");
   const osmOnly = process.argv.includes("--osm-only");
   const webOnly = process.argv.includes("--web-only");
-  const region = argValue("region");
+  const missingHh = process.argv.includes("--missing-hh");
+  const regions = parseListArg(argValue("region"));
+  const towns = parseListArg(argValue("town"));
+  const fromJson = argValue("from-json");
   const limit = argValue("limit") ? Number(argValue("limit")) : null;
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  console.log("Loading OSM venues from D1…");
-  const rows = loadOsmVenues({ region, limit });
+  console.log(
+    fromJson
+      ? `Loading OSM venues from ${fromJson}…`
+      : "Loading OSM venues from D1…"
+  );
+  if (regions.length) console.log(`  regions: ${regions.join(", ")}`);
+  if (towns.length) console.log(`  towns: ${towns.join(", ")}`);
+  if (missingHh) console.log("  filter: missing hh_start only");
+  const rows = loadOsmVenues({ regions, towns, missingHh, limit, fromJson });
   console.log(`Loaded ${rows.length} venues`);
 
   let updates = [];

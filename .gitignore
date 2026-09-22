@@ -21,7 +21,12 @@ node_modules/
 .wrangler/
 dist/
 *.local.sql
-scripts/generated/
+# Keep enrichment SQL/report committable; ignore other generated artifacts.
+scripts/generated/*
+!scripts/generated/.gitkeep
+!scripts/generated/enrich-venues.sql
+!scripts/generated/enrich-venues-report.json
+!scripts/generated/enrich-venues-input.json
 
 # Logs
 *.log
