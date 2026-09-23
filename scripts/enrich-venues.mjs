@@ -15,6 +15,11 @@
  *   node scripts/enrich-venues.mjs --town=Royal Oak,Ferndale
  *   node scripts/enrich-venues.mjs --missing-hh
  *   node scripts/enrich-venues.mjs --from-json=path.json
+ *
+ * Web scrape notes:
+ *   - Crawls /happy-hour, /menus, etc. before homepage
+ *   - Looks ~120 chars before "happy hour" (times often precede the label)
+ *   - Prefers strong day ranges (Mon-Fri) over stray opening-hours day names
  */
 import fs from "fs";
 import path from "path";
@@ -132,22 +137,31 @@ function expandDayRange(a, b) {
 function parseDayList(chunk) {
   const text = String(chunk || "").toLowerCase();
   const days = new Set();
+  let strongRange = false;
   // Mon-Fri / Tuesday-Friday / Tu-Th
   const rangeRe =
     /\b(mo|tu|we|th|fr|sa|su|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s*[-–—to]+\s*(mo|tu|we|th|fr|sa|su|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/gi;
   let m;
   while ((m = rangeRe.exec(text))) {
-    expandDayRange(m[1], m[2]).forEach((d) => days.add(d));
+    const expanded = expandDayRange(m[1], m[2]);
+    expanded.forEach((d) => days.add(d));
+    // Prefer explicit ranges over stray opening-hours day names nearby.
+    if (expanded.length >= 4) strongRange = true;
   }
-  const singleRe =
-    /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)\b/gi;
-  while ((m = singleRe.exec(text))) {
-    const d = DAY_MAP[m[1].toLowerCase()];
-    if (d) days.add(d);
-  }
-  // Every day / daily
+  // Every day / daily (before singles so we don't skip intentional 7-day)
   if (/\b(every\s*day|daily|7\s*days)\b/i.test(text)) {
     DAY_ORDER.forEach((d) => days.add(d));
+    return [...days].sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
+  }
+  // Skip singles when a clear multi-day range already filled the set
+  // (avoids "Sunday 12pm-2am … Monday-Friday 3-6pm happy hour" picking up Sunday).
+  if (!strongRange) {
+    const singleRe =
+      /\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|mon|tue|tues|wed|thu|thur|thurs|fri|sat|sun)\b/gi;
+    while ((m = singleRe.exec(text))) {
+      const d = DAY_MAP[m[1].toLowerCase()];
+      if (d) days.add(d);
+    }
   }
   return [...days].sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
 }
@@ -177,22 +191,17 @@ function extractHappyHourFromText(rawText) {
     .trim();
   if (!/happy\s*hour/i.test(text)) return null;
 
-  // Prefer windows that sit near "happy hour"
+  // Prefer windows that sit near "happy hour" — include lookbehind because
+  // many sites list "Mon-Fri 3-6pm … happy hour" (times before the label).
   const windows = [];
   const hhRe = /happy\s*hour[\s\S]{0,220}/gi;
   let hm;
   while ((hm = hhRe.exec(text))) {
     windows.push(hm[0]);
   }
-  // Also catch "TUES... From 3pm - 6pm" style near specials headers
-  const specialIdx = text.search(/happy\s*hour\s*specials?/i);
-  if (specialIdx >= 0) {
-    windows.push(text.slice(Math.max(0, specialIdx - 40), specialIdx + 220));
-  }
-  // "Monday-Friday 4-6 pm" immediately after a HAPPY HOUR heading
-  const headingIdx = text.search(/happy\s*hour\b/i);
-  if (headingIdx >= 0) {
-    windows.push(text.slice(headingIdx, headingIdx + 280));
+  for (const m of text.matchAll(/happy\s*hour\b/gi)) {
+    const idx = m.index ?? 0;
+    windows.push(text.slice(Math.max(0, idx - 120), idx + 280));
   }
 
   for (const win of windows) {

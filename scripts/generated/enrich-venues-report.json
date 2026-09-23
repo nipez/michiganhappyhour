@@ -1,130 +1,127 @@
 {
-  "generated_at": "2026-09-18T14:10:00.000Z",
+  "generated_at": "2026-09-23T14:30:00.000Z",
   "scope": {
-    "priority_regions": [
-      "port-huron",
-      "up-west",
-      "up-east",
-      "detroit"
-    ],
     "priority_towns": [
+      "Ferndale",
       "Port Huron & Thumb",
       "Western UP",
-      "Eastern UP",
-      "Royal Oak",
-      "Ferndale"
+      "Eastern UP"
     ],
-    "venues_scanned": 127
+    "follow_up_from": "PR #35 (Royal Oak unlocked; Ferndale 1/2)"
   },
   "cli_improvements": [
-    "--region=a,b (multi-region)",
-    "--town=Name,Name",
-    "--missing-hh",
-    "--from-json=path.json",
-    "shared-meridiem time parse (4-6 pm)",
-    "HH path crawl (/happy-hour, /menus, \u2026)",
-    "larger HTML fetch for Wix/Squarespace"
+    "happy-hour lookbehind (~120 chars) for 'Mon-Fri 3-6pm … happy hour' layouts",
+    "prefer strong day ranges (Mon-Fri) over stray opening-hours day names"
   ],
-  "updated": 6,
-  "with_hh": 3,
-  "with_website_only": 3,
-  "with_opening_hours": 0,
+  "updated": 7,
+  "with_hh": 1,
+  "with_website_only": 6,
   "town_gate_impact": {
-    "Royal Oak": {
-      "before_with_hh": 0,
+    "Ferndale": {
+      "before_with_hh": 1,
       "after_with_hh": 2,
       "gate_min": 2,
-      "crosses_gate": true
-    },
-    "Ferndale": {
-      "before_with_hh": 0,
-      "after_with_hh": 1,
-      "gate_min": 2,
-      "crosses_gate": false
+      "crosses_gate": true,
+      "venues": [
+        "One Eyed Betty's (existing)",
+        "Danny's Irish Pub (this PR)"
+      ]
     },
     "Port Huron & Thumb": {
       "before_with_hh": 0,
       "after_with_hh": 0,
-      "note": "OSM shells mostly lack websites; no confident HH on scraped pages"
+      "note": "OSM shells mostly lack first-party HH. Seeded websites for Refined Fool, Davis, Tin Fiddler — scraped pages advertise events/hours but not multi-day HH windows. Canadian Sarnia listings dominate the region dump."
     },
     "Western UP": {
       "before_with_hh": 0,
       "after_with_hh": 0,
-      "note": "same"
+      "note": "Continental Fire Co site down / rebranded Bonfire (opens 5pm) — old aggregator 4–6pm HH not verifiable. Keweenaw/Ambassador/Nutini sites have no confident HH windows. Fixed Kermit website (kermitsbar.com → kermitspub.com)."
     },
     "Eastern UP": {
       "before_with_hh": 0,
       "after_with_hh": 0,
-      "note": "same"
+      "note": "Upper Hand Brewery + Earnie's have websites but no scrapeable HH; remaining shells lack websites."
     }
   },
   "samples": [
     {
-      "id": 1454,
-      "name": "Brown Iron Brewhouse",
-      "town": "Royal Oak",
-      "region": "detroit",
-      "hh_start": "4:00 PM",
-      "hh_end": "6:00 PM",
-      "website": "https://browniron.com/royal-oak-menu/",
-      "source_url": "https://browniron.com/royal-oak-menu/",
-      "hh_days": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday"
-      ]
-    },
-    {
-      "id": 1430,
-      "name": "Goodnight Gracie",
-      "town": "Royal Oak",
-      "region": "detroit",
-      "hh_start": "4:00 PM",
-      "hh_end": "6:00 PM",
-      "website": "https://www.damatos.com/",
-      "source_url": "https://www.damatos.com/happy-hour",
-      "hh_days": [
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ]
-    },
-    {
-      "id": 1470,
-      "name": "One Eyed Betty's",
+      "id": 1475,
+      "name": "Danny's Irish Pub",
       "town": "Ferndale",
       "region": "detroit",
-      "hh_start": "4:00 PM",
+      "hh_start": "3:00 PM",
       "hh_end": "6:00 PM",
-      "website": "https://oneeyedbettys.com/",
-      "source_url": "https://oneeyedbettys.com/menus/",
+      "website": "https://www.dannysferndale.com/",
+      "source_url": "https://www.dannysferndale.com/",
       "hh_days": [
         "Monday",
         "Tuesday",
         "Wednesday",
         "Thursday",
         "Friday"
+      ],
+      "deals": [
+        "$2 domestic bottles",
+        "$1.50 Bud Light & Miller Lite draft"
       ]
+    }
+  ],
+  "website_seeds": [
+    {
+      "id": 1435,
+      "name": "The Oakland Art Novelty Company",
+      "website": "https://www.theoaklandferndale.com/"
+    },
+    {
+      "id": 1439,
+      "name": "Urbanrest Brewing Company",
+      "website": "https://www.urbanrest.com/"
+    },
+    {
+      "id": 1758,
+      "name": "Refined Fool Brewing Co.",
+      "website": "https://www.refinedfool.com/"
+    },
+    {
+      "id": 1763,
+      "name": "Davis by Refined Fool Brewing Company",
+      "website": "https://www.refinedfool.com/"
+    },
+    {
+      "id": 1762,
+      "name": "The Tin Fiddler",
+      "website": "https://www.thetinfiddler.com/"
+    },
+    {
+      "id": 2115,
+      "name": "Kermit's Pizza Pub & Grill",
+      "website": "https://kermitspub.com/"
     }
   ],
   "apply": {
     "remote": "npx wrangler d1 execute michiganhappyhour --remote --file=scripts/generated/enrich-venues.sql",
-    "note": "Already applied to remote D1 on 2026-09-18. Re-run with wrangler --file if needed on another env."
+    "note": "Already applied to remote D1 on 2026-09-23 via Cloudflare D1 API (bindings MCP)."
   },
   "remote_apply": {
     "status": "applied",
     "via": "Cloudflare D1 API (bindings MCP)",
     "verified": {
-      "Royal Oak": {
-        "with_hh": 2,
-        "crosses_gate": true
-      },
       "Ferndale": {
-        "with_hh": 1,
-        "crosses_gate": false
+        "with_hh": 2,
+        "crosses_gate": true,
+        "venues": [
+          "Danny's Irish Pub",
+          "One Eyed Betty's"
+        ]
+      },
+      "Port Huron & Thumb": {
+        "with_hh": 0
+      },
+      "Western UP": {
+        "with_hh": 0
+      },
+      "Eastern UP": {
+        "with_hh": 0
       }
     }
   }
