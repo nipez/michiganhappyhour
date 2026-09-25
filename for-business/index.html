@@ -75,6 +75,15 @@ input,select,textarea{width:100%;padding:12px 14px;border:2px solid var(--line);
 .note{font-size:13px;color:var(--muted);margin-top:8px}
 footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:center;color:var(--muted);font-size:14px;line-height:1.9}
 #form-msg{margin-top:10px;font-weight:600}
+.post-claim{display:none;margin-top:8px;padding:22px;border-radius:16px;border:1.5px solid #b7e4c7;background:linear-gradient(180deg,#f3fbf6,#fff)}
+.post-claim.is-visible{display:block}
+.post-claim .ok-line{color:#16A34A;font-weight:700;font-size:16px;margin-bottom:16px}
+.upsell{border:1.5px solid rgba(232,97,77,.35);background:linear-gradient(135deg,#fff8f3,#eff6ff);border-radius:14px;padding:18px}
+.upsell h3{font-family:Fraunces,Georgia,serif;font-size:22px;margin-bottom:8px;color:var(--ink)}
+.upsell p{color:var(--muted);font-size:15px;line-height:1.55;margin-bottom:14px;max-width:48ch}
+.upsell .price{font-family:Fraunces,Georgia,serif;font-weight:800;color:var(--coral)}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line);padding:12px 18px;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer}
+.btn-ghost:hover{color:var(--ink);border-color:#b8c9d6}
 </style>
 </head>
 <body>
@@ -233,6 +242,25 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       </div>
       <div id="form-msg" class="note"></div>
     </form>
+    <div id="post-claim" class="post-claim" hidden>
+      <div class="ok-line" id="post-claim-ok">Got it — your claim request is saved. We’ll review and follow up shortly.</div>
+      <div class="upsell" id="featured-upsell">
+        <h3>Want the top spot while we’re verifying?</h3>
+        <p>Featured puts you first in your region with a Verified badge — <span class="price">$79/mo</span>, cancel anytime. Checkout takes about a minute; we already have your details.</p>
+        <div class="cta-row" id="upsell-actions">
+          <button type="button" class="btn btn-primary" id="upsell-pay">Go Featured — $79/mo</button>
+          <button type="button" class="btn-ghost" id="upsell-later">Maybe later</button>
+        </div>
+        <div id="upsell-msg" class="note" style="font-weight:600;margin-top:10px"></div>
+        <div id="upsell-fallback" style="display:none">
+          <p style="margin-bottom:12px">Online checkout isn’t set up yet — we’ll follow up about Featured, or you can reach us now:</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" id="upsell-mailto" href="mailto:hello@michiganhappyhour.com">Email us about Featured</a>
+            <button type="button" class="btn-ghost" id="upsell-later-fallback">Maybe later</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -251,7 +279,19 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
   var payBtn = document.getElementById('pay-btn');
   var msg = document.getElementById('form-msg');
   var interest = document.getElementById('interest');
+  var postClaim = document.getElementById('post-claim');
+  var upsellPay = document.getElementById('upsell-pay');
+  var upsellLater = document.getElementById('upsell-later');
+  var upsellLaterFallback = document.getElementById('upsell-later-fallback');
+  var upsellActions = document.getElementById('upsell-actions');
+  var upsellFallback = document.getElementById('upsell-fallback');
+  var upsellMailto = document.getElementById('upsell-mailto');
+  var featuredUpsell = document.getElementById('featured-upsell');
+  var upsellMsg = document.getElementById('upsell-msg');
   var checkoutReady = false;
+  var lastClaim = null;
+  var venueId = '';
+  var venueSlug = '';
 
   function mapInterest(raw){
     var v = String(raw || '').toLowerCase();
@@ -267,8 +307,137 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     return v.indexOf('feature') >= 0 || v.indexOf('both') >= 0;
   }
 
+  /** Free claim paths that should see the Featured upsell (not Stripe auto-start). */
+  function isFreeClaimInterest(category){
+    var v = String(category || '').toLowerCase();
+    if (!v) return false;
+    if (v.indexOf('feature') >= 0 || v.indexOf('both') >= 0) return false;
+    return v.indexOf('claim') >= 0 || v.indexOf('new') >= 0;
+  }
+
   function syncPayButton(){
     payBtn.style.display = checkoutReady && wantsFeatured() ? 'inline-flex' : 'none';
+  }
+
+  function checkoutPayloadFrom(source){
+    var s = source || {};
+    var payload = {
+      name: String(s.name || '').trim(),
+      town: String(s.town || '').trim(),
+      email: String(s.email || '').trim(),
+      contact_name: String(s.contact_name || '').trim()
+    };
+    var phone = String(s.phone || '').trim();
+    if (phone) payload.phone = phone;
+    var vid = s.venue_id != null && String(s.venue_id).trim() !== ''
+      ? String(s.venue_id).trim()
+      : venueId;
+    if (vid) payload.venue_id = vid;
+    var slug = s.venue_slug || s.slug || venueSlug;
+    if (slug) payload.venue_slug = String(slug).trim();
+    return payload;
+  }
+
+  function startCheckout(source){
+    msg.textContent = '';
+    if (upsellMsg) upsellMsg.textContent = '';
+    var payload = checkoutPayloadFrom(source || {
+      name: form.elements.namedItem('name').value,
+      town: form.elements.namedItem('town').value,
+      email: form.elements.namedItem('email').value,
+      contact_name: form.elements.namedItem('contact_name').value,
+      phone: form.elements.namedItem('phone').value
+    });
+    if (!payload.name || !payload.town || !payload.email) {
+      var needMsg = 'Name, town, and email are required for checkout.';
+      if (source && upsellMsg) {
+        upsellMsg.style.color = '#E8614D';
+        upsellMsg.textContent = needMsg;
+      } else {
+        msg.style.color = '#E8614D';
+        msg.textContent = needMsg;
+      }
+      return;
+    }
+    var activePay = source ? upsellPay : payBtn;
+    if (activePay) {
+      activePay.disabled = true;
+      activePay.textContent = 'Redirecting to Stripe…';
+    }
+    fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().then(function(d){ return {r:r,d:d}; }); })
+    .then(function(x){
+      if (!x.r.ok || !x.d.ok || !x.d.url) throw new Error(x.d.error || 'checkout failed');
+      if (!source && window.trackCta) {
+        window.trackCta('cta_checkout', {
+          name: payload.name,
+          town: payload.town,
+          page_type:'for_business',
+          source: 'stripe_checkout'
+        });
+      }
+      location.href = x.d.url;
+    }).catch(function(err){
+      var errText = err.message || 'Checkout unavailable. Submit the request and we’ll invoice you.';
+      if (source && upsellMsg) {
+        upsellMsg.style.color = '#E8614D';
+        upsellMsg.textContent = errText;
+      } else {
+        msg.style.color = '#E8614D';
+        msg.textContent = errText;
+      }
+      if (activePay) {
+        activePay.disabled = false;
+        activePay.textContent = source ? 'Go Featured — $79/mo' : 'Pay $79/mo with Stripe';
+      }
+    });
+  }
+
+  function hideUpsellKeepConfirm(){
+    if (featuredUpsell) featuredUpsell.style.display = 'none';
+  }
+
+  function showFeaturedUpsell(claim){
+    lastClaim = claim;
+    form.style.display = 'none';
+    postClaim.hidden = false;
+    postClaim.classList.add('is-visible');
+    if (featuredUpsell) featuredUpsell.style.display = '';
+    var subject = 'Featured listing — ' + (claim.name || 'my venue') +
+      (claim.town ? ' (' + claim.town + ')' : '');
+    var body = [
+      'Hi — I just requested a claim and want Featured ($79/mo).',
+      '',
+      'Business: ' + (claim.name || ''),
+      'Town: ' + (claim.town || ''),
+      'Email: ' + (claim.email || ''),
+      'Phone: ' + (claim.phone || ''),
+      claim.venue_id ? ('Venue id: ' + claim.venue_id) : '',
+      claim.venue_slug ? ('Slug: ' + claim.venue_slug) : ''
+    ].filter(Boolean).join('\n');
+    if (upsellMailto) {
+      upsellMailto.href = 'mailto:hello@michiganhappyhour.com?subject=' +
+        encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+    }
+    if (checkoutReady) {
+      upsellActions.style.display = 'flex';
+      upsellFallback.style.display = 'none';
+    } else {
+      upsellActions.style.display = 'none';
+      upsellFallback.style.display = 'block';
+    }
+    if (window.trackCta) {
+      window.trackCta('cta_featured_upsell', {
+        name: claim.name,
+        town: claim.town,
+        page_type: 'for_business',
+        source: 'upsell_impression'
+      });
+    }
+    try { postClaim.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
   }
 
   fetch('/api/checkout').then(function(r){ return r.json(); }).then(function(d){
@@ -292,6 +461,8 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     if (p.get('email')) form.elements.namedItem('email').value = p.get('email');
     if (p.get('contact_name')) form.elements.namedItem('contact_name').value = p.get('contact_name');
     if (p.get('role')) form.elements.namedItem('role').value = p.get('role');
+    venueId = p.get('venue_id') || p.get('id') || '';
+    venueSlug = p.get('slug') || p.get('venue_slug') || '';
     var mapped = mapInterest(p.get('interest') || p.get('category'));
     if (mapped) interest.value = mapped;
   } catch (e) {}
@@ -308,46 +479,41 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     });
   });
 
-  function startCheckout(){
-    msg.textContent = '';
-    var payload = {
-      name: form.elements.namedItem('name').value.trim(),
-      town: form.elements.namedItem('town').value.trim(),
-      email: form.elements.namedItem('email').value.trim(),
-      contact_name: form.elements.namedItem('contact_name').value.trim()
-    };
-    if (!payload.name || !payload.town || !payload.email) {
-      msg.style.color = '#E8614D';
-      msg.textContent = 'Name, town, and email are required for checkout.';
-      return;
-    }
-    payBtn.disabled = true;
-    payBtn.textContent = 'Redirecting to Stripe…';
-    fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(function(r){ return r.json().then(function(d){ return {r:r,d:d}; }); })
-    .then(function(x){
-      if (!x.r.ok || !x.d.ok || !x.d.url) throw new Error(x.d.error || 'checkout failed');
-      if (window.trackCta) window.trackCta('cta_checkout', { name: payload.name, town: payload.town, page_type:'for_business', source:'stripe_checkout' });
-      location.href = x.d.url;
-    }).catch(function(err){
-      msg.style.color = '#E8614D';
-      msg.textContent = err.message || 'Checkout unavailable. Submit the request and we’ll invoice you.';
-      payBtn.disabled = false;
-      payBtn.textContent = 'Pay $79/mo with Stripe';
+  payBtn.addEventListener('click', function(){ startCheckout(null); });
+  if (upsellPay) {
+    upsellPay.addEventListener('click', function(){
+      if (window.trackCta && lastClaim) {
+        window.trackCta('cta_featured_upsell', {
+          name: lastClaim.name,
+          town: lastClaim.town,
+          page_type: 'for_business',
+          source: 'upsell_click'
+        });
+      }
+      startCheckout(lastClaim);
     });
   }
-
-  payBtn.addEventListener('click', startCheckout);
+  if (upsellLater) upsellLater.addEventListener('click', hideUpsellKeepConfirm);
+  if (upsellLaterFallback) upsellLaterFallback.addEventListener('click', hideUpsellKeepConfirm);
+  if (upsellMailto) {
+    upsellMailto.addEventListener('click', function(){
+      if (window.trackCta && lastClaim) {
+        window.trackCta('cta_featured_upsell', {
+          name: lastClaim.name,
+          town: lastClaim.town,
+          page_type: 'for_business',
+          source: 'upsell_mailto'
+        });
+      }
+    });
+  }
 
   form.addEventListener('submit', function(e){
     e.preventDefault();
     msg.textContent = '';
     // Featured + checkout ready → go straight to Stripe
     if (checkoutReady && wantsFeatured()) {
-      startCheckout();
+      startCheckout(null);
       return;
     }
     btn.disabled = true;
@@ -357,6 +523,8 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     fd.forEach(function(v,k){ payload[k] = v; });
     payload.path = location.pathname + location.search;
     payload.source = 'for_business';
+    if (venueId) payload.venue_id = venueId;
+    if (venueSlug) payload.venue_slug = venueSlug;
     fetch('/api/submit', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -365,12 +533,24 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
     .then(function(x){
       if (!x.r.ok || !x.d.ok) throw new Error(x.d.error || 'failed');
       if (window.trackCta) window.trackCta('submit_success', { name: payload.name, town: payload.town, page_type:'for_business', source:'for_business', category: payload.category });
-      msg.style.color = '#16A34A';
-      msg.textContent = 'Got it — your request is saved. We’ll review and follow up shortly.';
-      form.reset();
+      if (isFreeClaimInterest(payload.category)) {
+        showFeaturedUpsell({
+          name: payload.name,
+          town: payload.town,
+          email: payload.email,
+          phone: payload.phone || '',
+          contact_name: payload.contact_name || '',
+          venue_id: payload.venue_id || venueId || '',
+          venue_slug: payload.venue_slug || venueSlug || ''
+        });
+      } else {
+        msg.style.color = '#16A34A';
+        msg.textContent = 'Got it — your request is saved. We’ll review and follow up shortly.';
+        form.reset();
+        syncPayButton();
+      }
       btn.disabled = false;
       btn.textContent = 'Submit request';
-      syncPayButton();
     }).catch(function(){
       msg.style.color = '#E8614D';
       msg.textContent = 'Could not save. Try again or email hello@michiganhappyhour.com.';
