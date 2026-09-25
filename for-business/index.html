@@ -251,6 +251,7 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
           <button type="button" class="btn btn-primary" id="upsell-pay">Go Featured — $79/mo</button>
           <button type="button" class="btn-ghost" id="upsell-later">Maybe later</button>
         </div>
+        <div id="upsell-msg" class="note" style="font-weight:600;margin-top:10px"></div>
         <div id="upsell-fallback" style="display:none">
           <p style="margin-bottom:12px">Online checkout isn’t set up yet — we’ll follow up about Featured, or you can reach us now:</p>
           <div class="cta-row">
@@ -286,6 +287,7 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
   var upsellFallback = document.getElementById('upsell-fallback');
   var upsellMailto = document.getElementById('upsell-mailto');
   var featuredUpsell = document.getElementById('featured-upsell');
+  var upsellMsg = document.getElementById('upsell-msg');
   var checkoutReady = false;
   var lastClaim = null;
   var venueId = '';
@@ -338,6 +340,7 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
 
   function startCheckout(source){
     msg.textContent = '';
+    if (upsellMsg) upsellMsg.textContent = '';
     var payload = checkoutPayloadFrom(source || {
       name: form.elements.namedItem('name').value,
       town: form.elements.namedItem('town').value,
@@ -346,8 +349,14 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       phone: form.elements.namedItem('phone').value
     });
     if (!payload.name || !payload.town || !payload.email) {
-      msg.style.color = '#E8614D';
-      msg.textContent = 'Name, town, and email are required for checkout.';
+      var needMsg = 'Name, town, and email are required for checkout.';
+      if (source && upsellMsg) {
+        upsellMsg.style.color = '#E8614D';
+        upsellMsg.textContent = needMsg;
+      } else {
+        msg.style.color = '#E8614D';
+        msg.textContent = needMsg;
+      }
       return;
     }
     var activePay = source ? upsellPay : payBtn;
@@ -372,8 +381,14 @@ footer{border-top:1.5px solid var(--line);padding:32px 20px 48px;text-align:cent
       }
       location.href = x.d.url;
     }).catch(function(err){
-      msg.style.color = '#E8614D';
-      msg.textContent = err.message || 'Checkout unavailable. Submit the request and we’ll invoice you.';
+      var errText = err.message || 'Checkout unavailable. Submit the request and we’ll invoice you.';
+      if (source && upsellMsg) {
+        upsellMsg.style.color = '#E8614D';
+        upsellMsg.textContent = errText;
+      } else {
+        msg.style.color = '#E8614D';
+        msg.textContent = errText;
+      }
       if (activePay) {
         activePay.disabled = false;
         activePay.textContent = source ? 'Go Featured — $79/mo' : 'Pay $79/mo with Stripe';
