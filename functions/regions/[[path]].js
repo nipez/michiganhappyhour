@@ -2,6 +2,8 @@ import {
   getPublishedVenues,
   regionCountsFromVenues
 } from "../lib/published-venues-cache.js";
+import { notFoundPage } from "../lib/not-found-page.js";
+import { renderRegionsIndex } from "../lib/render-directory-index.js";
 import {
   normalizeRegionSlug,
   REGION_META,
@@ -21,10 +23,10 @@ function html(body, status = 200, extraHeaders = {}) {
 
 function notFound() {
   return html(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Region not found</title>
-<meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{font-family:system-ui,sans-serif;background:#F5F7FA;color:#1B2838;padding:40px 20px;text-align:center}a{color:#E8614D;font-weight:700}</style>
-</head><body><h1>Region not found</h1><p>That region page isn’t available.</p><p><a href="/">Browse all happy hours</a></p></body></html>`,
+    notFoundPage({
+      title: "Region not found",
+      message: "That region page isn’t available."
+    }),
     404,
     { "Cache-Control": "public, max-age=30" }
   );
@@ -45,7 +47,15 @@ export async function onRequestGet(context) {
   const slug = normalizeRegionSlug(rawPath);
 
   if (!slug || slug === "index") {
-    return Response.redirect(new URL("/", request.url), 302);
+    try {
+      const all = await getPublishedVenues(env, context);
+      return html(renderRegionsIndex(regionCountsFromVenues(all)));
+    } catch (err) {
+      const msg = String(err && err.message ? err.message : err);
+      return html(`<h1>Error</h1><pre>${msg}</pre>`, 500, {
+        "Cache-Control": "no-store"
+      });
+    }
   }
 
   if (!REGION_META[slug]) return notFound();

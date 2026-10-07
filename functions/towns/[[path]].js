@@ -1,4 +1,6 @@
 import { getPublishedVenues } from "../lib/published-venues-cache.js";
+import { notFoundPage } from "../lib/not-found-page.js";
+import { renderTownsIndex } from "../lib/render-directory-index.js";
 import { renderTownPage } from "../lib/render-town-page.js";
 import {
   findQualifyingTown,
@@ -19,10 +21,11 @@ function html(body, status = 200, extraHeaders = {}) {
 
 function notFound() {
   return html(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Town not found</title>
-<meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{font-family:system-ui,sans-serif;background:#F5F7FA;color:#1B2838;padding:40px 20px;text-align:center}a{color:#E8614D;font-weight:700}</style>
-</head><body><h1>Town not found</h1><p>That town doesn’t have enough verified happy hour hours yet — or the link is outdated.</p><p><a href="/">Browse all happy hours</a></p></body></html>`,
+    notFoundPage({
+      title: "Town not found",
+      message:
+        "That town doesn’t have enough verified happy hour hours yet — or the link is outdated."
+    }),
     404,
     { "Cache-Control": "public, max-age=30" }
   );
@@ -43,7 +46,15 @@ export async function onRequestGet(context) {
   const slug = normalizeTownSlug(rawPath);
 
   if (!slug || slug === "index") {
-    return Response.redirect(new URL("/", request.url), 302);
+    try {
+      const all = await getPublishedVenues(env, context);
+      return html(renderTownsIndex(getQualifyingTowns(all)));
+    } catch (err) {
+      const msg = String(err && err.message ? err.message : err);
+      return html(`<h1>Error</h1><pre>${msg}</pre>`, 500, {
+        "Cache-Control": "no-store"
+      });
+    }
   }
 
   const url = new URL(request.url);

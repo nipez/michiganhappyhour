@@ -1,5 +1,17 @@
 {
   "version": 1,
-  "include": ["/api/*", "/spots/*", "/regions/*", "/towns/*", "/collections/*", "/owner-report", "/manage-billing"],
+  "include": [
+    "/api/*",
+    "/spots",
+    "/spots/*",
+    "/regions",
+    "/regions/*",
+    "/towns",
+    "/towns/*",
+    "/collections",
+    "/collections/*",
+    "/owner-report",
+    "/manage-billing"
+  ],
   "exclude": []
 }
