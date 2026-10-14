@@ -1,5 +1,10 @@
 import { slugify } from "../api/_venues.js";
-import { getPublishedVenues } from "../lib/published-venues-cache.js";
+import {
+  getPublishedVenues,
+  regionCountsFromVenues
+} from "../lib/published-venues-cache.js";
+import { notFoundPage } from "../lib/not-found-page.js";
+import { renderSpotsIndex } from "../lib/render-directory-index.js";
 import {
   canonicalSpotPath,
   normalizeSpotSlug,
@@ -7,7 +12,7 @@ import {
   renderSpotPage,
   venueSlug
 } from "../lib/render-spot-page.js";
-import { findQualifyingTown } from "../lib/towns.js";
+import { findQualifyingTown, getQualifyingTowns } from "../lib/towns.js";
 
 function html(body, status = 200, extraHeaders = {}) {
   return new Response(body, {
@@ -41,10 +46,10 @@ function prefersMarkdown(request) {
 
 function notFound() {
   return html(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Spot not found</title>
-<meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{font-family:system-ui,sans-serif;background:#F5F7FA;color:#1B2838;padding:40px 20px;text-align:center}a{color:#E8614D;font-weight:700}</style>
-</head><body><h1>Spot not found</h1><p>That listing isn’t published (or the link is outdated).</p><p><a href="/">Browse all happy hours</a></p></body></html>`,
+    notFoundPage({
+      title: "Spot not found",
+      message: "That listing isn’t published (or the link is outdated)."
+    }),
     404,
     { "Cache-Control": "public, max-age=30" }
   );
@@ -99,7 +104,17 @@ export async function onRequestGet(context) {
     : params.path || "";
   const slug = normalizeSpotSlug(rawPath);
   if (!slug || slug === "index") {
-    return Response.redirect(new URL("/", request.url), 302);
+    try {
+      const venues = await getPublishedVenues(env, context);
+      const counts = regionCountsFromVenues(venues);
+      const towns = getQualifyingTowns(venues);
+      return html(renderSpotsIndex(counts, towns));
+    } catch (err) {
+      const msg = String(err && err.message ? err.message : err);
+      return html(`<h1>Error</h1><pre>${msg}</pre>`, 500, {
+        "Cache-Control": "no-store"
+      });
+    }
   }
 
   try {

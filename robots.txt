@@ -4,8 +4,11 @@ Disallow: /admin/
 Disallow: /owner-report
 Disallow: /manage-billing
 Disallow: /submit/thanks.html
+Disallow: /submit/thanks
 Disallow: /for-business/thanks.html
+Disallow: /for-business/thanks
 Disallow: /index-backup.html
+Disallow: /index-backup
 Disallow: /api/
 # Public, curated venue feed (also linked from /llms.txt)
 Allow: /api/venues

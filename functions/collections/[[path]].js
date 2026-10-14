@@ -1,4 +1,6 @@
 import { getPublishedVenues } from "../lib/published-venues-cache.js";
+import { notFoundPage } from "../lib/not-found-page.js";
+import { renderCollectionsIndex } from "../lib/render-directory-index.js";
 import {
   COLLECTION_META,
   matchesCollection,
@@ -19,10 +21,10 @@ function html(body, status = 200, extraHeaders = {}) {
 
 function notFound() {
   return html(
-    `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Collection not found</title>
-<meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{font-family:system-ui,sans-serif;background:#F5F7FA;color:#1B2838;padding:40px 20px;text-align:center}a{color:#E8614D;font-weight:700}</style>
-</head><body><h1>Collection not found</h1><p><a href="/">Browse all happy hours</a></p></body></html>`,
+    notFoundPage({
+      title: "Collection not found",
+      message: "That collection isn’t available."
+    }),
     404
   );
 }
@@ -36,7 +38,7 @@ export async function onRequestGet(context) {
     : params.path || "";
   const slug = normalizeCollectionSlug(rawPath);
   if (!slug || slug === "index") {
-    return Response.redirect(new URL("/", request.url), 302);
+    return html(renderCollectionsIndex());
   }
   if (!COLLECTION_META[slug]) return notFound();
 
