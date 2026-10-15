@@ -96,46 +96,85 @@ function dealHook(deals) {
   return short.length <= 42 ? short : short.slice(0, 39).replace(/\s+\S*$/, "") + "…";
 }
 
-function buildSpotSeo(name, town, hhStart, hhEnd, deals, category = "") {
+/**
+ * One-off SERP name aliases for query wording mismatches (slug → title name).
+ * Keep tiny: only when GSC shows people search a shorter / alternate brand name.
+ */
+const SEO_NAME_BY_SLUG = {
+  "prost-wine-bar-charcuterie-bay-city": "Prost",
+  "unicorn-lounge-lansing": "Unicorn Bar"
+};
+
+function nameIncludesTown(name, town) {
+  if (!name || !town) return false;
+  return String(name).toLowerCase().includes(String(town).toLowerCase());
+}
+
+/** Name-intent title lead: "Venue City Happy Hour" (skip duplicate city). */
+function nameIntentLead(seoName, town) {
+  if (town && !nameIncludesTown(seoName, town)) {
+    return `${seoName} ${town} Happy Hour`;
+  }
+  return `${seoName} Happy Hour`;
+}
+
+/**
+ * CTR-first spot SEO for name-intent queries (venue + city + happy hour).
+ * @param {string} name
+ * @param {string} town
+ * @param {string} hhStart
+ * @param {string} hhEnd
+ * @param {unknown} deals
+ * @param {string} [category]
+ * @param {string} [slug] venue slug for optional SERP name aliases
+ */
+export function buildSpotSeo(name, town, hhStart, hhEnd, deals, category = "", slug = "") {
   const hoursLine = [hhStart, hhEnd].filter(Boolean).join("–");
   const realDeals = verifiedDeals(deals);
   const hasHours = Boolean(hhStart && hhEnd);
   const cat = (category || "spot").toLowerCase();
   const hook = dealHook(deals);
   const year = new Date().getFullYear();
+  const seoName = (slug && SEO_NAME_BY_SLUG[slug]) || name;
+  const lead = nameIntentLead(seoName, town);
 
-  // CTR-first titles: lead with hours/deals when we have them; otherwise local intent.
+  // Prefer "Name City Happy Hour | times/deals" so brand+local tokens stay left of the pipe.
   let title;
-  const withHours = `${name} Happy Hour ${hoursLine} | ${town}`;
-  const withHook = `${name} Happy Hour | ${hook}`;
-  const withTown = `${name} Happy Hour | ${town}, MI`;
-  const nearMe = `Happy Hour at ${name} | ${town}, MI`;
+  const withHours = `${lead} | ${hoursLine}`;
+  const withHook = `${lead} | ${hook}`;
+  const withTownMi = `${seoName} Happy Hour | ${town}, MI`;
   if (hasHours && withHours.length <= 60) {
     title = withHours;
   } else if (hook && withHook.length <= 60) {
     title = withHook;
-  } else if (withTown.length <= 60) {
-    title = withTown;
-  } else if (nearMe.length <= 60) {
-    title = nearMe;
+  } else if (lead.length <= 60) {
+    title = lead;
+  } else if (town && withTownMi.length <= 60) {
+    title = withTownMi;
   } else {
-    title = `${name} Happy Hour | ${town}`;
+    title = `${seoName} Happy Hour | ${town || "Michigan"}`.slice(0, 60);
   }
 
+  // Meta: lead with searchable name + city, then times/deals (matches GSC name-intent queries).
   let desc;
+  const place = !town
+    ? seoName
+    : nameIncludesTown(seoName, town)
+      ? `${seoName}, MI`
+      : `${seoName} in ${town}, MI`;
   if (realDeals.length && hasHours) {
-    desc = `${realDeals.slice(0, 3).join(", ")} at ${name} — happy hour ${hoursLine} in ${town}, MI. Updated ${year}: hours, specials, map & directions.`;
+    desc = `${place}: happy hour ${hoursLine} — ${realDeals.slice(0, 3).join(", ")}. Map, phone & directions — updated ${year}.`;
   } else if (hasHours) {
-    desc = `${name} happy hour runs ${hoursLine} in ${town}, MI. See current ${cat} specials, map pin, and directions — updated ${year}.`;
+    desc = `${place}: happy hour ${hoursLine}. See current ${cat} specials, map pin, and directions — updated ${year}.`;
+  } else if (realDeals.length) {
+    desc = `${place} happy hour — ${realDeals.slice(0, 3).join(", ")}. Location, map, phone & how to confirm today's specials. Updated ${year}.`;
   } else {
-    desc = `Happy hour at ${name} in ${town}, MI — location, map, phone, and how to confirm today's ${cat} drink specials. Updated ${year}.`;
+    desc = `${place} happy hour — location, map, phone, and how to confirm today's ${cat} drink specials. Updated ${year}.`;
   }
   desc = desc.slice(0, 160);
 
-  const ogTitle = hasHours
-    ? `${name} Happy Hour ${hoursLine} | ${town}, MI`
-    : `${name} Happy Hour | ${town}, MI`;
-  return { title, desc, ogTitle, hasVerifiedDeals: realDeals.length > 0, hasHours };
+  const ogTitle = hasHours ? `${lead} | ${hoursLine}` : lead;
+  return { title, desc, ogTitle, hasVerifiedDeals: realDeals.length > 0, hasHours, seoName };
 }
 
 export function normalizeSpotSlug(raw) {
@@ -206,7 +245,7 @@ export function renderSpotPage(venue, related = [], opts = {}) {
   const townHref = townPageSlug ? canonicalTownPath(townPageSlug) : "";
   const slug = venueSlug(venue);
   const canonical = `https://michiganhappyhour.com/spots/${slug}`;
-  const seo = buildSpotSeo(name, town, hhStart, hhEnd, deals, category);
+  const seo = buildSpotSeo(name, town, hhStart, hhEnd, deals, category, slug);
   const { title, desc, ogTitle } = seo;
   const daysText = days.join(", ");
   const hoursDisplay = [hhStart, hhEnd].filter(Boolean).join(" &ndash; ");
