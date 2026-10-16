@@ -89,7 +89,7 @@ const STATIC = [
   { loc: "/blog/sunday-happy-hour-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/college-town-happy-hours-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/upper-peninsula-happy-hour-road-trip", priority: "0.75", changefreq: "weekly" },
-  { loc: "/blog/traverse-city-happy-hour-guide", priority: "0.75", changefreq: "weekly" },
+  { loc: "/blog/traverse-city-happy-hour-guide", priority: "0.85", changefreq: "weekly" },
   { loc: "/blog/best-brewery-happy-hours-michigan", priority: "0.75", changefreq: "weekly" },
   { loc: "/blog/michigan-happy-hour-laws", priority: "0.75", changefreq: "weekly" },
   { loc: "/map/", priority: "0.7", changefreq: "weekly" },

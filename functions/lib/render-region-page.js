@@ -6,9 +6,19 @@ export const REGION_META = {
   "traverse-city": {
     name: "Traverse City",
     emoji: "🏙️",
+    // Distinct from the editorial blog guide (primary for "traverse city happy hour").
+    h1: "Traverse City Happy Hour Spots",
+    title: "Traverse City Happy Hour Listings (2026)",
+    ogTitle: "Traverse City Happy Hour Listings | Map & Directory",
+    desc:
+      "Directory of Traverse City happy hour listings — downtown, Commons, and bayfront bars mapped. For neighborhoods & itineraries, see the city guide.",
     blurb:
-      "Downtown TC packs brewery pints, pizza slices, wine specials, and craft cocktails into walkable blocks — real hours and deals, mapped.",
-    blog: "/blog/traverse-city-happy-hour-guide"
+      "Browse every published Traverse City listing — downtown, Commons, and bayfront — then open the city guide for neighborhoods and itineraries.",
+    blog: "/blog/traverse-city-happy-hour-guide",
+    blogLabel: "Neighborhood guide",
+    blogAnchor: "Read the Traverse City happy hour guide",
+    blogSuffix:
+      "for Front Street, Commons, and bayfront itineraries. This page is the full listings directory."
   },
   leelanau: {
     name: "Leelanau Peninsula",
@@ -258,21 +268,26 @@ export function renderRegionPage(regionId, venues, allRegionCounts = {}) {
   const count = venues.length;
   const name = meta.name;
   const year = new Date().getFullYear();
-  const title =
-    `Best ${name} Happy Hours (${year}) | ${count} Spots`.length <= 60
-      ? `Best ${name} Happy Hours (${year}) | ${count} Spots`
-      : `${name} Happy Hour Guide (${year}) | ${count} Spots`;
-  const desc = `Find the best ${name} happy hours — ${count} bars, breweries & restaurants with hours, drink specials, and maps. Updated ${year}.`.slice(
-    0,
-    160
-  );
+  const title = (
+    meta.title
+      ? `${meta.title} | ${count} Spots`
+      : `Best ${name} Happy Hours (${year}) | ${count} Spots`.length <= 60
+        ? `Best ${name} Happy Hours (${year}) | ${count} Spots`
+        : `${name} Happy Hour Guide (${year}) | ${count} Spots`
+  ).slice(0, 60);
+  const h1 = meta.h1 || `${name} Happy Hour Guide`;
+  const ogTitle = meta.ogTitle || `${name} Happy Hour Guide | Best Deals & Hours`;
+  const desc = (
+    meta.desc ||
+    `Find the best ${name} happy hours — ${count} bars, breweries & restaurants with hours, drink specials, and maps. Updated ${year}.`
+  ).slice(0, 160);
   const canonical = `https://michiganhappyhour.com/regions/${regionId}`;
   const interactive = `/?region=${encodeURIComponent(regionId)}#listings-top`;
 
   const itemList = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `${name} Happy Hour Guide`,
+    name: h1,
     numberOfItems: count,
     itemListElement: venues.slice(0, 100).map((v, i) => ({
       "@type": "ListItem",
@@ -328,7 +343,11 @@ export function renderRegionPage(regionId, venues, allRegionCounts = {}) {
 
   const blogBlock = meta.blog
     ? `<div style="margin:28px 0 8px;padding:16px 18px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;font-size:16px;line-height:1.5">
-<strong>City guide:</strong> <a href="${escapeAttr(meta.blog)}" style="color:#E8614D;font-weight:700">Read the ${escapeHtml(name)} happy hour guide</a> for itineraries, neighborhoods, and standout deals.
+<strong>${escapeHtml(meta.blogLabel || "City guide")}:</strong> <a href="${escapeAttr(meta.blog)}" style="color:#E8614D;font-weight:700">${escapeHtml(
+        meta.blogAnchor || `Read the ${name} happy hour guide`
+      )}</a> ${escapeHtml(
+        meta.blogSuffix || "for itineraries, neighborhoods, and standout deals."
+      )}
 </div>`
     : "";
 
@@ -359,7 +378,7 @@ export function renderRegionPage(regionId, venues, allRegionCounts = {}) {
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeAttr(desc)}">
-<meta property="og:title" content="${escapeAttr(`${name} Happy Hour Guide | Best Deals & Hours`)}">
+<meta property="og:title" content="${escapeAttr(ogTitle)}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="${escapeAttr(desc)}">
 <meta property="og:url" content="${escapeAttr(canonical)}">
@@ -402,7 +421,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 <div class="bc"><a href="/">Home</a> &rarr; ${escapeHtml(name)}</div>
 <div style="margin-bottom:28px">
 <div style="font-size:40px;margin-bottom:8px">${meta.emoji}</div>
-<h1 class="sf" style="font-size:clamp(28px,5vw,40px);font-weight:800;margin-bottom:10px">${escapeHtml(name)} Happy Hour Guide</h1>
+<h1 class="sf" style="font-size:clamp(28px,5vw,40px);font-weight:800;margin-bottom:10px">${escapeHtml(h1)}</h1>
 <p style="font-size:18px;color:#4A6274;line-height:1.6;max-width:640px">${escapeHtml(meta.blurb)}</p>
 <div style="margin-top:12px;font-size:16px;color:#2D6A8F;font-weight:700">${count} happy hour spot${count === 1 ? "" : "s"}</div>
 <div class="cta-row">

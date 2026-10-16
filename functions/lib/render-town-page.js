@@ -63,19 +63,31 @@ export function renderTownPage(town, siblingTowns = []) {
   const regionLabel = town.region_name || regionMeta?.name || "Michigan";
   const regionPath = regionId ? `/regions/${regionId}` : "/";
 
-  const title = `Happy Hour in ${name}, Michigan (${year}) | ${count} Spots`.slice(0, 60);
-  const desc =
-    `Happy hour in ${name}, Michigan — ${count} bars, breweries & restaurants with real hours, drink specials, and maps. Updated ${year}.`.slice(
-      0,
-      160
-    );
+  // Traverse City: keep town page as the verified-hours directory; blog guide owns the head query.
+  const isTraverseCity = town.slug === "traverse-city";
+  const title = (
+    isTraverseCity
+      ? `Traverse City Happy Hour Hours (${year}) | ${count} Verified`
+      : `Happy Hour in ${name}, Michigan (${year}) | ${count} Spots`
+  ).slice(0, 60);
+  const desc = (
+    isTraverseCity
+      ? `Verified Traverse City happy hour hours — ${count} bars & restaurants with real start/end times. For neighborhoods & itineraries, see the city guide.`
+      : `Happy hour in ${name}, Michigan — ${count} bars, breweries & restaurants with real hours, drink specials, and maps. Updated ${year}.`
+  ).slice(0, 160);
+  const h1 = isTraverseCity
+    ? `Traverse City Happy Hour Hours`
+    : `Happy Hour in ${name}, Michigan`;
+  const lead = isTraverseCity
+    ? `Verified happy hour start/end times in Traverse City — the live hours checklist. For neighborhoods, day-by-day picks, and patio routes, use the city guide.`
+    : `Real happy hour hours and drink specials in ${name} — bars, breweries, and restaurants you can plan around, not OSM shells without times.`;
   const canonical = `https://michiganhappyhour.com${canonicalTownPath(town.slug)}`;
   const interactive = `/?q=${encodeURIComponent(name)}#listings-top`;
 
   const itemList = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `Happy Hour in ${name}, Michigan`,
+    name: h1,
     numberOfItems: count,
     itemListElement: spots.slice(0, 100).map((v, i) => ({
       "@type": "ListItem",
@@ -148,7 +160,15 @@ export function renderTownPage(town, siblingTowns = []) {
   const blogHref = regionMeta?.blog || "";
   const blogBlock = blogHref
     ? `<div style="margin:28px 0 8px;padding:16px 18px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;font-size:16px;line-height:1.5">
-<strong>Region guide:</strong> <a href="${escapeAttr(blogHref)}" style="color:#E8614D;font-weight:700">Read the ${escapeHtml(regionLabel)} happy hour guide</a> for neighborhoods and itineraries.
+<strong>${isTraverseCity ? "City guide (primary)" : "Region guide"}:</strong> <a href="${escapeAttr(blogHref)}" style="color:#E8614D;font-weight:700">${
+        isTraverseCity
+          ? "Read the Traverse City happy hour guide"
+          : `Read the ${escapeHtml(regionLabel)} happy hour guide`
+      }</a> ${
+        isTraverseCity
+          ? "for Front Street, Commons, bayfront, and day-by-day picks. This town page lists verified hours only."
+          : "for neighborhoods and itineraries."
+      }
 </div>`
     : "";
 
@@ -167,7 +187,7 @@ export function renderTownPage(town, siblingTowns = []) {
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>${escapeHtml(title)}</title>
 <meta name="description" content="${escapeAttr(desc)}">
-<meta property="og:title" content="${escapeAttr(`Happy Hour in ${name}, Michigan`)}">
+<meta property="og:title" content="${escapeAttr(h1)}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="${escapeAttr(desc)}">
 <meta property="og:url" content="${escapeAttr(canonical)}">
@@ -213,8 +233,8 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
       : ""
   } &rarr; ${escapeHtml(name)}</div>
 <div style="margin-bottom:28px">
-<h1 class="sf" style="font-size:clamp(28px,5vw,40px);font-weight:800;margin-bottom:10px">Happy Hour in ${escapeHtml(name)}, Michigan</h1>
-<p style="font-size:18px;color:#4A6274;line-height:1.6;max-width:640px">Real happy hour hours and drink specials in ${escapeHtml(name)} — bars, breweries, and restaurants you can plan around, not OSM shells without times.</p>
+<h1 class="sf" style="font-size:clamp(28px,5vw,40px);font-weight:800;margin-bottom:10px">${escapeHtml(h1)}</h1>
+<p style="font-size:18px;color:#4A6274;line-height:1.6;max-width:640px">${escapeHtml(lead)}</p>
 <div style="margin-top:12px;font-size:16px;color:#2D6A8F;font-weight:700">${count} spot${count === 1 ? "" : "s"} with verified hours</div>
 <div class="cta-row">
 <a class="bt bp" href="${escapeAttr(interactive)}">Filter &amp; map ${escapeHtml(name)}</a>
