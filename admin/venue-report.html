@@ -120,7 +120,7 @@ h1{font-family:Fraunces,Georgia,serif;font-size:clamp(26px,4vw,34px);margin:6px 
     reportEl.innerHTML =
       '<div class="eyebrow">Michigan Happy Hour · monthly traffic</div>' +
       '<h1>'+esc(v.name)+'</h1>' +
-      '<div class="meta">'+esc(v.town) + (v.region_name ? ' · ' + esc(v.region_name) : '') + '</div>' +
+      '<div class="meta">'+esc(v.town) + (v.region_name && v.region_name !== v.town ? ' · ' + esc(v.region_name) : '') + '</div>' +
       '<div>'+badges+'</div>' +
       '<p class="intro">Here’s how people found and used your listing on michiganhappyhour.com during <strong>'+esc(result.data.month_label)+'</strong>. These are real taps from locals and visitors already browsing happy hours.</p>' +
       '<div class="metrics">' +
