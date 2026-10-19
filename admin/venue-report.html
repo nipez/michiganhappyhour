@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Venue traffic report | Michigan Happy Hour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14202c;--muted:#5f7385;--line:#d5e0e8;--coral:#E8614D;--blue:#2D6A8F}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:#eef2f5;color:var(--ink);padding:24px 16px 64px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.toolbar a,.toolbar button{appearance:none;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer;text-decoration:none;color:var(--ink);font-family:inherit}
+.toolbar button.primary{background:linear-gradient(135deg,var(--blue),var(--coral));color:#fff;border:none}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 8px 28px rgba(20,32,44,.06)}
+.eyebrow{color:var(--muted);font-size:13px;font-weight:600;letter-spacing:.02em}
+h1{font-family:Fraunces,Georgia,serif;font-size:clamp(26px,4vw,34px);margin:6px 0 4px;line-height:1.15}
+.meta{color:var(--muted);font-size:14px;line-height:1.5}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-right:6px;margin-top:10px}
+.badge.ok{background:#ECFDF5;color:#059669}
+.badge.hot{background:#FFF0ED;color:var(--coral)}
+.intro{margin:16px 0 4px;font-size:15px;line-height:1.55;color:#314455}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:18px 0}
+.metric{background:#f4f7f9;border:1px solid var(--line);border-radius:12px;padding:12px}
+.metric .n{font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:800;line-height:1}
+.metric .l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.metric .d{font-size:12px;margin-top:6px;font-weight:600}
+.metric .d.up{color:#059669}.metric .d.down{color:var(--coral)}.metric .d.flat{color:var(--muted)}
+.foot{margin-top:16px;font-size:13px;color:var(--muted);line-height:1.6}
+.err{color:var(--coral);font-weight:600;margin:12px 0}
+.hidden{display:none!important}
+@media print{
+  body{background:#fff;padding:0}
+  .toolbar{display:none!important}
+  .card{box-shadow:none;border:none;border-radius:0;padding:0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="toolbar">
+    <a href="/admin/">← Admin</a>
+    <button type="button" class="primary" id="print-btn">Print / save PDF</button>
+  </div>
+  <div id="error" class="err hidden"></div>
+  <div id="report" class="card hidden"></div>
+</div>
+<script>
+(function(){
+  var KEY = 'mhh_admin_pw';
+  var params = new URLSearchParams(window.location.search);
+  var venueId = params.get('venue_id') || params.get('id');
+  var month = params.get('month') || '';
+  var pw = sessionStorage.getItem(KEY) || '';
+  var err = document.getElementById('error');
+  var reportEl = document.getElementById('report');
+
+  function showErr(t){ err.textContent = t; err.classList.remove('hidden'); }
+  function esc(s){
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function fmtDelta(n){
+    if (n == null || n === 0) return '<span class="d flat">vs prior month: 0</span>';
+    var cls = n > 0 ? 'up' : 'down';
+    var sign = n > 0 ? '+' : '';
+    return '<span class="d '+cls+'">vs prior month: '+sign+n+'</span>';
+  }
+  function metric(label, value, change){
+    return '<div class="metric"><div class="n">'+esc(value)+'</div><div class="l">'+esc(label)+'</div>'+fmtDelta(change)+'</div>';
+  }
+
+  document.getElementById('print-btn').addEventListener('click', function(){ window.print(); });
+
+  if (!pw) {
+    showErr('Sign in at Admin first, then open this report again.');
+    return;
+  }
+  if (!venueId) {
+    showErr('Missing venue_id.');
+    return;
+  }
+
+  var q = '/api/admin/venue-traffic?venue_id=' + encodeURIComponent(venueId);
+  if (month) q += '&month=' + encodeURIComponent(month);
+
+  fetch(q, {
+    headers: { 'Authorization': 'Bearer ' + pw, 'Content-Type': 'application/json' }
+  }).then(function(res){
+    return res.json().then(function(data){ return { res: res, data: data }; });
+  }).then(function(result){
+    if (result.res.status === 401) {
+      sessionStorage.removeItem(KEY);
+      showErr('Unauthorized. Sign in at /admin/ and try again.');
+      return;
+    }
+    if (!result.data.ok) {
+      showErr(result.data.error || result.data.detail || 'Failed to load report');
+      return;
+    }
+    var v = result.data.venue || (result.data.venues && result.data.venues[0]);
+    if (!v) {
+      showErr('No claimed venue found for this id. Only claimed listings appear in monthly traffic reports.');
+      return;
+    }
+    var m = v.metrics || {};
+    var c = v.change || {};
+    var badges = '<span class="badge ok">Claimed</span>' +
+      (v.featured ? '<span class="badge hot">Featured</span>' : '');
+    var listing = v.listing_path
+      ? '<a href="'+esc(v.listing_path)+'">View public listing</a>'
+      : '';
+
+    document.title = v.name + ' — ' + result.data.month_label + ' | Michigan Happy Hour';
+
+    reportEl.innerHTML =
+      '<div class="eyebrow">Michigan Happy Hour · monthly traffic</div>' +
+      '<h1>'+esc(v.name)+'</h1>' +
+      '<div class="meta">'+esc(v.town) + (v.region_name ? ' · ' + esc(v.region_name) : '') + '</div>' +
+      '<div>'+badges+'</div>' +
+      '<p class="intro">Here’s how people found and used your listing on michiganhappyhour.com during <strong>'+esc(result.data.month_label)+'</strong>. These are real taps from locals and visitors already browsing happy hours.</p>' +
+      '<div class="metrics">' +
+        metric('Listing views', m.views, c.views) +
+        metric('Phone calls', m.calls, c.calls) +
+        metric('Directions', m.directions, c.directions) +
+        metric('Map taps', m.map_clicks, c.map_clicks) +
+        metric('Website clicks', m.website_clicks, c.website_clicks) +
+      '</div>' +
+      '<p class="meta">Compared with '+esc(result.data.prev_month_label)+'. Map taps mostly come from the homepage map; directions and calls are from your listing page.</p>' +
+      '<div class="foot">' +
+        (v.featured
+          ? 'You’re on Featured ($79/mo) — priority placement in your region plus homepage/map callouts.'
+          : 'Want more eyes? Featured placement is $79/mo for priority in your region and homepage/map callouts.') +
+        (listing ? '<br>'+listing : '') +
+      '</div>';
+    reportEl.classList.remove('hidden');
+  }).catch(function(e){
+    showErr(String(e && e.message ? e.message : e));
+  });
+})();
+</script>
+</body>
+</html>

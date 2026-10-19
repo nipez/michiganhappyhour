@@ -105,7 +105,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   <div class="topbar">
     <div class="brand">
       <h1>Michigan Happy Hour admin</h1>
-      <p class="sub">Venues, submissions, and outreach reports. Noindex.</p>
+      <p class="sub">Venues, submissions, outreach, and monthly claimed traffic. Noindex.</p>
     </div>
   </div>
 
@@ -124,6 +124,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       <div class="tabs">
         <button class="tab active" data-tab="venues" type="button">Venues</button>
         <button class="tab" data-tab="reports" type="button">Reports</button>
+        <button class="tab" data-tab="traffic" type="button">Monthly traffic</button>
         <button class="tab" data-tab="submissions" type="button">Submissions</button>
       </div>
       <button class="ghost" id="logout-btn" type="button">Lock</button>
@@ -422,6 +423,56 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       </div>
     </section>
 
+    <section id="tab-traffic" class="hidden">
+      <div class="card tight">
+        <div class="toolbar" style="grid-template-columns:minmax(160px,.7fr) auto">
+          <div>
+            <label class="field-label" for="traffic-month">Calendar month</label>
+            <input id="traffic-month" type="month">
+          </div>
+          <div class="actions">
+            <button class="primary" id="traffic-load-btn" type="button">Load report</button>
+            <button class="ghost" id="traffic-refresh-btn" type="button">Refresh (skip cache)</button>
+            <button class="ghost" id="traffic-csv-btn" type="button">Download CSV</button>
+          </div>
+        </div>
+        <p class="meta" style="margin-top:10px">Claimed listings only. Views, calls, directions, map taps, and website clicks for the month, with change vs the prior month. Default is the last full calendar month. Printable one-pagers are admin-gated (no public links yet).</p>
+        <div id="traffic-msg" class="err hidden"></div>
+        <div class="counts" id="traffic-counts" style="margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <div class="panel-head">
+          <div>
+            <h2 style="margin:0" id="traffic-title">Claimed venue traffic</h2>
+            <p class="meta" style="margin-top:4px" id="traffic-meta"></p>
+          </div>
+        </div>
+        <div class="list-scroll" style="max-height:min(70vh,820px)">
+          <table>
+            <thead>
+              <tr>
+                <th>Venue</th>
+                <th>Town</th>
+                <th>Feat</th>
+                <th>Views</th>
+                <th>Δ</th>
+                <th>Calls</th>
+                <th>Δ</th>
+                <th>Dir</th>
+                <th>Δ</th>
+                <th>Map</th>
+                <th>Web</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="traffic-rows">
+              <tr><td colspan="12" class="empty">Pick a month and load the report.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section id="tab-submissions" class="hidden">
       <div class="card tight">
         <div class="toolbar" style="grid-template-columns:1fr auto">
@@ -456,12 +507,14 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   var app = document.getElementById('app');
   var msg = document.getElementById('login-msg');
   var reportsMsg = document.getElementById('reports-msg');
+  var trafficMsg = document.getElementById('traffic-msg');
   var list = document.getElementById('list');
   var counts = document.getElementById('counts');
   var pwInput = document.getElementById('password');
   var activeTab = 'venues';
   var regionsMeta = {};
   var venuesCache = [];
+  var lastTrafficReport = null;
 
   function pw(){ return sessionStorage.getItem(KEY) || ''; }
   function setPw(v){ sessionStorage.setItem(KEY, v); }
@@ -507,10 +560,107 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     });
     document.getElementById('tab-venues').classList.toggle('hidden', tab !== 'venues');
     document.getElementById('tab-reports').classList.toggle('hidden', tab !== 'reports');
+    document.getElementById('tab-traffic').classList.toggle('hidden', tab !== 'traffic');
     document.getElementById('tab-submissions').classList.toggle('hidden', tab !== 'submissions');
     if (tab === 'venues') loadVenues();
     if (tab === 'submissions') loadSubmissions();
     if (tab === 'reports') loadReports();
+    if (tab === 'traffic') {
+      ensureTrafficMonthDefault();
+      loadTraffic();
+    }
+  }
+
+  function lastFullMonthValue(){
+    var d = new Date();
+    d.setUTCDate(1);
+    d.setUTCMonth(d.getUTCMonth() - 1);
+    var y = d.getUTCFullYear();
+    var m = String(d.getUTCMonth() + 1).padStart(2, '0');
+    return y + '-' + m;
+  }
+  function ensureTrafficMonthDefault(){
+    var el = document.getElementById('traffic-month');
+    if (el && !el.value) el.value = lastFullMonthValue();
+  }
+  function fmtChange(n){
+    if (n == null || n === 0) return '<span style="color:var(--muted)">0</span>';
+    var sign = n > 0 ? '+' : '';
+    var color = n > 0 ? '#059669' : 'var(--accent)';
+    return '<span style="color:'+color+';font-weight:700">'+sign+n+'</span>';
+  }
+  async function loadTraffic(opts){
+    opts = opts || {};
+    hideError(trafficMsg);
+    ensureTrafficMonthDefault();
+    var month = document.getElementById('traffic-month').value;
+    var q = '/api/admin/venue-traffic?month=' + encodeURIComponent(month);
+    if (opts.refresh) q += '&refresh=1';
+    var result = await api(q);
+    if (handleAuthFailure(result, trafficMsg)) return;
+    if (!result.data.ok) {
+      showError(trafficMsg, result.data.error || result.data.detail || 'Failed to load monthly traffic');
+      return;
+    }
+    lastTrafficReport = result.data;
+    document.getElementById('traffic-title').textContent = 'Claimed venue traffic — ' + (result.data.month_label || month);
+    document.getElementById('traffic-meta').textContent =
+      'Compared with ' + (result.data.prev_month_label || 'prior month') +
+      (result.data.cached_at ? ' · cached ' + result.data.cached_at : '');
+    document.getElementById('traffic-counts').innerHTML =
+      '<span class="chip">'+esc(result.data.claimed_count)+' claimed</span>' +
+      '<span class="chip hot">'+(result.data.venues||[]).filter(function(v){return v.featured;}).length+' featured</span>' +
+      '<span class="chip muted">'+esc(result.data.month)+'</span>';
+
+    var tbody = document.getElementById('traffic-rows');
+    var venues = result.data.venues || [];
+    if (!venues.length) {
+      tbody.innerHTML = '<tr><td colspan="12" class="empty">No claimed venues yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = venues.map(function(v){
+      var m = v.metrics || {};
+      var c = v.change || {};
+      var printHref = '/admin/venue-report.html?venue_id=' + encodeURIComponent(v.venue_id) +
+        '&month=' + encodeURIComponent(result.data.month);
+      return '<tr>' +
+        '<td><b>'+esc(v.name)+'</b></td>' +
+        '<td>'+esc(v.town)+'</td>' +
+        '<td>'+(v.featured ? '<span class="chip hot">Yes</span>' : '—')+'</td>' +
+        '<td>'+esc(m.views)+'</td><td>'+fmtChange(c.views)+'</td>' +
+        '<td>'+esc(m.calls)+'</td><td>'+fmtChange(c.calls)+'</td>' +
+        '<td>'+esc(m.directions)+'</td><td>'+fmtChange(c.directions)+'</td>' +
+        '<td>'+esc(m.map_clicks)+'</td>' +
+        '<td>'+esc(m.website_clicks)+'</td>' +
+        '<td><a class="btn ghost" style="padding:6px 9px;font-size:12px" href="'+esc(printHref)+'" target="_blank" rel="noopener">Printable</a></td>' +
+        '</tr>';
+    }).join('');
+  }
+  async function downloadTrafficCsv(){
+    ensureTrafficMonthDefault();
+    var month = document.getElementById('traffic-month').value;
+    var res = await fetch('/api/admin/venue-traffic?month=' + encodeURIComponent(month) + '&format=csv', {
+      headers: { 'Authorization': 'Bearer ' + pw() }
+    });
+    if (res.status === 401) {
+      clearPw();
+      app.classList.add('hidden');
+      login.classList.remove('hidden');
+      showError(msg, 'Wrong password.');
+      return;
+    }
+    if (!res.ok) {
+      showError(trafficMsg, 'CSV download failed ('+res.status+').');
+      return;
+    }
+    var blob = await res.blob();
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'claimed-venue-traffic-' + month + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
   }
 
   function fillRegionSelects(regions){
@@ -1128,6 +1278,10 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       'spot_name','town','region','phone','website','source','category','listing_url','claim_url'
     ]);
   });
+  document.getElementById('traffic-load-btn').addEventListener('click', function(){ loadTraffic(); });
+  document.getElementById('traffic-refresh-btn').addEventListener('click', function(){ loadTraffic({ refresh: true }); });
+  document.getElementById('traffic-csv-btn').addEventListener('click', downloadTrafficCsv);
+  document.getElementById('traffic-month').addEventListener('change', function(){ loadTraffic(); });
   pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
 
   if (pw()) unlock();
