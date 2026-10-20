@@ -141,6 +141,7 @@ Open `https://michiganhappyhour.com/admin/` and unlock with that password.
 | **Venues** | Search/edit/create listings in D1 (`venues`). Homepage + map load from `/api/venues`. Toggle **Dog friendly**, Claimed, Featured. |
 | **Venue reports** | 7/30/90-day CTAs + Featured pitch copy ($79/mo), mailto, CSV export, cold targets (not featured + phone) |
 | **Monthly traffic** | Calendar-month KPIs for **claimed** listings (views, calls, directions, map, website) + MoM change, CSV, printable one-pager (`/admin/venue-report.html`) |
+| **Claim outreach** | Unclaimed venues + private `/claim-traffic?t=` links, email/SMS copy, mailto (does not send). Generate/rotate tokens per venue. |
 | **Submissions** | Inbox of tip/claim forms |
 
 ### Seed venues into D1 (one-time / refresh)

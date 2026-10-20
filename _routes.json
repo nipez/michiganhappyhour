@@ -11,7 +11,8 @@
     "/collections",
     "/collections/*",
     "/owner-report",
-    "/manage-billing"
+    "/manage-billing",
+    "/claim-traffic"
   ],
   "exclude": []
 }
