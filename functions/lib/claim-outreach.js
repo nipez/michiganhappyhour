@@ -48,11 +48,12 @@ function proofLine(venueRow, monthLabel) {
 
   if (presentation?.mode === "venue" || !isLowVenueTraffic(m)) {
     const bits = [];
-    if (views) bits.push(`${fmtNum(views)} listing views`);
-    if (calls) bits.push(`${fmtNum(calls)} call taps`);
-    if (directions) bits.push(`${fmtNum(directions)} directions taps`);
-    if (map) bits.push(`${fmtNum(map)} map taps`);
-    if (web) bits.push(`${fmtNum(web)} website clicks`);
+    if (views) bits.push(`${fmtNum(views)} listing view${views === 1 ? "" : "s"}`);
+    if (calls) bits.push(`${fmtNum(calls)} call tap${calls === 1 ? "" : "s"}`);
+    if (directions)
+      bits.push(`${fmtNum(directions)} directions tap${directions === 1 ? "" : "s"}`);
+    if (map) bits.push(`${fmtNum(map)} map tap${map === 1 ? "" : "s"}`);
+    if (web) bits.push(`${fmtNum(web)} website click${web === 1 ? "" : "s"}`);
     if (bits.length) {
       return `In ${period}, your Michigan Happy Hour listing got ${bits.slice(0, 3).join(", ")} from people already searching happy hours.`;
     }
@@ -133,7 +134,8 @@ export function mailtoHref({ email, subject, body }) {
 }
 
 export function outreachSubject(venue) {
-  return `Your ${venue.name || "listing"} traffic on Michigan Happy Hour`;
+  const name = venue.name || "your listing";
+  return `Traffic for ${name} on Michigan Happy Hour`;
 }
 
 /** Ensure venue has a token; returns { token, created }. */
