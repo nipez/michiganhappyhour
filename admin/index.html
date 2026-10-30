@@ -105,7 +105,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   <div class="topbar">
     <div class="brand">
       <h1>Michigan Happy Hour admin</h1>
-      <p class="sub">Venues, submissions, outreach, and monthly claimed traffic. Noindex.</p>
+      <p class="sub">Venues, sponsors, submissions, outreach, and monthly claimed traffic. Noindex.</p>
     </div>
   </div>
 
@@ -123,6 +123,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     <div class="nav">
       <div class="tabs">
         <button class="tab active" data-tab="venues" type="button">Venues</button>
+        <button class="tab" data-tab="sponsors" type="button">Sponsors</button>
         <button class="tab" data-tab="reports" type="button">Reports</button>
         <button class="tab" data-tab="traffic" type="button">Monthly traffic</button>
         <button class="tab" data-tab="submissions" type="button">Submissions</button>
@@ -294,6 +295,90 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
             <button class="ghost" id="venue-report-btn" type="button">Owner report link</button>
             <button class="ghost" id="venue-portal-btn" type="button">Billing portal link</button>
             <div id="venue-save-msg" class="ok hidden" style="margin:0"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-sponsors" class="hidden">
+      <div class="card tight">
+        <div class="panel-head">
+          <div>
+            <h2 style="margin:0">Local sponsors</h2>
+            <p class="meta">Exclusive $100/mo slot per town or region. Only one live sponsor shows on a page.</p>
+          </div>
+          <div class="row">
+            <button class="ghost" id="sponsor-refresh-btn" type="button">Refresh</button>
+            <button class="primary" id="sponsor-new-btn" type="button">New sponsor</button>
+          </div>
+        </div>
+        <div id="sponsors-msg" class="err hidden"></div>
+      </div>
+      <div class="workspace">
+        <div class="panel">
+          <div class="list-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Place</th>
+                  <th>Name</th>
+                  <th>Dates</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="sponsors-table"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card editor-shell">
+          <div class="editor-scroll stack">
+            <input type="hidden" id="s-id" value="">
+            <div class="field-grid">
+              <div>
+                <label class="field-label" for="s-place-type">Place type</label>
+                <select id="s-place-type">
+                  <option value="town">town</option>
+                  <option value="region">region</option>
+                </select>
+              </div>
+              <div>
+                <label class="field-label" for="s-place-slug">Place slug</label>
+                <input id="s-place-slug" type="text" placeholder="royal-oak or detroit">
+              </div>
+              <div class="full">
+                <label class="field-label" for="s-name">Sponsor name</label>
+                <input id="s-name" type="text" placeholder="Business name">
+              </div>
+              <div class="full">
+                <label class="field-label" for="s-url">URL</label>
+                <input id="s-url" type="text" placeholder="https://…">
+              </div>
+              <div class="full">
+                <label class="field-label" for="s-tagline">Tagline (one line)</label>
+                <input id="s-tagline" type="text" maxlength="240" placeholder="Short pitch">
+              </div>
+              <div class="full">
+                <label class="field-label" for="s-image">Image URL (optional)</label>
+                <input id="s-image" type="text" placeholder="https://…/logo.png">
+              </div>
+              <div>
+                <label class="field-label" for="s-starts">Starts</label>
+                <input id="s-starts" type="text" placeholder="YYYY-MM-DD">
+              </div>
+              <div>
+                <label class="field-label" for="s-ends">Ends</label>
+                <input id="s-ends" type="text" placeholder="YYYY-MM-DD">
+              </div>
+              <div class="full">
+                <label class="check"><input id="s-active" type="checkbox" checked> Active</label>
+              </div>
+            </div>
+            <div id="sponsor-save-msg" class="err hidden"></div>
+          </div>
+          <div class="editor-foot">
+            <button class="primary" id="sponsor-save-btn" type="button">Save</button>
+            <button class="ghost" id="sponsor-end-btn" type="button">End now</button>
+            <button class="ghost" id="sponsor-clear-btn" type="button">Clear</button>
           </div>
         </div>
       </div>
@@ -559,16 +644,138 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
     });
     document.getElementById('tab-venues').classList.toggle('hidden', tab !== 'venues');
+    document.getElementById('tab-sponsors').classList.toggle('hidden', tab !== 'sponsors');
     document.getElementById('tab-reports').classList.toggle('hidden', tab !== 'reports');
     document.getElementById('tab-traffic').classList.toggle('hidden', tab !== 'traffic');
     document.getElementById('tab-submissions').classList.toggle('hidden', tab !== 'submissions');
     if (tab === 'venues') loadVenues();
+    if (tab === 'sponsors') loadSponsors();
     if (tab === 'submissions') loadSubmissions();
     if (tab === 'reports') loadReports();
     if (tab === 'traffic') {
       ensureTrafficMonthDefault();
       loadTraffic();
     }
+  }
+
+  var sponsorsCache = [];
+
+  function todayYmd(){
+    return new Date().toISOString().slice(0, 10);
+  }
+  function clearSponsorForm(){
+    document.getElementById('s-id').value = '';
+    document.getElementById('s-place-type').value = 'town';
+    document.getElementById('s-place-slug').value = '';
+    document.getElementById('s-name').value = '';
+    document.getElementById('s-url').value = '';
+    document.getElementById('s-tagline').value = '';
+    document.getElementById('s-image').value = '';
+    document.getElementById('s-starts').value = todayYmd();
+    var end = new Date();
+    end.setUTCMonth(end.getUTCMonth() + 1);
+    document.getElementById('s-ends').value = end.toISOString().slice(0, 10);
+    document.getElementById('s-active').checked = true;
+    hideError(document.getElementById('sponsor-save-msg'));
+  }
+  function fillSponsorForm(s){
+    document.getElementById('s-id').value = s.id || '';
+    document.getElementById('s-place-type').value = s.place_type || 'town';
+    document.getElementById('s-place-slug').value = s.place_slug || '';
+    document.getElementById('s-name').value = s.name || '';
+    document.getElementById('s-url').value = s.url || '';
+    document.getElementById('s-tagline').value = s.tagline || '';
+    document.getElementById('s-image').value = s.image_url || '';
+    document.getElementById('s-starts').value = (s.starts_at || '').slice(0, 10);
+    document.getElementById('s-ends').value = (s.ends_at || '').slice(0, 10);
+    document.getElementById('s-active').checked = !!s.active;
+    hideError(document.getElementById('sponsor-save-msg'));
+  }
+  function renderSponsorsTable(rows){
+    var body = document.getElementById('sponsors-table');
+    if (!rows || !rows.length) {
+      body.innerHTML = '<tr><td colspan="4"><div class="empty">No sponsors yet.</div></td></tr>';
+      return;
+    }
+    var selected = Number(document.getElementById('s-id').value) || 0;
+    body.innerHTML = rows.map(function(s){
+      var endDay = (s.ends_at || '').slice(0, 10);
+      var status = s.live ? 'live' : (!s.active ? 'ended' : (endDay && endDay < todayYmd() ? 'expired' : 'scheduled'));
+      var cls = status === 'live' ? 'pub' : (status === 'ended' || status === 'expired' ? 'arch' : '');
+      return '<tr class="clickable'+(s.id === selected ? ' selected' : '')+'" data-id="'+s.id+'">' +
+        '<td><b>'+esc(s.place_type)+'</b> / '+esc(s.place_slug)+'</td>' +
+        '<td>'+esc(s.name)+'</td>' +
+        '<td>'+esc((s.starts_at||'').slice(0,10))+' → '+esc((s.ends_at||'').slice(0,10))+'</td>' +
+        '<td><span class="status '+cls+'">'+status+'</span></td>' +
+      '</tr>';
+    }).join('');
+    body.querySelectorAll('tr[data-id]').forEach(function(tr){
+      tr.addEventListener('click', function(){
+        var id = Number(tr.getAttribute('data-id'));
+        var row = sponsorsCache.find(function(x){ return x.id === id; });
+        if (row) fillSponsorForm(row);
+        renderSponsorsTable(sponsorsCache);
+      });
+    });
+  }
+  async function loadSponsors(){
+    var msgEl = document.getElementById('sponsors-msg');
+    hideError(msgEl);
+    var result = await api('/api/admin/sponsors');
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(msgEl, result.data.error || result.data.detail || 'Failed to load sponsors');
+      return;
+    }
+    sponsorsCache = result.data.sponsors || [];
+    renderSponsorsTable(sponsorsCache);
+  }
+  async function saveSponsor(){
+    var msgEl = document.getElementById('sponsor-save-msg');
+    hideError(msgEl);
+    var id = Number(document.getElementById('s-id').value);
+    var payload = {
+      place_type: document.getElementById('s-place-type').value,
+      place_slug: document.getElementById('s-place-slug').value.trim(),
+      name: document.getElementById('s-name').value.trim(),
+      url: document.getElementById('s-url').value.trim(),
+      tagline: document.getElementById('s-tagline').value.trim(),
+      image_url: document.getElementById('s-image').value.trim(),
+      starts_at: document.getElementById('s-starts').value.trim(),
+      ends_at: document.getElementById('s-ends').value.trim(),
+      active: document.getElementById('s-active').checked ? 1 : 0
+    };
+    if (id) payload.id = id;
+    var result = await api('/api/admin/sponsors', {
+      method: id ? 'PUT' : 'POST',
+      body: JSON.stringify(payload)
+    });
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(msgEl, result.data.error || result.data.detail || 'Save failed');
+      return;
+    }
+    fillSponsorForm(result.data.sponsor);
+    showOk(msgEl, id ? 'Sponsor updated.' : 'Sponsor created.');
+    await loadSponsors();
+  }
+  async function endSponsor(){
+    var msgEl = document.getElementById('sponsor-save-msg');
+    var id = Number(document.getElementById('s-id').value);
+    if (!id) { showError(msgEl, 'Select a sponsor first.'); return; }
+    hideError(msgEl);
+    var result = await api('/api/admin/sponsors', {
+      method: 'PUT',
+      body: JSON.stringify({ id: id, end: true })
+    });
+    if (handleAuthFailure(result, msgEl)) return;
+    if (!result.res.ok || !result.data.ok) {
+      showError(msgEl, result.data.error || 'Could not end sponsor');
+      return;
+    }
+    fillSponsorForm(result.data.sponsor);
+    showOk(msgEl, 'Sponsor ended.');
+    await loadSponsors();
   }
 
   function lastFullMonthValue(){
@@ -1201,6 +1408,11 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   document.getElementById('venue-new-btn').addEventListener('click', clearVenueForm);
   document.getElementById('venue-clear-btn').addEventListener('click', clearVenueForm);
   document.getElementById('venue-save-btn').addEventListener('click', saveVenue);
+  document.getElementById('sponsor-refresh-btn').addEventListener('click', loadSponsors);
+  document.getElementById('sponsor-new-btn').addEventListener('click', clearSponsorForm);
+  document.getElementById('sponsor-clear-btn').addEventListener('click', clearSponsorForm);
+  document.getElementById('sponsor-save-btn').addEventListener('click', saveSponsor);
+  document.getElementById('sponsor-end-btn').addEventListener('click', endSponsor);
   document.getElementById('venue-report-btn').addEventListener('click', async function(){
     var id = Number(document.getElementById('v-id').value);
     var msgEl = document.getElementById('venue-save-msg');
