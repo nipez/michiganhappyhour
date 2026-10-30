@@ -3,6 +3,7 @@ Allow: /
 Disallow: /admin/
 Disallow: /owner-report
 Disallow: /manage-billing
+Disallow: /claim-traffic
 Disallow: /submit/thanks.html
 Disallow: /submit/thanks
 Disallow: /for-business/thanks.html

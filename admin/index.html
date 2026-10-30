@@ -126,6 +126,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
         <button class="tab" data-tab="sponsors" type="button">Sponsors</button>
         <button class="tab" data-tab="reports" type="button">Reports</button>
         <button class="tab" data-tab="traffic" type="button">Monthly traffic</button>
+        <button class="tab" data-tab="outreach" type="button">Claim outreach</button>
         <button class="tab" data-tab="submissions" type="button">Submissions</button>
       </div>
       <button class="ghost" id="logout-btn" type="button">Lock</button>
@@ -558,6 +559,82 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
       </div>
     </section>
 
+    <section id="tab-outreach" class="hidden">
+      <div class="card tight">
+        <div class="toolbar" style="grid-template-columns:minmax(160px,.7fr) auto">
+          <div>
+            <label class="field-label" for="outreach-month">Calendar month</label>
+            <input id="outreach-month" type="month">
+          </div>
+          <div class="actions">
+            <button class="primary" id="outreach-load-btn" type="button">Load unclaimed</button>
+            <button class="ghost" id="outreach-refresh-btn" type="button">Refresh (skip cache)</button>
+          </div>
+        </div>
+        <p class="meta" style="margin-top:10px">Unclaimed published venues, prioritized by traffic + phone/website/email. Generate a private traffic link, copy email or SMS/DM copy, or open mailto. The system never sends messages.</p>
+        <div id="outreach-msg" class="err hidden"></div>
+        <div class="counts" id="outreach-counts" style="margin-top:10px"></div>
+      </div>
+      <div class="card">
+        <div class="panel-head">
+          <div>
+            <h2 style="margin:0" id="outreach-title">Claim outreach</h2>
+            <p class="meta" style="margin-top:4px" id="outreach-meta"></p>
+          </div>
+        </div>
+        <div class="list-scroll" style="max-height:min(70vh,900px)">
+          <table>
+            <thead>
+              <tr>
+                <th>Venue</th>
+                <th>Town</th>
+                <th>Contact</th>
+                <th>Views</th>
+                <th>CTAs</th>
+                <th>Mode</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="outreach-rows">
+              <tr><td colspan="7" class="empty">Pick a month and load unclaimed venues.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card hidden" id="outreach-detail">
+        <div class="panel-head">
+          <div>
+            <h2 style="margin:0" id="outreach-detail-title">Outreach copy</h2>
+            <p class="meta" style="margin-top:4px" id="outreach-detail-meta"></p>
+          </div>
+          <div class="row">
+            <a class="btn ghost" id="outreach-open-link" href="#" target="_blank" rel="noopener">Open traffic page</a>
+            <a class="btn ghost" id="outreach-mailto" href="#">Mailto</a>
+          </div>
+        </div>
+        <div class="field-grid" style="margin-top:10px">
+          <div class="full">
+            <label class="field-label" for="outreach-traffic-url">Private traffic URL</label>
+            <input id="outreach-traffic-url" type="text" readonly>
+          </div>
+          <div class="full">
+            <label class="field-label" for="outreach-email-body">Email body</label>
+            <textarea id="outreach-email-body" class="summary" readonly style="min-height:200px"></textarea>
+          </div>
+          <div class="full">
+            <label class="field-label" for="outreach-sms-body">Text / DM (short)</label>
+            <textarea id="outreach-sms-body" class="summary" readonly style="min-height:90px"></textarea>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="primary" id="outreach-copy-email" type="button">Copy email</button>
+          <button class="ghost" id="outreach-copy-sms" type="button">Copy text/DM</button>
+          <button class="ghost" id="outreach-copy-url" type="button">Copy traffic URL</button>
+          <button class="ghost" id="outreach-rotate-btn" type="button">Rotate token</button>
+        </div>
+      </div>
+    </section>
+
     <section id="tab-submissions" class="hidden">
       <div class="card tight">
         <div class="toolbar" style="grid-template-columns:1fr auto">
@@ -593,6 +670,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   var msg = document.getElementById('login-msg');
   var reportsMsg = document.getElementById('reports-msg');
   var trafficMsg = document.getElementById('traffic-msg');
+  var outreachMsg = document.getElementById('outreach-msg');
   var list = document.getElementById('list');
   var counts = document.getElementById('counts');
   var pwInput = document.getElementById('password');
@@ -600,6 +678,8 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   var regionsMeta = {};
   var venuesCache = [];
   var lastTrafficReport = null;
+  var lastOutreachReport = null;
+  var lastOutreachVenue = null;
 
   function pw(){ return sessionStorage.getItem(KEY) || ''; }
   function setPw(v){ sessionStorage.setItem(KEY, v); }
@@ -647,6 +727,7 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     document.getElementById('tab-sponsors').classList.toggle('hidden', tab !== 'sponsors');
     document.getElementById('tab-reports').classList.toggle('hidden', tab !== 'reports');
     document.getElementById('tab-traffic').classList.toggle('hidden', tab !== 'traffic');
+    document.getElementById('tab-outreach').classList.toggle('hidden', tab !== 'outreach');
     document.getElementById('tab-submissions').classList.toggle('hidden', tab !== 'submissions');
     if (tab === 'venues') loadVenues();
     if (tab === 'sponsors') loadSponsors();
@@ -655,6 +736,10 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
     if (tab === 'traffic') {
       ensureTrafficMonthDefault();
       loadTraffic();
+    }
+    if (tab === 'outreach') {
+      ensureOutreachMonthDefault();
+      loadOutreach();
     }
   }
 
@@ -789,6 +874,132 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   function ensureTrafficMonthDefault(){
     var el = document.getElementById('traffic-month');
     if (el && !el.value) el.value = lastFullMonthValue();
+  }
+  function ensureOutreachMonthDefault(){
+    var el = document.getElementById('outreach-month');
+    if (el && !el.value) el.value = lastFullMonthValue();
+  }
+  async function loadOutreach(opts){
+    opts = opts || {};
+    hideError(outreachMsg);
+    ensureOutreachMonthDefault();
+    var month = document.getElementById('outreach-month').value;
+    var q = '/api/admin/claim-outreach?month=' + encodeURIComponent(month);
+    if (opts.refresh) q += '&refresh=1';
+    var result = await api(q);
+    if (handleAuthFailure(result, outreachMsg)) return;
+    if (!result.data.ok) {
+      showError(outreachMsg, result.data.error || result.data.detail || 'Failed to load claim outreach');
+      return;
+    }
+    lastOutreachReport = result.data;
+    document.getElementById('outreach-title').textContent = 'Claim outreach — ' + (result.data.month_label || month);
+    document.getElementById('outreach-meta').textContent =
+      'Prioritized by traffic + contact on file · compared with ' + (result.data.prev_month_label || 'prior month');
+    document.getElementById('outreach-counts').innerHTML =
+      '<span class="chip">'+esc(result.data.unclaimed_count)+' unclaimed</span>' +
+      '<span class="chip hot">'+esc(result.data.with_traffic)+' with traffic</span>' +
+      '<span class="chip">'+esc(result.data.with_contact)+' with contact</span>' +
+      '<span class="chip muted">'+esc(result.data.month)+'</span>';
+
+    var tbody = document.getElementById('outreach-rows');
+    var venues = result.data.venues || [];
+    if (!venues.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty">No unclaimed published venues.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = venues.map(function(v, i){
+      var m = v.metrics || {};
+      var contact = [];
+      if (v.phone) contact.push(esc(v.phone));
+      if (v.email) contact.push(esc(v.email));
+      if (v.website) contact.push('<span class="meta">web</span>');
+      var mode = (v.presentation && v.presentation.mode) || '—';
+      return '<tr>' +
+        '<td><b>'+esc(v.name)+'</b></td>' +
+        '<td>'+esc(v.town)+'</td>' +
+        '<td>'+(contact.length ? contact.join('<br>') : '—')+'</td>' +
+        '<td>'+esc(m.views)+'</td>' +
+        '<td>'+esc(v.total_ctas != null ? v.total_ctas : ((m.calls||0)+(m.directions||0)+(m.map_clicks||0)+(m.website_clicks||0)))+'</td>' +
+        '<td><span class="chip muted">'+esc(mode)+'</span></td>' +
+        '<td class="row">' +
+          '<button class="ghost outreach-prep" data-i="'+i+'" type="button">'+(v.traffic_url ? 'Prep' : 'Make link')+'</button>' +
+        '</td>' +
+        '</tr>';
+    }).join('');
+
+    tbody.querySelectorAll('.outreach-prep').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var row = venues[Number(btn.getAttribute('data-i'))];
+        if (row) prepOutreachVenue(row);
+      });
+    });
+  }
+  async function prepOutreachVenue(row){
+    hideError(outreachMsg);
+    var month = document.getElementById('outreach-month').value;
+    var venue = row;
+    if (!venue.traffic_url) {
+      var result = await api('/api/admin/claim-outreach', {
+        method: 'POST',
+        body: JSON.stringify({ venue_id: venue.venue_id, month: month })
+      });
+      if (handleAuthFailure(result, outreachMsg)) return;
+      if (!result.data.ok || !result.data.venue) {
+        showError(outreachMsg, result.data.error || result.data.detail || 'Could not create traffic link');
+        return;
+      }
+      venue = result.data.venue;
+      showOk(outreachMsg, 'Private traffic link ready for ' + venue.name);
+      loadOutreach({ refresh: true });
+    }
+    showOutreachDetail(venue);
+  }
+  function showOutreachDetail(venue){
+    lastOutreachVenue = venue;
+    var box = document.getElementById('outreach-detail');
+    box.classList.remove('hidden');
+    document.getElementById('outreach-detail-title').textContent = venue.name || 'Outreach copy';
+    document.getElementById('outreach-detail-meta').textContent =
+      (venue.town || '') + (venue.presentation ? ' · ' + venue.presentation.mode + ' headline' : '');
+    document.getElementById('outreach-traffic-url').value = venue.traffic_url || '';
+    document.getElementById('outreach-email-body').value = venue.email_body || '';
+    document.getElementById('outreach-sms-body').value = venue.sms_body || '';
+    var open = document.getElementById('outreach-open-link');
+    open.href = venue.traffic_url || '#';
+    open.classList.toggle('hidden', !venue.traffic_url);
+    document.getElementById('outreach-mailto').href = venue.mailto || 'mailto:';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  async function rotateOutreachToken(){
+    if (!lastOutreachVenue || !lastOutreachVenue.venue_id) return;
+    if (!confirm('Rotate token for ' + lastOutreachVenue.name + '? The old traffic link will stop working.')) return;
+    var month = document.getElementById('outreach-month').value;
+    var result = await api('/api/admin/claim-outreach', {
+      method: 'POST',
+      body: JSON.stringify({ venue_id: lastOutreachVenue.venue_id, month: month, rotate: true })
+    });
+    if (handleAuthFailure(result, outreachMsg)) return;
+    if (!result.data.ok || !result.data.venue) {
+      showError(outreachMsg, result.data.error || 'Rotate failed');
+      return;
+    }
+    showOk(outreachMsg, 'Token rotated for ' + result.data.venue.name);
+    showOutreachDetail(result.data.venue);
+    loadOutreach({ refresh: true });
+  }
+  async function copyOutreachField(id, label){
+    var el = document.getElementById(id);
+    var text = el && el.value;
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      showOk(outreachMsg, (label || 'Copied') + ' copied.');
+    } catch (e) {
+      el.select();
+      document.execCommand('copy');
+      showOk(outreachMsg, (label || 'Copied') + ' copied.');
+    }
   }
   function fmtChange(n){
     if (n == null || n === 0) return '<span style="color:var(--muted)">0</span>';
@@ -1494,6 +1705,13 @@ th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05
   document.getElementById('traffic-refresh-btn').addEventListener('click', function(){ loadTraffic({ refresh: true }); });
   document.getElementById('traffic-csv-btn').addEventListener('click', downloadTrafficCsv);
   document.getElementById('traffic-month').addEventListener('change', function(){ loadTraffic(); });
+  document.getElementById('outreach-load-btn').addEventListener('click', function(){ loadOutreach(); });
+  document.getElementById('outreach-refresh-btn').addEventListener('click', function(){ loadOutreach({ refresh: true }); });
+  document.getElementById('outreach-month').addEventListener('change', function(){ loadOutreach(); });
+  document.getElementById('outreach-copy-email').addEventListener('click', function(){ copyOutreachField('outreach-email-body', 'Email'); });
+  document.getElementById('outreach-copy-sms').addEventListener('click', function(){ copyOutreachField('outreach-sms-body', 'Text/DM'); });
+  document.getElementById('outreach-copy-url').addEventListener('click', function(){ copyOutreachField('outreach-traffic-url', 'Traffic URL'); });
+  document.getElementById('outreach-rotate-btn').addEventListener('click', rotateOutreachToken);
   pwInput.addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('login-btn').click(); });
 
   if (pw()) unlock();
