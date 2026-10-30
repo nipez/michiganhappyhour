@@ -130,7 +130,7 @@ export async function onRequestGet(context) {
     const msg = String(err && err.message ? err.message : err);
     if (msg.includes("no such table")) {
       return json(
-        { ok: false, error: "Sponsors table missing — apply migration 0010_sponsors.sql" },
+        { ok: false, error: "Sponsors table missing — apply migration 0011_sponsors.sql" },
         503
       );
     }
@@ -251,7 +251,7 @@ async function upsert(context, { create }) {
     const msg = String(err && err.message ? err.message : err);
     if (msg.includes("no such table")) {
       return json(
-        { ok: false, error: "Sponsors table missing — apply migration 0010_sponsors.sql" },
+        { ok: false, error: "Sponsors table missing — apply migration 0011_sponsors.sql" },
         503
       );
     }
