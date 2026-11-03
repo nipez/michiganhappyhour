@@ -18,7 +18,8 @@
     "build": "npm run build:home",
     "test:cache": "node scripts/test-published-venues-cache.mjs",
     "test:towns": "node scripts/test-towns.mjs",
-    "test:spot-seo": "node scripts/test-spot-seo.mjs"
+    "test:spot-seo": "node scripts/test-spot-seo.mjs",
+    "test:sponsors": "node scripts/test-sponsors-cache.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

@@ -2,6 +2,7 @@ import {
   getPublishedVenues,
   regionCountsFromVenues
 } from "../lib/published-venues-cache.js";
+import { getActiveSponsor } from "../lib/sponsors-cache.js";
 import { notFoundPage } from "../lib/not-found-page.js";
 import { renderRegionsIndex } from "../lib/render-directory-index.js";
 import {
@@ -71,7 +72,13 @@ export async function onRequestGet(context) {
     const venues = all.filter((v) => v.region === slug);
     const counts = regionCountsFromVenues(all);
 
-    const page = renderRegionPage(slug, venues, counts);
+    let sponsor = null;
+    try {
+      sponsor = await getActiveSponsor(env, "region", slug, context);
+    } catch {
+      // Sponsors table may be unmigrated — page still works without a slot.
+    }
+    const page = renderRegionPage(slug, venues, counts, sponsor);
     if (!page) return notFound();
     return html(page);
   } catch (err) {

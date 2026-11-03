@@ -23,22 +23,28 @@ export async function onRequestOptions() {
   return new Response(null, { status: 204, headers: CORS });
 }
 
-/** GET /api/checkout — whether online Featured checkout is available. */
+/**
+ * GET /api/checkout — whether online checkout is available.
+ * Optional ?product=local_sponsor|featured_listing
+ */
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { request, env } = context;
+  const url = new URL(request.url);
+  const product = asText(url.searchParams.get("product") || "featured_listing", 40);
+  const isSponsor = product === "local_sponsor" || product === "sponsor";
   return json({
     ok: true,
     configured: stripeConfigured(env),
-    amount_cents: 7900,
+    amount_cents: isSponsor ? 10000 : 7900,
     interval: "month",
-    product: "featured_listing"
+    product: isSponsor ? "local_sponsor" : "featured_listing"
   });
 }
 
 /**
  * POST /api/checkout
- * Body: { name, town, email, venue_id?, contact_name? }
- * Creates a Stripe Checkout Session for Featured ($79/mo subscription).
+ * Featured: { product?: 'featured_listing', name, town, email, venue_id?, contact_name? }
+ * Sponsor:  { product: 'local_sponsor', name, email, place_type, place_slug, place_name?, contact_name? }
  */
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -47,7 +53,7 @@ export async function onRequestPost(context) {
       {
         ok: false,
         error: "Checkout not configured",
-        detail: "Set STRIPE_SECRET_KEY (and optionally STRIPE_PRICE_ID) on Pages."
+        detail: "Set STRIPE_SECRET_KEY (and optionally STRIPE_PRICE_ID / STRIPE_SPONSOR_PRICE_ID) on Pages."
       },
       503
     );
@@ -61,6 +67,14 @@ export async function onRequestPost(context) {
     return json({ ok: false, error: "Invalid JSON" }, 400);
   }
 
+  const productRaw = asText(body.product || "featured_listing", 40).toLowerCase();
+  if (productRaw === "local_sponsor" || productRaw === "sponsor") {
+    return createSponsorCheckout(request, env, body);
+  }
+  return createFeaturedCheckout(request, env, body);
+}
+
+async function createFeaturedCheckout(request, env, body) {
   const name = asText(body.name, 200);
   const town = asText(body.town, 120);
   const email = asText(body.email, 200);
@@ -129,7 +143,6 @@ export async function onRequestPost(context) {
       integration_identifier: `featured-checkout-${randomSuffix(8)}`
     });
 
-    // Log lead even if they abandon checkout
     try {
       await env.DB.prepare(
         `INSERT INTO submissions (
@@ -150,6 +163,111 @@ export async function onRequestPost(context) {
     }
 
     return json({ ok: true, url: session.url, id: session.id, venue_id: venue?.id || null });
+  } catch (err) {
+    return json(
+      {
+        ok: false,
+        error: "Could not start checkout",
+        detail: String(err && err.message ? err.message : err)
+      },
+      err.status && err.status < 500 ? 400 : 502
+    );
+  }
+}
+
+async function createSponsorCheckout(request, env, body) {
+  const name = asText(body.name, 200);
+  const email = asText(body.email, 200);
+  const contactName = asText(body.contact_name, 160);
+  let placeType = asText(body.place_type, 20).toLowerCase();
+  const placeSlug = asText(body.place_slug, 120)
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const placeName = asText(body.place_name || body.town, 160);
+
+  if (placeType !== "town" && placeType !== "region") placeType = "town";
+
+  if (!name || !email) {
+    return json({ ok: false, error: "name and email are required" }, 400);
+  }
+  if (!placeSlug) {
+    return json({ ok: false, error: "place_slug is required" }, 400);
+  }
+
+  const origin = new URL(request.url).origin;
+  const qs = new URLSearchParams({
+    type: placeType,
+    slug: placeSlug,
+    name: placeName || placeSlug,
+    email,
+    business: name
+  });
+  const successUrl = `${origin}/sponsor/thanks.html?session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${origin}/sponsor/?${qs.toString()}`;
+
+  const label = placeName || placeSlug;
+  const metadata = {
+    product: "local_sponsor",
+    place_type: placeType,
+    place_slug: placeSlug,
+    place_name: label,
+    sponsor_name: name,
+    contact_name: contactName
+  };
+
+  const lineItem = env.STRIPE_SPONSOR_PRICE_ID
+    ? { price: env.STRIPE_SPONSOR_PRICE_ID, quantity: 1 }
+    : {
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: 10000,
+          recurring: { interval: "month" },
+          product_data: {
+            name: "Michigan Happy Hour — Local sponsor",
+            description: `Exclusive ${placeType} sponsor for ${label}`
+          }
+        }
+      };
+
+  try {
+    const session = await stripeForm(env, "/checkout/sessions", {
+      mode: "subscription",
+      customer_email: email,
+      client_reference_id: `sponsor:${placeType}:${placeSlug}`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: "true",
+      billing_address_collection: "auto",
+      line_items: [lineItem],
+      metadata,
+      subscription_data: {
+        metadata
+      },
+      integration_identifier: `sponsor-checkout-${randomSuffix(8)}`
+    });
+
+    try {
+      await env.DB.prepare(
+        `INSERT INTO submissions (
+          status, submission_type, name, town, state, category, happy_hour_schedule, deals,
+          contact_name, email, source, path, notes
+        ) VALUES ('new', 'claim_request', ?, ?, 'Michigan', 'Local sponsor', 'n/a', 'Local sponsor checkout started', ?, ?, 'stripe_checkout', '/sponsor/', ?)`
+      )
+        .bind(
+          name,
+          label,
+          contactName || null,
+          email,
+          `product=local_sponsor; ${placeType}=${placeSlug}; session=${session.id}`
+        )
+        .run();
+    } catch {
+      // non-fatal
+    }
+
+    return json({ ok: true, url: session.url, id: session.id, product: "local_sponsor" });
   } catch (err) {
     return json(
       {

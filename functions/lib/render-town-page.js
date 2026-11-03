@@ -1,5 +1,6 @@
 import { parseJsonArray } from "../api/_venues.js";
 import { REGION_META } from "./render-region-page.js";
+import { renderSponsorSlot, SPONSOR_SLOT_CSS } from "./render-sponsor.js";
 import { canonicalSpotPath } from "./render-spot-page.js";
 import { canonicalTownPath } from "./towns.js";
 
@@ -40,8 +41,9 @@ function dealHook(row) {
  * Render a gated town landing page.
  * @param {{ slug: string, name: string, region: string, region_name: string, withHours: object[] }} town
  * @param {object[]} siblingTowns other qualifying towns (for internal links)
+ * @param {object|null} [sponsor] active exclusive sponsor, if any
  */
-export function renderTownPage(town, siblingTowns = []) {
+export function renderTownPage(town, siblingTowns = [], sponsor = null) {
   if (!town?.slug || !town?.name) return null;
 
   const spots = [...(town.withHours || [])].sort((a, b) => {
@@ -221,6 +223,7 @@ a{color:#2D6A8F;text-decoration:none}a:hover{color:#E8614D}
 .nc:hover{border-color:#E8614D;box-shadow:0 4px 16px rgba(232,97,77,0.1)}
 .ft{border-top:2px solid #D8E2EA;padding:32px 0;text-align:center;margin-top:40px;color:#8AA3B5;font-size:15px;line-height:2}
 .cta-row{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 8px}
+${SPONSOR_SLOT_CSS}
 @media(max-width:600px){.w{padding:0 16px}}
 </style>
 </head>
@@ -246,6 +249,7 @@ ${
 <a class="bt bo" href="/for-business/?interest=featured&amp;town=${encodeURIComponent(name)}#claim">Own a ${escapeHtml(name)} listing?</a>
 </div>
 </div>
+${renderSponsorSlot(sponsor, { placeType: "town", placeSlug: town.slug, placeLabel: name })}
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:12px;margin-bottom:32px">
 ${cards}
 </div>

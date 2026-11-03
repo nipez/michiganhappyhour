@@ -1,4 +1,5 @@
 import { getPublishedVenues } from "../lib/published-venues-cache.js";
+import { getActiveSponsor } from "../lib/sponsors-cache.js";
 import { notFoundPage } from "../lib/not-found-page.js";
 import { renderTownsIndex } from "../lib/render-directory-index.js";
 import { renderTownPage } from "../lib/render-town-page.js";
@@ -69,7 +70,13 @@ export async function onRequestGet(context) {
     if (!town) return notFound();
 
     const siblings = getQualifyingTowns(all);
-    const page = renderTownPage(town, siblings);
+    let sponsor = null;
+    try {
+      sponsor = await getActiveSponsor(env, "town", town.slug, context);
+    } catch {
+      // Sponsors table may be unmigrated — page still works without a slot.
+    }
+    const page = renderTownPage(town, siblings, sponsor);
     if (!page) return notFound();
     return html(page);
   } catch (err) {

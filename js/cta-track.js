@@ -2,7 +2,8 @@
  * Venue CTA + page analytics for Michigan Happy Hour.
  * Dual-writes to GA4 (gtag) and Cloudflare D1 via POST /api/track.
  *
- * Events: page_view, spot_view, cta_call, cta_map, cta_directions, cta_details
+ * Events: page_view, spot_view, cta_call, cta_map, cta_directions, cta_details,
+ *         sponsor_impression, sponsor_click
  */
 (function () {
   var TRACK_URL = "/api/track";
@@ -145,7 +146,9 @@
   function guessPageType() {
     var path = window.location.pathname || "";
     if (/\/spots\//.test(path)) return "spot";
+    if (/\/towns\//.test(path)) return "town";
     if (/\/regions\//.test(path)) return "region";
+    if (/\/sponsor/.test(path)) return "sponsor";
     if (/\/map/.test(path)) return "map";
     if (/\/blog/.test(path)) return "blog";
     if (/\/collections\//.test(path)) return "collection";
@@ -215,8 +218,36 @@
     });
   }
 
+  function bindSponsorSlot() {
+    var el = document.querySelector("a.mhh-sponsor");
+    if (!el || el.dataset.sponsorBound) return;
+    el.dataset.sponsorBound = "1";
+
+    var placeType = el.getAttribute("data-place-type") || guessPageType();
+    var placeSlug = el.getAttribute("data-place-slug") || "";
+    var nameNode = el.querySelector(".mhh-sponsor-name");
+    var spot = {
+      id: el.getAttribute("data-sponsor-id") || undefined,
+      name: el.getAttribute("data-sponsor-name") || (nameNode ? nameNode.textContent.trim() : "Sponsor"),
+      town: placeSlug,
+      page_type: placeType,
+      source: "sponsor_slot",
+      payload: {
+        place_type: placeType,
+        place_slug: placeSlug,
+        sponsor_id: el.getAttribute("data-sponsor-id") || null
+      }
+    };
+
+    trackCta("sponsor_impression", spot);
+    el.addEventListener("click", function () {
+      trackCta("sponsor_click", spot);
+    });
+  }
+
   function init() {
     bindSpotPage();
+    bindSponsorSlot();
     bindGlobalPageView();
   }
 

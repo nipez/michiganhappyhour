@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sponsor a Town | Michigan Happy Hour</title>
+<meta name="description" content="Exclusive local sponsorship on Michigan Happy Hour town and region pages — one sponsor per place, $100/mo.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://michiganhappyhour.com/sponsor/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14202c; --muted:#5f7385; --line:#d5e0e8; --bg:#eef2f5; --card:#fff;
+  --accent:#E8614D; --blue:#2D6A8F; --soft:#f4f7f9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(180deg,#e8eef3 0%,#f5f7fa 40%,#eef2f5 100%);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+.sf{font-family:Fraunces,Georgia,serif}
+.wrap{max-width:720px;margin:0 auto;padding:28px 20px 64px}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.nav a{color:var(--blue);font-weight:700;text-decoration:none}
+.nav a:hover{color:var(--accent)}
+h1{font-size:clamp(28px,5vw,40px);font-weight:800;line-height:1.15;margin-bottom:12px}
+.lead{font-size:18px;color:#4A6274;line-height:1.55;margin-bottom:22px;max-width:42ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 8px 28px rgba(20,32,44,.05)}
+.price{font-family:Fraunces,Georgia,serif;font-size:36px;font-weight:800;color:var(--accent);line-height:1}
+.price span{font-size:16px;font-weight:700;color:var(--muted)}
+.bullets{margin:14px 0 0;padding-left:18px;color:#314455;line-height:1.55;font-size:15px}
+.bullets li{margin:6px 0}
+.field-label{display:block;font-weight:600;margin:0 0 5px;font-size:12px;color:#4A6274}
+.stack > * + *{margin-top:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input,select{
+  width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:14px;font-family:inherit;background:#fff;color:var(--ink)
+}
+input:focus,select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(45,106,143,.12)}
+.btn{
+  appearance:none;border:none;border-radius:10px;padding:12px 16px;font-weight:700;font-size:15px;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none
+}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--accent));color:#fff}
+.btn-ghost{background:var(--soft);border:1.5px solid var(--line);color:#4A6274}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.meta{font-size:13px;color:var(--muted);line-height:1.45;margin-top:10px}
+.err{color:var(--accent);font-weight:600;margin-top:10px;font-size:13px}
+.ok{color:#16A34A;font-weight:600;margin-top:10px;font-size:13px}
+.hidden{display:none !important}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="/">← Michigan Happy Hour</a>
+    <a href="/for-business/">For business</a>
+  </div>
+
+  <h1 class="sf">Sponsor a Michigan town</h1>
+  <p class="lead">One exclusive “Sponsored by” slot per town or region page — logo or name, a one-line pitch, and your link. No ad networks.</p>
+
+  <div class="card">
+    <div class="price">$100<span>/mo</span></div>
+    <ul class="bullets">
+      <li>Exclusive — only one active sponsor per town or region at a time</li>
+      <li>Shown near the top of that landing page to locals planning happy hour</li>
+      <li>Monthly subscription; cancel anytime</li>
+      <li>First-party placement (no third-party ad scripts)</li>
+    </ul>
+    <p class="meta">Looking for listing placement instead? <a href="/for-business/?interest=featured#claim">Featured listings are $79/mo</a>.</p>
+  </div>
+
+  <div class="card">
+    <h2 class="sf" style="font-size:22px;margin-bottom:6px">Start sponsorship</h2>
+    <p class="meta" style="margin-top:0;margin-bottom:14px">Pay online if Stripe is configured, or email us — we won’t auto-send mail from this form.</p>
+    <form id="sponsor-form" class="stack" novalidate>
+      <div class="grid">
+        <div>
+          <label class="field-label" for="place_type">Place type</label>
+          <select id="place_type" name="place_type">
+            <option value="town">Town page</option>
+            <option value="region">Region page</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label" for="place_slug">Place slug</label>
+          <input id="place_slug" name="place_slug" type="text" placeholder="e.g. royal-oak or detroit" required>
+        </div>
+      </div>
+      <div>
+        <label class="field-label" for="place_name">Place label (optional)</label>
+        <input id="place_name" name="place_name" type="text" placeholder="Royal Oak">
+      </div>
+      <div class="grid">
+        <div>
+          <label class="field-label" for="name">Business name</label>
+          <input id="name" name="name" type="text" required placeholder="Your business">
+        </div>
+        <div>
+          <label class="field-label" for="email">Email</label>
+          <input id="email" name="email" type="email" required placeholder="you@example.com">
+        </div>
+      </div>
+      <div>
+        <label class="field-label" for="contact_name">Contact name (optional)</label>
+        <input id="contact_name" name="contact_name" type="text" placeholder="Alex">
+      </div>
+      <div class="row">
+        <button class="btn btn-primary" type="submit" id="pay-btn">Pay $100/mo with Stripe</button>
+        <a class="btn btn-ghost" id="mailto-btn" href="mailto:hello@michiganhappyhour.com">Email us instead</a>
+      </div>
+      <div id="form-msg" class="err hidden"></div>
+      <p class="meta" id="checkout-note">Checking online checkout…</p>
+    </form>
+  </div>
+</div>
+<script src="/js/cta-track.js" defer></script>
+<script>
+(function(){
+  var params = new URLSearchParams(window.location.search || '');
+  var placeType = document.getElementById('place_type');
+  var placeSlug = document.getElementById('place_slug');
+  var placeName = document.getElementById('place_name');
+  var nameEl = document.getElementById('name');
+  var emailEl = document.getElementById('email');
+  var contactEl = document.getElementById('contact_name');
+  var payBtn = document.getElementById('pay-btn');
+  var mailtoBtn = document.getElementById('mailto-btn');
+  var msg = document.getElementById('form-msg');
+  var note = document.getElementById('checkout-note');
+  var checkoutReady = false;
+
+  if (params.get('type') === 'region' || params.get('type') === 'town') placeType.value = params.get('type');
+  if (params.get('slug')) placeSlug.value = params.get('slug');
+  if (params.get('name')) placeName.value = params.get('name');
+  if (params.get('business')) nameEl.value = params.get('business');
+  if (params.get('email')) emailEl.value = params.get('email');
+
+  function showErr(t){ msg.textContent = t; msg.className = 'err'; msg.classList.remove('hidden'); }
+  function showOk(t){ msg.textContent = t; msg.className = 'ok'; msg.classList.remove('hidden'); }
+  function hideMsg(){ msg.classList.add('hidden'); msg.textContent = ''; }
+
+  function updateMailto(){
+    var label = placeName.value || placeSlug.value || 'a Michigan town';
+    var subject = 'Local sponsor — ' + label + ' ($100/mo)';
+    var body = [
+      'Hi — I want the exclusive local sponsor slot.',
+      '',
+      'Place type: ' + placeType.value,
+      'Place slug: ' + (placeSlug.value || ''),
+      'Place: ' + label,
+      'Business: ' + (nameEl.value || ''),
+      'Contact: ' + (contactEl.value || ''),
+      'Email: ' + (emailEl.value || '')
+    ].join('\n');
+    mailtoBtn.href = 'mailto:hello@michiganhappyhour.com?subject=' +
+      encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
+
+  function syncPayVisibility(){
+    payBtn.style.display = checkoutReady ? 'inline-flex' : 'none';
+    note.textContent = checkoutReady
+      ? 'Online checkout is ready — Stripe subscription, cancel anytime.'
+      : 'Online checkout isn’t configured yet. Use email, or set STRIPE_SECRET_KEY on Pages.';
+    updateMailto();
+  }
+
+  ['input','change'].forEach(function(evt){
+    placeType.addEventListener(evt, updateMailto);
+    placeSlug.addEventListener(evt, updateMailto);
+    placeName.addEventListener(evt, updateMailto);
+    nameEl.addEventListener(evt, updateMailto);
+    emailEl.addEventListener(evt, updateMailto);
+    contactEl.addEventListener(evt, updateMailto);
+  });
+
+  fetch('/api/checkout?product=local_sponsor').then(function(r){ return r.json(); }).then(function(d){
+    checkoutReady = !!(d && d.ok && d.configured);
+    syncPayVisibility();
+  }).catch(function(){
+    checkoutReady = false;
+    syncPayVisibility();
+  });
+
+  document.getElementById('sponsor-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    hideMsg();
+    updateMailto();
+    if (!checkoutReady) {
+      // Fallback: open mailto; do not send email programmatically.
+      window.location.href = mailtoBtn.href;
+      return;
+    }
+    var payload = {
+      product: 'local_sponsor',
+      name: nameEl.value.trim(),
+      email: emailEl.value.trim(),
+      contact_name: contactEl.value.trim(),
+      place_type: placeType.value,
+      place_slug: placeSlug.value.trim(),
+      place_name: placeName.value.trim()
+    };
+    if (!payload.name || !payload.email || !payload.place_slug) {
+      showErr('Business name, email, and place slug are required.');
+      return;
+    }
+    payBtn.disabled = true;
+    payBtn.textContent = 'Starting checkout…';
+    fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().then(function(d){ return { r:r, d:d }; }); }).then(function(x){
+      if (!x.r.ok || !x.d.ok || !x.d.url) throw new Error(x.d.error || 'checkout failed');
+      if (window.trackCta) {
+        window.trackCta('cta_checkout', {
+          name: payload.name,
+          town: payload.place_name || payload.place_slug,
+          page_type: 'sponsor',
+          source: 'stripe_sponsor_checkout',
+          payload: { product: 'local_sponsor', place_type: payload.place_type, place_slug: payload.place_slug }
+        });
+      }
+      window.location.href = x.d.url;
+    }).catch(function(err){
+      payBtn.disabled = false;
+      payBtn.textContent = 'Pay $100/mo with Stripe';
+      showErr(err.message || 'Could not start checkout');
+    });
+  });
+
+  syncPayVisibility();
+})();
+</script>
+</body>
+</html>
