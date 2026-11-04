@@ -1,3 +1,9 @@
+import {
+  LEAD_ALERT_SUBMISSION_TYPES,
+  formatSubmissionLeadAlert,
+  queueLeadAlert
+} from "../lib/lead-alert-email.js";
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
@@ -231,6 +237,13 @@ export async function onRequestPost(context) {
       } catch {
         // Non-fatal
       }
+    }
+
+    // Optional owner inbox email (Resend). Silent no-op until secrets are set.
+    // Does not block or fail the user response.
+    if (LEAD_ALERT_SUBMISSION_TYPES.has(row.submission_type)) {
+      const origin = new URL(request.url).origin;
+      queueLeadAlert(context, env, formatSubmissionLeadAlert(row, { id, origin }));
     }
 
     return json({ ok: true, id });
