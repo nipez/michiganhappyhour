@@ -1,5 +1,6 @@
 import { verifyStripeWebhook } from "../lib/stripe.js";
 import { invalidatePublishedVenuesCache } from "../lib/published-venues-cache.js";
+import { formatCheckoutLeadAlert, queueLeadAlert } from "../lib/lead-alert-email.js";
 
 /**
  * POST /api/stripe-webhook
@@ -22,8 +23,14 @@ export async function onRequestPost(context) {
 
   try {
     if (event.type === "checkout.session.completed") {
-      await fulfillCheckout(env, event.data.object);
+      const session = event.data.object;
+      await fulfillCheckout(env, session);
       invalidatePublishedVenuesCache(context);
+      // Owner inbox alert for paid Featured / local sponsor — never blocks Stripe ACK.
+      if (session && session.mode === "subscription") {
+        const origin = new URL(request.url).origin;
+        queueLeadAlert(context, env, formatCheckoutLeadAlert(session, { origin }));
+      }
     } else if (event.type === "customer.subscription.deleted") {
       await clearFeatured(env, event.data.object);
       invalidatePublishedVenuesCache(context);

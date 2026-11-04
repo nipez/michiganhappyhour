@@ -188,11 +188,25 @@ Sources: statewide OSM `dog=yes`/`dogs=yes`, OSM tag re-check for `osm:*` rows, 
 
 Spot PDPs, region pages, homepage cards, and `/submit/` deep-link into the form with venue context.
 
-Optional lead alert — set a Zapier/Make/Slack webhook secret:
+Optional lead alerts:
+
+1. **Zapier / Make / Slack webhook** (claim/feature form posts only):
 
 ```bash
 printf '%s' 'https://hooks.zapier.com/...' | npx wrangler pages secret put LEAD_WEBHOOK_URL --project-name=nwmichhappyhour
 ```
+
+2. **Email to your inbox** (Resend) — fires for new listing submissions, venue claim / for-business leads, and completed Featured or local-sponsor Stripe checkouts. Silent no-op until all three are set:
+
+```bash
+# One-time: verify a sender domain in Resend (https://resend.com/domains),
+# e.g. alerts@michiganhappyhour.com or a subdomain you control.
+printf '%s' 're_...' | npx wrangler pages secret put RESEND_API_KEY --project-name=nwmichhappyhour
+printf '%s' 'you@example.com' | npx wrangler pages secret put LEAD_ALERT_EMAIL --project-name=nwmichhappyhour
+printf '%s' 'Michigan Happy Hour <alerts@michiganhappyhour.com>' | npx wrangler pages secret put LEAD_ALERT_FROM --project-name=nwmichhappyhour
+```
+
+`LEAD_ALERT_EMAIL` is the only recipient (owner alerts — not venue owners or the public). Emails are sent in the background via `waitUntil` so form/checkout responses never wait on or fail because of Resend.
 
 Admin **Submissions** can filter by `claim_request`. After verify, toggle **Claimed / verified owner** on the venue (green Verified badge). After payment, also toggle **Featured**. Publishing a `claim_request` marks the venue claimed automatically.
 
@@ -236,6 +250,6 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 
 ## Next (planned)
 
-- Email receipts / lead alerts beyond `LEAD_WEBHOOK_URL`
 - Enrich Port Huron / UP OSM venues with verified hours (owner tips + Places)
+- Customer-facing email receipts (thank-you / payment confirmation to the submitter)
 
