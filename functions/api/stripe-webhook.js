@@ -1,6 +1,10 @@
-import { verifyStripeWebhook } from "../lib/stripe.js";
+import { reportToken, verifyStripeWebhook } from "../lib/stripe.js";
 import { invalidatePublishedVenuesCache } from "../lib/published-venues-cache.js";
 import { formatCheckoutLeadAlert, queueLeadAlert } from "../lib/lead-alert-email.js";
+import {
+  formatCheckoutCustomerReceipt,
+  queueCustomerReceipt
+} from "../lib/customer-receipt-email.js";
 
 /**
  * POST /api/stripe-webhook
@@ -26,10 +30,13 @@ export async function onRequestPost(context) {
       const session = event.data.object;
       await fulfillCheckout(env, session);
       invalidatePublishedVenuesCache(context);
-      // Owner inbox alert for paid Featured / local sponsor — never blocks Stripe ACK.
+      // Owner inbox + customer receipt for paid Featured / local sponsor — never blocks Stripe ACK.
       if (session && session.mode === "subscription") {
         const origin = new URL(request.url).origin;
         queueLeadAlert(context, env, formatCheckoutLeadAlert(session, { origin }));
+        const billingUrl = await maybeFeaturedBillingUrl(env, session, origin);
+        const receipt = formatCheckoutCustomerReceipt(session, { origin, billingUrl });
+        if (receipt) queueCustomerReceipt(context, env, receipt);
       }
     } else if (event.type === "customer.subscription.deleted") {
       await clearFeatured(env, event.data.object);
@@ -52,6 +59,24 @@ export async function onRequestPost(context) {
     status: 200,
     headers: { "Content-Type": "application/json" }
   });
+}
+
+/** Signed /manage-billing link for Featured venue checkouts when secrets allow. */
+async function maybeFeaturedBillingUrl(env, session, origin) {
+  const meta = (session && session.metadata) || {};
+  const product = String(meta.product || "featured_listing").trim() || "featured_listing";
+  if (product === "local_sponsor" || product === "sponsor") return null;
+
+  const venueId = Number(meta.venue_id || session.client_reference_id);
+  if (!Number.isFinite(venueId) || venueId <= 0) return null;
+
+  try {
+    const token = await reportToken(env, venueId);
+    const base = String(origin || "").replace(/\/$/, "") || "https://michiganhappyhour.com";
+    return `${base}/manage-billing?v=${venueId}&t=${token}`;
+  } catch {
+    return null;
+  }
 }
 
 async function fulfillCheckout(env, session) {

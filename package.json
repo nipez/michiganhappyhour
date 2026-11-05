@@ -20,7 +20,8 @@
     "test:towns": "node scripts/test-towns.mjs",
     "test:spot-seo": "node scripts/test-spot-seo.mjs",
     "test:sponsors": "node scripts/test-sponsors-cache.mjs",
-    "test:lead-alert": "node scripts/test-lead-alert-email.mjs"
+    "test:lead-alert": "node scripts/test-lead-alert-email.mjs",
+    "test:customer-receipt": "node scripts/test-customer-receipt-email.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.28.1",

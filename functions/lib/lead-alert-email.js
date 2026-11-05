@@ -7,7 +7,12 @@
  * Alerts go only to LEAD_ALERT_EMAIL (never venue owners / the public).
  */
 
-const RESEND_API = "https://api.resend.com/emails";
+import {
+  queueResendEmail,
+  resendSendConfigured,
+  sendResendEmail
+} from "./resend-email.js";
+
 const DEFAULT_ORIGIN = "https://michiganhappyhour.com";
 
 /** Submission types that warrant an owner alert. */
@@ -15,81 +20,41 @@ export const LEAD_ALERT_SUBMISSION_TYPES = new Set(["claim_request", "new_listin
 
 export function leadAlertConfigured(env) {
   return Boolean(
-    env &&
-      String(env.RESEND_API_KEY || "").trim() &&
-      String(env.LEAD_ALERT_EMAIL || "").trim() &&
-      String(env.LEAD_ALERT_FROM || "").trim()
+    resendSendConfigured(env) && String(env?.LEAD_ALERT_EMAIL || "").trim()
   );
 }
 
 /**
- * Send one plain-text alert email. Never throws.
+ * Send one plain-text alert email to LEAD_ALERT_EMAIL. Never throws.
  * @returns {Promise<{ ok: boolean, skipped?: boolean, status?: number, error?: string }>}
  */
 export async function sendLeadAlertEmail(env, { subject, text } = {}) {
   if (!leadAlertConfigured(env)) return { ok: true, skipped: true };
-
-  const to = String(env.LEAD_ALERT_EMAIL).trim();
-  const from = String(env.LEAD_ALERT_FROM).trim();
-  const subj = String(subject || "").trim().slice(0, 200) || "Michigan Happy Hour lead";
-  const body = String(text || "").trim().slice(0, 12000);
-  if (!body) return { ok: true, skipped: true };
-
-  try {
-    const res = await fetch(RESEND_API, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${String(env.RESEND_API_KEY).trim()}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        subject: subj,
-        text: body
-      })
-    });
-
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      console.error(
-        "[lead-alert-email] Resend failed",
-        res.status,
-        detail.slice(0, 500)
-      );
-      return { ok: false, status: res.status, error: detail.slice(0, 300) };
-    }
-    return { ok: true, status: res.status };
-  } catch (err) {
-    console.error(
-      "[lead-alert-email] send failed",
-      String(err && err.message ? err.message : err)
-    );
-    return { ok: false, error: String(err && err.message ? err.message : err) };
-  }
+  return sendResendEmail(env, {
+    to: String(env.LEAD_ALERT_EMAIL).trim(),
+    subject,
+    text
+  });
 }
 
 /**
  * Fire-and-forget via context.waitUntil so the user request never waits on email.
- * Safe no-op when secrets are missing or waitUntil is unavailable.
+ * Safe no-op when secrets are missing or waitUntil is absent.
  */
 export function queueLeadAlert(context, env, alert) {
   if (!leadAlertConfigured(env)) return;
   if (!alert || (!alert.subject && !alert.text)) return;
 
-  const task = sendLeadAlertEmail(env, alert).catch((err) => {
-    console.error(
-      "[lead-alert-email] waitUntil task failed",
-      String(err && err.message ? err.message : err)
-    );
-  });
-
-  if (context && typeof context.waitUntil === "function") {
-    context.waitUntil(task);
-    return;
-  }
-  // Fallback: do not await (best-effort if waitUntil missing in tests).
-  void task;
+  queueResendEmail(
+    context,
+    env,
+    {
+      to: String(env.LEAD_ALERT_EMAIL).trim(),
+      subject: alert.subject,
+      text: alert.text
+    },
+    "lead-alert-email"
+  );
 }
 
 function line(label, value) {
