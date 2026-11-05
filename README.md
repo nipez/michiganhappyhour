@@ -206,7 +206,16 @@ printf '%s' 'you@example.com' | npx wrangler pages secret put LEAD_ALERT_EMAIL -
 printf '%s' 'Michigan Happy Hour <alerts@michiganhappyhour.com>' | npx wrangler pages secret put LEAD_ALERT_FROM --project-name=nwmichhappyhour
 ```
 
-`LEAD_ALERT_EMAIL` is the only recipient (owner alerts — not venue owners or the public). Emails are sent in the background via `waitUntil` so form/checkout responses never wait on or fail because of Resend.
+`LEAD_ALERT_EMAIL` is the only recipient for **owner** alerts (not venue owners or the public). Emails are sent in the background via `waitUntil` so form/checkout responses never wait on or fail because of Resend.
+
+3. **Customer thank-you / payment receipts** (same Resend key + From) — short plain-text emails **to the submitter’s email** (never to `LEAD_ALERT_EMAIL`) when we have a usable address:
+
+   - New listing submission (`submission_type=new_listing`)
+   - Claim / for-business inquiry (`submission_type=claim_request`)
+   - Successful Featured Stripe checkout
+   - Successful local-sponsor Stripe checkout (`product=local_sponsor`)
+
+   Silent no-op until `RESEND_API_KEY` and `LEAD_ALERT_FROM` are set (no extra secrets). Featured receipts include a signed `/manage-billing` link when `venue_id` + `REPORT_SECRET`/`ADMIN_PASSWORD` allow it.
 
 Admin **Submissions** can filter by `claim_request`. After verify, toggle **Claimed / verified owner** on the venue (green Verified badge). After payment, also toggle **Featured**. Publishing a `claim_request` marks the venue claimed automatically.
 
@@ -251,5 +260,4 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 ## Next (planned)
 
 - Enrich Port Huron / UP OSM venues with verified hours (owner tips + Places)
-- Customer-facing email receipts (thank-you / payment confirmation to the submitter)
 

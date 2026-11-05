@@ -3,6 +3,11 @@ import {
   formatSubmissionLeadAlert,
   queueLeadAlert
 } from "../lib/lead-alert-email.js";
+import {
+  CUSTOMER_RECEIPT_SUBMISSION_TYPES,
+  formatSubmissionCustomerReceipt,
+  queueCustomerReceipt
+} from "../lib/customer-receipt-email.js";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -241,9 +246,15 @@ export async function onRequestPost(context) {
 
     // Optional owner inbox email (Resend). Silent no-op until secrets are set.
     // Does not block or fail the user response.
+    const origin = new URL(request.url).origin;
     if (LEAD_ALERT_SUBMISSION_TYPES.has(row.submission_type)) {
-      const origin = new URL(request.url).origin;
       queueLeadAlert(context, env, formatSubmissionLeadAlert(row, { id, origin }));
+    }
+
+    // Optional thank-you to the submitter (same Resend key/From; never LEAD_ALERT_EMAIL).
+    if (CUSTOMER_RECEIPT_SUBMISSION_TYPES.has(row.submission_type)) {
+      const receipt = formatSubmissionCustomerReceipt(row, { origin });
+      if (receipt) queueCustomerReceipt(context, env, receipt);
     }
 
     return json({ ok: true, id });
