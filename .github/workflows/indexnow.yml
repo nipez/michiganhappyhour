@@ -1,0 +1,34 @@
+# Submit new/changed sitemap URLs to IndexNow after production deploys.
+# Runs on every push to main (Cloudflare Pages also deploys from main).
+# No repository secrets required — the IndexNow key is public by design.
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: indexnow-main
+  cancel-in-progress: true
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Need history so we can diff sitemap.xml against the previous tip.
+          fetch-depth: 0
+
+      - name: Wait for Cloudflare Pages production deploy
+        # Pages usually finishes within a couple of minutes; IndexNow verifies
+        # keyLocation on the live host, so give the deploy a head start.
+        run: sleep 90
+
+      - name: Submit changed URLs to IndexNow
+        env:
+          # github.event.before is the SHA before this push (all-zero on new branch).
+          INDEXNOW_PREV_SHA: ${{ github.event.before }}
+        run: node scripts/indexnow-submit.mjs

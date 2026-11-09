@@ -6,3 +6,8 @@
 /favicon.ico
   Cache-Control: public, max-age=86400
   Content-Type: image/x-icon
+
+# IndexNow ownership key (body = key). Must be publicly reachable as text/plain.
+/5a011e7451e43a4c03bacd51c0ba3ed1.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=86400

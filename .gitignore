@@ -27,6 +27,8 @@ scripts/generated/*
 !scripts/generated/enrich-venues.sql
 !scripts/generated/enrich-venues-report.json
 !scripts/generated/enrich-venues-input.json
+# IndexNow last-submitted url→lastmod snapshot (written by scripts/indexnow-submit.mjs)
+# scripts/generated/indexnow-state.json is covered by the ignore above.
 
 # Logs
 *.log
