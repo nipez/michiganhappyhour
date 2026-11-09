@@ -257,6 +257,46 @@ Admin → Venues → **Owner report link** copies a signed URL (`/owner-report?v
 - GSC weekly: Performance → Queries/Pages, sort by impressions, fix titles/meta on CTR &lt;2% or position 8–20
 - New posts: `node scripts/generate-seo-posts.mjs` (or edit `blog/*.html` directly)
 
+## IndexNow
+
+Pings Bing/Yandex/etc. when URLs are new or their sitemap `<lastmod>` changes. **No Cloudflare/GitHub secrets required** — the key is public by design.
+
+| Item | Value |
+| --- | --- |
+| Key file (public) | https://michiganhappyhour.com/5a011e7451e43a4c03bacd51c0ba3ed1.txt |
+| Key source in repo | `5a011e7451e43a4c03bacd51c0ba3ed1.txt` (body = key) |
+| Submit script | `scripts/indexnow-submit.mjs` (`npm run indexnow`) |
+| Auto-run | GitHub Action `.github/workflows/indexnow.yml` on every push to `main` (waits ~90s for Pages, then submits) |
+
+### How changed URLs are detected
+
+1. Explicit URLs passed on the CLI (or `INDEXNOW_URLS`)
+2. Else diff current `sitemap.xml` vs previous snapshot, in order:
+   - `INDEXNOW_PREV_SHA` / `--prev=<sha>` (used by the Action with `github.event.before`)
+   - `scripts/generated/indexnow-state.json` (local cheap persistence; gitignored)
+   - `git show HEAD~1:sitemap.xml` when available
+3. Else fall back to sitemap URLs whose `<lastmod>` is within the last **7 days**
+
+Batches at most 10,000 URLs per POST to `https://api.indexnow.org/indexnow`. Non-2xx responses are warnings only (exit 0) so deploys are never blocked.
+
+### Manual / dry-run
+
+```bash
+# Print JSON payload only (no network)
+INDEXNOW_DRY_RUN=1 npm run indexnow
+INDEXNOW_DRY_RUN=1 npm run indexnow -- https://michiganhappyhour.com/blog/monday-happy-hour-michigan
+
+# Submit specific URLs
+npm run indexnow -- https://michiganhappyhour.com/blog/monday-happy-hour-michigan \
+  https://michiganhappyhour.com/regions/traverse-city
+
+# Auto-detect from sitemap diff / lastmod fallback
+npm run indexnow
+
+# Smoke test (key file + dry-run)
+npm run test:indexnow
+```
+
 ## Next (planned)
 
 - Enrich Port Huron / UP OSM venues with verified hours (owner tips + Places)
