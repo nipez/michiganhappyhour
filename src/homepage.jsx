@@ -910,9 +910,29 @@ function App(){
             <a href="/blog/" style={{fontSize:14,fontWeight:700,color:"#E8614D",textDecoration:"none"}}>All posts →</a>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(min(100%,220px),1fr))",gap:10}}>
+            <a href="/blog/detroit-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>UPDATED · CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit happy hours</div>
+            </a>
+            <a href="/blog/grand-rapids-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>UPDATED · CITY GUIDE</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Grand Rapids happy hours</div>
+            </a>
             <a href="/blog/traverse-city-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
               <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>UPDATED · CITY GUIDE</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Traverse City happy hours</div>
+            </a>
+            <a href="/blog/holiday-new-years-eve-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · SEASONAL</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Holiday & NYE happy hours</div>
+            </a>
+            <a href="/blog/winter-patio-fireplace-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · SEASONAL</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Winter patio & fireplace HH</div>
+            </a>
+            <a href="/blog/super-bowl-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · SEASONAL</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Super Bowl watch parties</div>
             </a>
             <a href="/blog/bay-city-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
               <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
@@ -927,28 +947,20 @@ function App(){
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>$5 & under deals</div>
             </a>
             <a href="/blog/waterfront-patio-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · ROUNDUP</div>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>ROUNDUP</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Waterfront & patio HH</div>
             </a>
             <a href="/blog/tri-cities-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · CITY GUIDE</div>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Tri-Cities happy hours</div>
             </a>
             <a href="/blog/charlevoix-petoskey-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>NEW · CITY GUIDE</div>
+              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Petoskey & Charlevoix</div>
             </a>
             <a href="/blog/dog-friendly-happy-hours-michigan" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
               <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>ROUNDUP</div>
               <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Dog-friendly happy hours</div>
-            </a>
-            <a href="/blog/detroit-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Detroit happy hours</div>
-            </a>
-            <a href="/blog/grand-rapids-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
-              <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#1B2838"}}>Grand Rapids happy hours</div>
             </a>
             <a href="/blog/ann-arbor-happy-hour-guide" style={{display:"block",padding:"16px",borderRadius:14,background:"#fff",border:"1.5px solid #D8E2EA",textDecoration:"none"}}>
               <div style={{fontSize:13,color:"#8AA3B5",fontWeight:700,marginBottom:4}}>CITY GUIDE</div>
